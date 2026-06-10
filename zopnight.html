@@ -236,7 +236,7 @@
    Section root inherits body bg (matches the homepage / zopday aesthetic, sections share one canvas, only borders mark the boundary). */
 .zn-stats{ padding:var(--sp-9) 0; }
 .zn-stats .container{ display:grid; grid-template-columns:repeat(4, 1fr); gap:18px; }
-.zn-stats.zn-stats-trust .container{ grid-template-columns:repeat(3, 1fr); }
+.zn-stats.zn-stats-trust .container{ grid-template-columns:repeat(4, 1fr); }
 @media (max-width:768px){
   .zn-stats .container,
   .zn-stats.zn-stats-trust .container{ grid-template-columns:1fr; }
@@ -1141,7 +1141,7 @@ html[data-theme="dark"] .zn-narrative-chip--depth{ color:var(--logo-blue-on-dark
   <div class="topbar-news" aria-label="Live announcements">
     <div class="topbar-news-track">
       <span class="tn-item"><span class="tn-tag tn-up">ZN</span><span class="tn-text">ZopNight v1.5 &middot; Live Kubernetes cluster state</span><span class="tn-delta tn-up">NEW</span></span>
-      <span class="tn-item"><span class="tn-tag tn-up">FIN</span><span class="tn-text">$57K/mo recovered on Azure &middot; Fortune 1000 estate</span><span class="tn-delta tn-up">&#9650; 31.4%</span></span>
+      <span class="tn-item"><span class="tn-tag tn-up">FIN</span><span class="tn-text">$14,820/mo recovered on Azure &middot; Fortune 1000 estate</span><span class="tn-delta tn-up">&#9650; 31.4%</span></span>
       <span class="tn-item"><span class="tn-tag">ZD</span><span class="tn-text">ZopDay &middot; Push-to-deploy across AWS, GCP, Azure</span><span class="tn-delta">LIVE</span></span>
       <span class="tn-item"><span class="tn-tag tn-up">SCH</span><span class="tn-text">Smart Scheduling captures 73% of non-prod cycle</span><span class="tn-delta tn-up">&#9650; 73%</span></span>
       <span class="tn-item"><span class="tn-tag">EVT</span><span class="tn-text">Event Readiness ships per-scope verdicts</span><span class="tn-delta">UPDATED</span></span>
@@ -1149,7 +1149,7 @@ html[data-theme="dark"] .zn-narrative-chip--depth{ color:var(--logo-blue-on-dark
       <span class="tn-item"><span class="tn-tag">CDCR</span><span class="tn-text">Continuous Detection, Continuous Remediation &middot; on every cloud</span><span class="tn-delta">SHIPPED</span></span>
       <!-- Duplicate the sequence so the marquee loops seamlessly -->
       <span class="tn-item" aria-hidden="true"><span class="tn-tag tn-up">ZN</span><span class="tn-text">ZopNight v1.5 &middot; Live Kubernetes cluster state</span><span class="tn-delta tn-up">NEW</span></span>
-      <span class="tn-item" aria-hidden="true"><span class="tn-tag tn-up">FIN</span><span class="tn-text">$57K/mo recovered on Azure &middot; Fortune 1000 estate</span><span class="tn-delta tn-up">&#9650; 31.4%</span></span>
+      <span class="tn-item" aria-hidden="true"><span class="tn-tag tn-up">FIN</span><span class="tn-text">$14,820/mo recovered on Azure &middot; Fortune 1000 estate</span><span class="tn-delta tn-up">&#9650; 31.4%</span></span>
       <span class="tn-item" aria-hidden="true"><span class="tn-tag">ZD</span><span class="tn-text">ZopDay &middot; Push-to-deploy across AWS, GCP, Azure</span><span class="tn-delta">LIVE</span></span>
       <span class="tn-item" aria-hidden="true"><span class="tn-tag tn-up">SCH</span><span class="tn-text">Smart Scheduling captures 73% of non-prod cycle</span><span class="tn-delta tn-up">&#9650; 73%</span></span>
       <span class="tn-item" aria-hidden="true"><span class="tn-tag">EVT</span><span class="tn-text">Event Readiness ships per-scope verdicts</span><span class="tn-delta">UPDATED</span></span>
@@ -1519,7 +1519,7 @@ html[data-theme="dark"] .zn-narrative-chip--depth{ color:var(--logo-blue-on-dark
                 <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"><path d="M3 5h14v10H3z"/><path d="M3 5l7 5 7-5"/></svg>
               </div>
               <h3 class="np-cell-title">Contact</h3>
-              <p class="np-cell-desc">Talk to sales &middot; founders reply within 24h</p>
+              <p class="np-cell-desc">Talk to sales &middot; founders reply within one business day</p>
             </a>
           </div>
         </div>
@@ -1601,7 +1601,7 @@ html[data-theme="dark"] .zn-narrative-chip--depth{ color:var(--logo-blue-on-dark
     </div>
     <div class="container zn-hero-inner">
       <div>
-        <a class="hero-mcp-pill" href="developers.html" aria-label="v1.5 · Live Kubernetes cluster state">
+        <a class="hero-mcp-pill" href="k8s-view.html" aria-label="v1.5 · Live Kubernetes cluster state">
           <span class="hmp-status" aria-hidden="true">
             <span class="hmp-ring"></span>
             <span class="hmp-dot"></span>
@@ -1644,6 +1644,11 @@ html[data-theme="dark"] .zn-narrative-chip--depth{ color:var(--logo-blue-on-dark
         <span class="k">teams</span>
         <div class="v">154<em>+</em></div>
         <div class="l">on the platform</div>
+      </div>
+      <div class="zn-stat">
+        <span class="k">audit rules</span>
+        <div class="v">450<em>+</em></div>
+        <div class="l">across AWS, GCP, Azure</div>
       </div>
     </div>
   </section>
@@ -2463,7 +2468,7 @@ html[data-theme="dark"] .znd-cv-card-body{ color:#D4CDB5; }
       <div class="sec-meta">see the product</div>
       <div>
         <h2>The architecture canvas.<br/>Every resource, every dependency, mapped.</h2>
-        <p class="sub">Switch between Globe and Canvas. Filter by provider, account, region, or category. Click any resource to drill into its config + cost.</p>
+        <p class="sub">Architecture canvas view. Filter by provider and region. Click any resource to drill into its config + cost. <em>(Live product includes Globe view, account / category filters, and the full inventory grid.)</em></p>
       </div>
     </div>
     <div class="znd-frame" aria-label="ZopNight dashboard preview">
@@ -2529,7 +2534,7 @@ html[data-theme="dark"] .znd-cv-card-body{ color:#D4CDB5; }
               <span>Search resources&hellip;</span>
             </span>
             <span class="znd-cv-counts">
-              <span class="znd-cv-count">15 resources</span>
+              <span class="znd-cv-count">Showing 4 of 15 resources</span>
             </span>
           </div>
 
@@ -2650,7 +2655,8 @@ html[data-theme="dark"] .znd-cv-card-body{ color:#D4CDB5; }
       </ul>
 
       <div class="zn-mainthing">
-        <h3>Found. Fixed. Audited. &mdash; Every dollar your cloud advisor missed.</h3>
+        <h3>Detect. Decide. Act. &mdash; Every dollar your cloud advisor missed.</h3>
+        <p>Continuous detection across AWS, GCP, and Azure. Every finding reconciled against your live bill. Auto-fix where it&rsquo;s safe; guided remediation for everything else. Customer databases excluded by default.</p>
       </div>
     </div>
   </section>
@@ -4077,6 +4083,7 @@ html[data-theme="dark"] .loop-node{
   <section id="section-5-proof">
     <div class="container">
       <div class="zn-sec-head">
+        <div class="zn-narrative-chip zn-narrative-chip--solution">PROOF</div>
         <div class="meta">section 5 &middot; proof</div>
         <div>
           <h2 style="max-width:none;"><span style="white-space:nowrap;">$14,820/month recovered in 4 weeks.</span><br/><span style="white-space:nowrap;"><em>Production untouched.</em></span></h2>
@@ -4151,6 +4158,7 @@ html[data-theme="dark"] .loop-node{
                     <li><span>AKS spot</span><strong>$810</strong></li>
                     <li><span>Rightsize</span><strong>$680</strong></li>
                     <li><span>Stale storage</span><strong>$640</strong></li>
+                    <li><span>Misc findings (12 items)</span><strong>$1,090</strong></li>
                   </ul>
                 </div>
               </details>
@@ -4159,9 +4167,9 @@ html[data-theme="dark"] .loop-node{
         </div>
       </div>
 
-      <!-- Second proof card · Fortune Global 2000 FMCG, India (Tata,
-           anonymized per Talvinder note). Same chrome family as the
-           primary slide. Now flows in the carousel track. -->
+      <!-- Second proof card · Fortune Global 2000 FMCG, India · case
+           under NDA. Same chrome family as the primary slide. Flows in
+           the carousel track. -->
       <div class="zn-proof-card">
         <span class="zn-proof-counter">Customer 02 / 02 &middot; AWS &middot; SAP HANA-heavy</span>
         <div class="zn-proof-track-static">
@@ -4596,7 +4604,7 @@ html[data-theme="dark"] .loop-node{
   <section id="section-6-compare">
     <div class="container">
       <div class="zn-sec-head">
-        <div>
+        <div class="zn-narrative-chip zn-narrative-chip--depth">FIT</div><div>
           <div class="meta">section 6 &middot; vs. native tools &amp; finops platforms</div>
           <h2>We find. We execute. <em>We prove.</em></h2>
         </div>
@@ -4616,7 +4624,7 @@ html[data-theme="dark"] .loop-node{
             </tr>
           </thead>
           <tbody>
-            <tr><th scope="row">Azure rules</th><td>15</td><td>~50</td><td>~90</td><td>-</td><td class="zn-us"><strong>147</strong></td></tr>
+            <tr><th scope="row">Azure rules<sup>&dagger;</sup></th><td>15</td><td>~50</td><td>~90</td><td>-</td><td class="zn-us"><strong>147</strong></td></tr>
             <tr><th scope="row">Multi-cloud (AWS + GCP + Azure)</th><td>-</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td class="zn-us"><strong>&#10003;</strong></td></tr>
             <tr><th scope="row">Cron scheduler</th><td>-</td><td>-</td><td>partial</td><td>-</td><td class="zn-us"><strong>&#10003;</strong></td></tr>
             <tr><th scope="row">Dependency sequencing</th><td>-</td><td>-</td><td>-</td><td>-</td><td class="zn-us"><strong>&#10003;</strong></td></tr>
@@ -4628,7 +4636,7 @@ html[data-theme="dark"] .loop-node{
           </tbody>
         </table>
 </div>
-        <p class="zn-compare-foot"><sup>*</sup> AWS Trusted Advisor and GCP Recommender exhibit the same 14%-only pattern as Azure Advisor.</p>
+        <p class="zn-compare-foot"><sup>*</sup> AWS Trusted Advisor and GCP Recommender exhibit the same 14%-only pattern as Azure Advisor. &nbsp; <sup>&dagger;</sup> Azure-only count shown for parity with row 1; ZopNight runs <strong>450+ rules</strong> across AWS, GCP, and Azure combined.</p>
         <aside class="zn-compare-callout">
           <p>Native advisors recommend. FinOps platforms report. <strong>ZopNight finds, executes, and proves &mdash; against your actual cloud bill.</strong></p>
         </aside>
@@ -4653,13 +4661,13 @@ html[data-theme="dark"] .loop-node{
   </style>
 
   <!-- ============================================================
-       SECTION 8 · PRICING
+       SECTION 7 · PRICING
        Aligned pricing. Pay when the bill drops.
        ============================================================ -->
   <section id="section-8-pricing">
     <div class="container">
       <div class="zn-sec-head">
-        <div>
+        <div class="zn-narrative-chip zn-narrative-chip--solution">PRICE</div><div>
           <div class="meta">section 7 &middot; pricing</div>
           <h2>Outcome-aligned pricing.<br/><em>Pay when the bill drops.</em></h2>
         </div>
@@ -4718,18 +4726,19 @@ html[data-theme="dark"] .loop-node{
           </tbody>
         </table>
 </div>
-        <p class="zn-pricing-foot"><strong>No outcomes, no charge</strong> on the variable. Verified against your actual AWS / GCP / Azure billing.</p>
+        <p class="zn-pricing-foot"><strong>Enterprise variable pricing:</strong> no outcomes, no charge. Verified against your actual AWS / GCP / Azure billing. <em>(Free, Team, and Growth tiers are flat-fee &mdash; no outcome share.)</em></p>
       </div>
     </div>
   </section>
 
   <!-- ============================================================
-       SECTION 10 · STAKEHOLDER GRID
+       SECTION 8 · STAKEHOLDER GRID
        Built for every seat in the room
        ============================================================ -->
   <section id="section-10-stakeholder">
     <div class="container">
       <div class="zn-sec-head">
+        <div class="zn-narrative-chip zn-narrative-chip--problem">WHO</div>
         <div class="meta">section 8 &middot; stakeholder grid</div>
         <div>
           <h2>Built for every seat<br/>in the room.</h2>
@@ -4980,9 +4989,9 @@ html[data-theme="dark"] .loop-node{
           <a class="btn btn-secondary" href="demo.html">Book a 20-min walk-through <span aria-hidden="true">&rarr;</span></a>
         </div>
         <div class="final-stats final-stats--inline">
-          <div><strong>5 min</strong>connect time</div>
-          <div><strong>7 min</strong>first remediation</div>
-          <div><strong>42%</strong>average waste cut, 30 days</div>
+          <div><strong>5 min</strong>first finding, read-only</div>
+          <div><strong>$14,820/mo</strong>recovered &middot; Fortune 1000 case</div>
+          <div><strong>~24%</strong>non-prod cost cut &middot; FMCG case</div>
         </div>
       </div>
       <div class="final-aside" aria-hidden="true"></div>
@@ -4994,20 +5003,20 @@ html[data-theme="dark"] .loop-node{
 <!-- BRIDGE MARQUEE · cream slab between dark CTA and dark footer -->
 <section class="bridge-marquee" aria-label="ZopDev brand statement">
   <div class="bridge-track">
-    <span>multi-cloud automation</span><span class="acc">·</span>
+    <span>MCP-native</span><span class="acc">·</span>
     <span>450+ audit rules</span><span class="acc">·</span>
     <span>SOC 2 Type II</span><span class="acc">·</span>
     <span>ISO 27001:2022</span><span class="acc">·</span>
     <span>read-only by default</span><span class="acc">·</span>
-    <span>three engines</span><span class="acc">·</span>
-    <span>one workspace</span><span class="acc">·</span>
-    <span>multi-cloud automation</span><span class="acc">·</span>
+    <span>continuous remediation</span><span class="acc">·</span>
+    <span>CloudOps agents &middot; soon</span><span class="acc">·</span>
+    <span>MCP-native</span><span class="acc">·</span>
     <span>450+ audit rules</span><span class="acc">·</span>
     <span>SOC 2 Type II</span><span class="acc">·</span>
     <span>ISO 27001:2022</span><span class="acc">·</span>
     <span>read-only by default</span><span class="acc">·</span>
-    <span>three engines</span><span class="acc">·</span>
-    <span>one workspace</span><span class="acc">·</span>
+    <span>continuous remediation</span><span class="acc">·</span>
+    <span>CloudOps agents &middot; soon</span><span class="acc">·</span>
   </div>
 </section>
 

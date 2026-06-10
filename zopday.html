@@ -731,6 +731,264 @@ html[data-theme="dark"] .zd-stages-bento .feature .feat-visual{
 <script src="chrome-mobilenav.js" defer></script>
 <script src="chrome-footer.js" defer></script>
   <link rel="stylesheet" href="cta-tetris.css">
+<style id="zd-deploy-loop-css">
+/* Deploy loop section · reuses the homepage CDCR loop diagram CSS.
+   Same .topology / .loop-grid / .loop-node / .loop-hub vocabulary,
+   recolored for the ZD deploy lifecycle (push → build → deploy → observe). */
+
+/* CDCR · simplified 2×2 loop graph */
+.topo-graph.loop-grid{
+  position:relative; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr;
+  gap:48px 48px; padding:56px; background:var(--zop-white);
+}
+.loop-grid .loop-svg{
+  position:absolute; inset:40px; width:calc(100% - 80px); height:calc(100% - 80px);
+  pointer-events:none; overflow:visible;
+}
+.loop-grid .loop-svg .edge{
+  fill:none; stroke:var(--g-400); stroke-width:1.4; stroke-dasharray:5 5;
+  animation: edge-flow 4s linear infinite;
+}
+/* All 4 edges share the same animation phase · the dashed dots flow in
+   sync around the loop instead of staggered 1s apart per edge. */
+.loop-grid .loop-svg .edge.e1{ stroke:var(--zop-blue); }
+.loop-grid .loop-svg .edge.e2{ stroke:var(--zop-orange); }
+.loop-grid .loop-svg .edge.e3{ stroke:#6da137; }
+.loop-grid .loop-svg .edge.e4{ stroke:var(--ink); }
+.loop-grid .loop-svg .arrow{ opacity:.9; }
+.loop-grid .loop-svg .arrow.a1{ fill:var(--zop-blue); }
+.loop-grid .loop-svg .arrow.a2{ fill:var(--zop-orange); }
+.loop-grid .loop-svg .arrow.a3{ fill:#6da137; }
+.loop-grid .loop-svg .arrow.a4{ fill:var(--ink); }
+@keyframes edge-flow{ to{ stroke-dashoffset:-40; } }
+
+.loop-node{
+  position:relative; z-index:1; background:var(--zop-white);
+  border:1px solid var(--line); padding:18px 20px;
+  display:flex; flex-direction:column; gap:6px;
+  align-items:center; justify-content:center; text-align:center;
+}
+/* Explicit grid placement · DOM order matches sequence (01→02→03→04)
+   while visual placement matches the clockwise arrow flow
+   (TL→TR→BR→BL). */
+.loop-node--tl{ grid-column:1; grid-row:1; }
+.loop-node--tr{ grid-column:2; grid-row:1; }
+.loop-node--br{ grid-column:2; grid-row:2; }
+.loop-node--bl{ grid-column:1; grid-row:2; }
+.loop-node-num{
+  font-family:var(--mono); font-size:11px; font-weight:700;
+  color:var(--zop-orange); letter-spacing:.16em;
+  margin-bottom:2px;
+}
+.loop-node .hdr{
+  font-family:var(--mono); font-size:10px; letter-spacing:.16em; color:var(--g-500);
+  display:flex; align-items:center; gap:8px; text-transform:uppercase;
+}
+.loop-node .hdr .dot{ width:8px; height:8px; background:var(--g-400); display:inline-block; }
+.loop-node[data-step="connect"]   .hdr .dot{ background:var(--zop-blue); }
+.loop-node[data-step="detect"]    .hdr .dot{ background:var(--zop-orange); }
+.loop-node[data-step="remediate"] .hdr .dot{ background:#3f6320; }
+.loop-node[data-step="verify"]    .hdr .dot{ background:var(--ink); }
+.loop-node .name{ font-size:15px; font-weight:700; letter-spacing:-0.02em; color:var(--ink); }
+/* Multi-line meta · two short mono lines stacked under the headline */
+.loop-node-meta{
+  list-style:none; margin:2px 0 0; padding:0;
+  display:flex; flex-direction:column; gap:2px;
+  font-family:var(--mono); font-size:11px;
+  color:var(--g-600); line-height:1.4;
+}
+.loop-node-meta li{ margin:0; }
+
+/* Dark-mode CDCR loop-nodes · dark cards so they don't float as bright
+   white boxes against the dark section background. Mirrors the bento
+   feature card override above. */
+html[data-theme="dark"] .loop-node{
+  background:#0F0F12;
+  border-color:#2a2a30;
+}
+
+.loop-hub{
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  z-index:2; background:var(--ink); color:var(--paper);
+  padding:14px 20px; text-align:center; min-width:120px;
+  display:flex; flex-direction:column; align-items:center; gap:2px;
+}
+.loop-hub .pulse{
+  width:8px; height:8px; background:#34d399; display:block; margin-bottom:6px;
+  animation: hub-pulse 1.6s steps(2) infinite;
+}
+.loop-hub .lbl{ font-family:var(--mono); font-size:9px; letter-spacing:.2em; color:#a0a0a8; text-transform:uppercase; }
+.loop-hub .val{ font-size:14px; font-weight:700; letter-spacing:.05em; }
+@keyframes hub-pulse{ 50%{ opacity:.35; } }
+@media (prefers-reduced-motion: reduce){
+  .loop-grid .loop-svg .edge{ animation:none; }
+  .loop-hub .pulse{ animation:none; }
+}
+@media (max-width:900px){
+  /* Keep the 2×2 loop layout on mobile so the diagram still reads as a
+     loop with directional arrows + center hub, just compress padding,
+     gap, and the node typography so it fits a phone-width container. */
+  .topo-graph.loop-grid{
+    grid-template-columns:minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows:auto auto;
+    gap:24px;
+    padding:32px 20px;
+  }
+  .loop-grid .loop-svg{
+    display:block;
+    inset:24px;
+    width:calc(100% - 48px);
+    height:calc(100% - 48px);
+  }
+  .loop-node{ padding:12px 13px; gap:4px; }
+  .loop-node-num{ font-size:9.5px; }
+  .loop-node .hdr{ font-size:9px; letter-spacing:.12em; gap:6px; }
+  .loop-node .hdr .dot{ width:6px; height:6px; }
+  .loop-node .name{ font-size:13px; }
+  .loop-node-meta{ font-size:10px; gap:1px; }
+  .loop-hub{
+    min-width:88px; padding:10px 14px;
+  }
+  .loop-hub .pulse{ width:6px; height:6px; margin-bottom:4px; }
+  .loop-hub .lbl{ font-size:8.5px; }
+  .loop-hub .val{ font-size:12px; }
+}
+@media (max-width:480px){
+  /* Phone-portrait · drop another step so the cards stay one-line per
+     name and the hub doesn't overlap the surrounding edges. */
+  .topo-graph.loop-grid{
+    gap:14px 14px;
+    padding:22px 12px;
+  }
+  .loop-grid .loop-svg{
+    inset:18px;
+    width:calc(100% - 36px);
+    height:calc(100% - 36px);
+  }
+  .loop-node{ padding:10px 11px; }
+  .loop-node .hdr{ font-size:8.5px; letter-spacing:.10em; }
+  .loop-node .name{ font-size:12px; }
+  .loop-node .meta{ font-size:9.5px; letter-spacing:0; }
+  .loop-hub{ min-width:72px; padding:8px 10px; }
+  .loop-hub .val{ font-size:11px; }
+}
+
+
+/* --- 3. CDCR node topology --- */
+.topology{display:grid; grid-template-columns:1fr 1.2fr; border:1px solid var(--line); background:var(--zop-white)}
+/* Single-column mode · the left phase column is gone, the diagram now
+   spans the full width of the section. */
+.topology.topology--single{ grid-template-columns:1fr; }
+.topology.topology--single .topo-graph.loop-grid{ border-right:0; }
+
+/* XL diagram · bigger padding + gap so the 4 loop nodes get the room to
+   carry the full description inside each node. */
+.loop-grid.loop-grid--xl{
+  padding:80px 72px;
+  gap:80px 96px;
+  min-height:640px;
+}
+.loop-grid.loop-grid--xl .loop-svg{
+  inset:56px;
+  width:calc(100% - 112px); height:calc(100% - 112px);
+}
+.loop-grid--xl .loop-node{
+  padding:28px 30px;
+  align-items:flex-start; text-align:left;
+  gap:8px;
+  min-height:230px;
+}
+.loop-grid--xl .loop-node .name{
+  font-size:18px; line-height:1.2; margin-top:2px;
+}
+.loop-grid--xl .loop-node-body{
+  margin:6px 0 0;
+  font-size:13.5px; line-height:1.55;
+  color:var(--g-600); letter-spacing:-.005em;
+}
+html[data-theme="dark"] .loop-grid--xl .loop-node-body{ color:var(--g-400); }
+.loop-grid--xl .loop-hub{
+  min-width:160px; padding:18px 24px;
+}
+.loop-grid--xl .loop-hub .val{ font-size:16px; }
+
+@media (max-width:980px){
+  .loop-grid.loop-grid--xl{ padding:48px 32px; gap:48px; min-height:0; }
+  .loop-grid.loop-grid--xl .loop-svg{
+    inset:32px; width:calc(100% - 64px); height:calc(100% - 64px);
+  }
+  .loop-grid--xl .loop-node{ min-height:0; padding:20px 22px; }
+  .loop-grid--xl .loop-hub{ display:none; }
+}
+@media (max-width:760px){
+  .loop-grid.loop-grid--xl{
+    grid-template-columns:1fr; grid-template-rows:auto;
+    padding:24px 18px; gap:24px;
+  }
+  .loop-grid.loop-grid--xl .loop-svg{ display:none; }
+  .loop-grid--xl .loop-node--tl,
+  .loop-grid--xl .loop-node--tr,
+  .loop-grid--xl .loop-node--br,
+  .loop-grid--xl .loop-node--bl{ grid-column:1; grid-row:auto; }
+}
+
+/* ZD-specific overrides · use ZopDay's color palette for the loop edges
+   instead of CDCR's. Push = blue, Build = orange, Deploy = green,
+   Observe = ink (same as CDCR by accident). */
+.zd-deploy-loop .loop-node[data-step="push"]    .hdr .dot{ background:var(--zop-blue); }
+.zd-deploy-loop .loop-node[data-step="build"]   .hdr .dot{ background:var(--zop-orange); }
+.zd-deploy-loop .loop-node[data-step="deploy"]  .hdr .dot{ background:#6da137; }
+.zd-deploy-loop .loop-node[data-step="observe"] .hdr .dot{ background:var(--ink); }
+.zd-deploy-loop .loop-svg .edge.e1{ stroke:var(--zop-blue); }
+.zd-deploy-loop .loop-svg .edge.e2{ stroke:var(--zop-orange); }
+.zd-deploy-loop .loop-svg .edge.e3{ stroke:#6da137; }
+.zd-deploy-loop .loop-svg .edge.e4{ stroke:var(--ink); }
+.zd-deploy-loop .loop-svg .arrow.a1{ fill:var(--zop-blue); }
+.zd-deploy-loop .loop-svg .arrow.a2{ fill:var(--zop-orange); }
+.zd-deploy-loop .loop-svg .arrow.a3{ fill:#6da137; }
+.zd-deploy-loop .loop-svg .arrow.a4{ fill:var(--ink); }
+
+.zd-deploy-loop{
+  padding-top:80px; padding-bottom:80px;
+}
+.zd-deploy-loop-callout{
+  margin-top:24px;
+  padding:22px 28px;
+  background:rgba(127, 178, 54, .08);
+  border:1px solid #6da137;
+  border-left-width:4px;
+  display:flex; align-items:center; gap:18px; flex-wrap:wrap;
+}
+html[data-theme="dark"] .zd-deploy-loop-callout{ background:rgba(127, 178, 54, .12); }
+.zd-deploy-loop-callout-tag{
+  flex:none;
+  font-family:var(--mono, 'Space Grotesk', monospace);
+  font-size:10.5px; font-weight:700; letter-spacing:.18em;
+  text-transform:uppercase;
+  color:#6da137;
+}
+.zd-deploy-loop-callout-text{
+  margin:0; flex:1 1 320px;
+  font-family:var(--font);
+  font-size:clamp(17px, 1.8vw, 21px);
+  font-weight:500; letter-spacing:-.01em;
+  color:var(--ink);
+}
+html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
+</style>
+<style id="zd-mock-chip-css">
+.zd-deploylog-cap{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.zd-mock-chip{
+      display:inline-block;
+      padding:3px 8px;
+      background:var(--zop-orange);
+      color:#fff;
+      font-weight:700;
+      font-size:10.5px;
+      letter-spacing:.18em;
+      border-radius:2px;
+    }
+</style>
 </head>
 <body data-product="zopday">
 <a class="skip-to-main" href="#main-content">Skip to main content</a>
@@ -1229,7 +1487,7 @@ html[data-theme="dark"] .zd-stages-bento .feature .feat-visual{
     </div>
     <div class="container zd-hero-inner">
       <div>
-        <a class="hero-mcp-pill" href="developers.html" aria-label="v1.5 · Live Kubernetes cluster state">
+        <a class="hero-mcp-pill" href="k8s-view.html" aria-label="v1.5 · Live Kubernetes cluster state">
           <span class="hmp-status" aria-hidden="true">
             <span class="hmp-ring"></span>
             <span class="hmp-dot"></span>
@@ -2512,35 +2770,35 @@ html[data-theme="dark"] .zd-stages-bento .feature .feat-visual{
         <p class="zd-feature-foot">INGRESS &middot; LOADBALANCER &middot; TLS</p>
       </article>
       <article class="zd-feature">
-        <span class="zd-feature-num">03 · ADD EXISTING CLUSTERS</span>
+        <span class="zd-feature-num">03 &middot; ADD EXISTING CLUSTERS</span>
         <h3 class="zd-feature-title">Bring the cluster you already run.</h3>
         <p class="zd-feature-tag">Imports stay identical to provisioned clusters.</p>
         <p class="zd-feature-body">Import an EKS, GKE (zonal or regional), or AKS cluster you already have. Components install consistently, datastore connections work, database provisioning runs the same way as on a ZopDay-provisioned cluster. The wizard rejects half-filled payloads up front, no clusters stuck in &ldquo;waiting for credentials.&rdquo;</p>
         <p class="zd-feature-foot">EKS &middot; GKE &middot; AKS &middot; END-TO-END</p>
       </article>
       <article class="zd-feature">
-        <span class="zd-feature-num">04 · IN-PLACE UPDATES</span>
+        <span class="zd-feature-num">04 &middot; IN-PLACE UPDATES</span>
         <h3 class="zd-feature-title">Change tier. Don't recreate.</h3>
         <p class="zd-feature-tag">Tier, storage, scaling, backups, all in-place.</p>
         <p class="zd-feature-body">Update tier, storage, scaling, or backup retention on RDS, ElastiCache, EKS node groups, Cloud SQL, Memorystore, GKE node pools, Azure SQL, Azure Database for MySQL/Postgres, Azure Redis, AKS, directly from ZopDay. Each change runs as its own provisioning job with a <strong>pre-flight check</strong> that confirms the resource is alive before touching it.</p>
         <p class="zd-feature-foot">TIER &middot; STORAGE &middot; BACKUPS &middot; SCALING</p>
       </article>
       <article class="zd-feature">
-        <span class="zd-feature-num">05 · CROSS-VPC PEERING</span>
+        <span class="zd-feature-num">05 &middot; CROSS-VPC PEERING</span>
         <h3 class="zd-feature-title">Same-region cross-VPC, auto-peered.</h3>
         <p class="zd-feature-tag">Peering + routes + scoped ingress, automatic.</p>
         <p class="zd-feature-body">When a datastore lives in a different VPC than the cluster (same region), ZopDay auto-creates the peering, the reciprocal routes, and a narrow ingress rule on the datastore's security group, scoped to your cluster's CIDR and the engine port only. <strong>Cross-region rejected upfront.</strong></p>
         <p class="zd-feature-foot">PEERING &middot; ROUTES &middot; SCOPED INGRESS</p>
       </article>
       <article class="zd-feature">
-        <span class="zd-feature-num">06 · REAL ERRORS, REAL REASONS</span>
+        <span class="zd-feature-num">06 &middot; REAL ERRORS, REAL REASONS</span>
         <h3 class="zd-feature-title">Provisioning fails, surface the cause.</h3>
         <p class="zd-feature-tag">Typed errors humanised end-to-end.</p>
         <p class="zd-feature-body">Typed-error wrapper flows the actual cause through to the UI: <code>IamLimitExceeded</code>, overlapping CIDR range, <code>Ec2SubnetInvalidConfiguration</code>, <code>AsgInstanceLaunchFailures</code>, <code>InvalidStateTransition</code>. No generic &ldquo;operation failed&rdquo; toast. Step labels humanised: &ldquo;Setup VPC Peering,&rdquo; &ldquo;Wait for Peering,&rdquo; &ldquo;Inject Connection Secret&rdquo; instead of raw <code>snake_case</code>.</p>
         <p class="zd-feature-foot">TYPED &middot; HUMANISED</p>
       </article>
       <article class="zd-feature">
-        <span class="zd-feature-num">07 · OPEN SOURCE DNA</span>
+        <span class="zd-feature-num">07 &middot; OPEN SOURCE DNA</span>
         <h3 class="zd-feature-title">Built on GoFr. Apache 2.0.</h3>
         <p class="zd-feature-tag">Same framework McAfee, FairPrice, Fortune 500 run.</p>
         <p class="zd-feature-body">ZopDay is built on <strong>GoFr</strong>, the open-source Go framework, Apache 2.0 licensed, created by our CTO. The same framework McAfee, FairPrice, and Fortune 500 retail teams run in production. Your services build cleanly on it. So do ours. <a href="https://github.com/gofr-dev/gofr" target="_blank" rel="noopener">★ Star GoFr on GitHub &middot; 21.5k &rarr;</a></p>
@@ -2646,10 +2904,78 @@ html[data-theme="dark"] .zd-stages-bento .feature .feat-visual{
        SECTION 4 · HOW IT ACTUALLY WORKS IN 4 MINUTES
        From git push to live URL, without leaving the editor.
        ============================================================ -->
-  <section>
+    <!-- SECTION · DEPLOY LOOP · push → build → deploy → observe ·
+       ported from the audit pass. zd-deploy-loop-css carries styles. -->
+<section class="section zd-deploy-loop" id="section-zd-loop">
     <div class="container">
       <div class="zd-sec-head">
-        <div class="meta">section 4 &middot; how it actually works</div>
+        <div class="zd-narrative-chip zd-narrative-chip--depth">METHOD</div>
+        <div class="meta">section 4 &middot; the deploy loop</div>
+        <div>
+          <h2>Push once.<br/><em>Ship forever.</em></h2>
+        </div>
+        <p class="sub">CI/CD made code continuous. ZopDay makes <strong>your whole deploy lifecycle</strong> continuous &mdash; push, build, roll out, observe, repeat &mdash; on every cluster, every environment, every cloud.</p>
+      </div>
+
+      <div class="topology topology--single">
+        <div class="topo-graph loop-grid loop-grid--xl">
+          <svg class="loop-svg" viewBox="0 0 400 400" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M 80 60 L 320 60" class="edge e1"/>
+            <path d="M 340 80 L 340 320" class="edge e2"/>
+            <path d="M 320 340 L 80 340" class="edge e3"/>
+            <path d="M 60 320 L 60 80" class="edge e4"/>
+            <polygon points="320,54 332,60 320,66" class="arrow a1"/>
+            <polygon points="346,320 340,332 334,320" class="arrow a2"/>
+            <polygon points="80,346 68,340 80,334" class="arrow a3"/>
+            <polygon points="54,80 60,68 66,80" class="arrow a4"/>
+          </svg>
+
+          <!-- 4 loop nodes · clockwise: TL Push → TR Build → BR Deploy → BL Observe -->
+          <div class="loop-node loop-node--tl" data-step="push">
+            <div class="loop-node-num">01</div>
+            <div class="hdr"><span class="dot"></span>PUSH</div>
+            <div class="name">Push to main.</div>
+            <p class="loop-node-body">Trigger from a git push, a PR merge, or the playground UI. ZopDay reads your service config (port, replicas, probes, secrets) and the cluster context. <strong>No Terraform written, no manifests to maintain.</strong></p>
+          </div>
+          <div class="loop-node loop-node--tr" data-step="build">
+            <div class="loop-node-num">02</div>
+            <div class="hdr"><span class="dot"></span>BUILD</div>
+            <div class="name">Build the artifact.</div>
+            <p class="loop-node-body">Image build, scan, sign &mdash; same wizard for every service. Helm chart renders from your inputs, not hand-written YAML. <strong>Pre-flight</strong> checks confirm cluster, datastore, and IAM are reachable before any write.</p>
+          </div>
+          <div class="loop-node loop-node--br" data-step="deploy">
+            <div class="loop-node-num">03</div>
+            <div class="hdr"><span class="dot"></span>DEPLOY</div>
+            <div class="name">Roll out, canary first.</div>
+            <p class="loop-node-body">Canary &rarr; progressive rollout &rarr; full traffic. <strong>Production writes are admin-gated and logged</strong>. Auto-rollback fires if health checks fail or error budget breaches. Customer databases never touched without explicit approval.</p>
+          </div>
+          <div class="loop-node loop-node--bl" data-step="observe">
+            <div class="loop-node-num">04</div>
+            <div class="hdr"><span class="dot"></span>OBSERVE</div>
+            <div class="name">Live metrics + rollback.</div>
+            <p class="loop-node-body">Health, latency, error rate, and cost delta streamed to the same workspace. <strong>Every action in the audit trail</strong> &mdash; actor, timestamp, dollar delta. Quarterly review reads measured outcomes, never forecasts.</p>
+          </div>
+
+          <div class="loop-hub">
+            <span class="pulse"></span>
+            <div class="lbl">continuous</div>
+            <div class="val">SHIPPING</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- UNIQUE TO DEPLOY LOOP · closing callout below the diagram -->
+      <aside class="zd-deploy-loop-callout">
+        <span class="zd-deploy-loop-callout-tag">WHY IT MATTERS</span>
+        <p class="zd-deploy-loop-callout-text">Most platforms ship infra. <strong>ZopDay ships the whole loop &mdash; provision, deploy, observe, rollback &mdash; for every service, on every cloud.</strong></p>
+      </aside>
+    </div>
+  </section>
+
+<section>
+    <div class="container">
+      <div class="zd-sec-head">
+        <div class="meta">section 5 &middot; how it actually works</div>
         <div>
           <h2>From git push to live URL, <em>without leaving the editor.</em></h2>
         </div>
@@ -2662,7 +2988,7 @@ html[data-theme="dark"] .zd-stages-bento .feature .feat-visual{
            editor") lands harder when the section LOOKS like what
            you'd see in your editor's integrated terminal. -->
       <figure class="zd-deploylog" aria-label="Mock deployment log: six steps from git push to live URL">
-        <figcaption class="zd-deploylog-cap">A real deploy, in real time &mdash; mock data, real flow.</figcaption>
+        <figcaption class="zd-deploylog-cap"><span class="zd-mock-chip">MOCK</span> Representative timings &middot; flow accurate, numbers illustrative.</figcaption>
         <div class="zd-deploylog-frame">
           <div class="zd-deploylog-chrome">
             <span class="zd-dl-dot zd-dl-dot--r" aria-hidden="true"></span>
@@ -2924,11 +3250,83 @@ html[data-theme="dark"] .zd-stages-bento .feature .feat-visual{
   </style>
 
   <!-- WHY ZOPDAY · 4 numbered points -->
-  <section>
+    <!-- SECTION · MCP · deploy from your coding agent · ported from the
+       audit pass. Self-contained: mcp-section-css carries all styles. -->
+<section class="mcp-section" id="mcp">
+    <div class="container mcp-inner">
+      <p class="mcp-eyebrow">
+        <span class="mcp-eyebrow-sq" aria-hidden="true"></span>
+        Available now
+      </p>
+      <h2 class="mcp-h">Your coding agent<br/><em>now ships infra.</em></h2>
+      <p class="mcp-sub">Same wizard. Same hardening. Voiced through the agent you already use.</p>
+      <p class="mcp-body">
+        ZopDay exposes every provisioning and deploy action through one MCP server.
+        <strong>Claude</strong>, <strong>Cursor</strong>, or <strong>Codex</strong> can
+        stand up environments, scale replicas, and roll out releases &mdash; through the
+        same admin-gated paths your console uses. Approvals stay with humans. The typing
+        is gone.
+      </p>
+      <p class="mcp-tag">Writes only what you approve. Every action logged. Customer data never read.</p>
+
+      <!-- Terminal mockup · 3 stacked prompts with the response previewed
+           underneath each, deploy-flavored. Cursor blink at the bottom
+           keeps the "right-now" feel without faking a chat UI. -->
+      <div class="mcp-terminal" aria-hidden="true">
+        <div class="mcp-terminal-chrome">
+          <span class="mcp-terminal-dot mcp-terminal-dot--r"></span>
+          <span class="mcp-terminal-dot mcp-terminal-dot--y"></span>
+          <span class="mcp-terminal-dot mcp-terminal-dot--g"></span>
+          <span class="mcp-terminal-title">claude &middot; zopday-mcp</span>
+          <span class="mcp-terminal-pill">approval-gated</span>
+        </div>
+        <div class="mcp-terminal-body">
+          <div class="mcp-q">
+            <span class="mcp-prompt">&gt;_</span>
+            <span class="mcp-q-text">stand me up a staging environment for the orders-api branch</span>
+          </div>
+          <div class="mcp-a">
+            <span class="mcp-a-mark" aria-hidden="true">&#8627;</span>
+            <span class="mcp-a-text">Provisioning&hellip; <strong>orders-api-stg</strong> created &middot; EKS small-tier &middot; Postgres + Redis &middot; <strong>ready in 3m 42s</strong>.</span>
+          </div>
+
+          <div class="mcp-q">
+            <span class="mcp-prompt">&gt;_</span>
+            <span class="mcp-q-text">why is my prod deploy stuck?</span>
+          </div>
+          <div class="mcp-a">
+            <span class="mcp-a-mark" aria-hidden="true">&#8627;</span>
+            <span class="mcp-a-text"><strong>orders-svc v2.18</strong> paused at canary gate &middot; 3 of 12 pods unhealthy &middot; <em>/healthz</em> returning 503 from db-pool. <strong>Roll back?</strong></span>
+          </div>
+
+          <div class="mcp-q">
+            <span class="mcp-prompt">&gt;_</span>
+            <span class="mcp-q-text">scale checkout-prod to handle Black Friday</span>
+          </div>
+          <div class="mcp-a">
+            <span class="mcp-a-mark" aria-hidden="true">&#8627;</span>
+            <span class="mcp-a-text">Proposing scale: <strong>6 &rarr; 24 pods</strong> &middot; estimated <strong>+$78/hr for 12 hrs</strong> &middot; canary first? <em>[admin approval required]</em></span>
+          </div>
+
+          <div class="mcp-q mcp-q--live">
+            <span class="mcp-prompt">&gt;_</span>
+            <span class="mcp-cursor" aria-hidden="true"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mcp-foot">
+        <span class="mcp-foot-flow">Claude Code &middot; Cursor &middot; Codex &nbsp;<span class="mcp-foot-arrow">&rarr;</span>&nbsp; ZopDay MCP</span>
+        <span class="mcp-foot-tag">Reads everything. Writes admin-gated. Production touched only on approval. Every action logged.</span>
+      </div>
+    </div>
+  </section>
+
+<section>
     <div class="container">
       <div class="zd-sec-head">
         <div>
-          <div class="meta">section 5 &middot; proof</div>
+          <div class="meta">section 6 &middot; proof</div>
           <h2>McAfee runs platform engineering <em>on ZopDay.</em></h2>
         </div>
       </div>
@@ -2963,17 +3361,17 @@ html[data-theme="dark"] .zd-stages-bento .feature .feat-visual{
               <div class="zd-proof-slide-stat">
                 <span class="k">Deployments</span>
                 <strong class="v">60% faster</strong>
-                <span class="b">pipeline-driven, standardised</span>
+                <span class="b">vs prior internal-platform baseline</span>
               </div>
               <div class="zd-proof-slide-stat">
                 <span class="k">Audit prep</span>
                 <strong class="v">40% less</strong>
-                <span class="b">compliance centralised</span>
+                <span class="b">vs prior manual quarterly cycle</span>
               </div>
               <div class="zd-proof-slide-stat">
                 <span class="k">MTTR</span>
                 <strong class="v">30% faster</strong>
-                <span class="b">full-stack observability</span>
+                <span class="b">vs prior multi-tool stack</span>
               </div>
             </div>
             <div class="zd-proof-slide-cta">
@@ -2992,7 +3390,7 @@ html[data-theme="dark"] .zd-stages-bento .feature .feat-visual{
   <section>
     <div class="container">
       <div class="zd-sec-head">
-        <div class="meta">section 6 &middot; where zopday fits</div>
+        <div class="meta">section 7 &middot; where zopday fits</div>
         <div>
           <h2>Hosted PaaS rents you their stack. <em>Internal platforms cost you a team.</em></h2>
         </div>
@@ -3067,7 +3465,7 @@ html[data-theme="dark"] .zd-stages-bento .feature .feat-visual{
   <section>
     <div class="container">
       <div class="zd-sec-head">
-        <div class="meta">section 7 &middot; pricing</div>
+        <div class="meta">section 8 &middot; pricing</div>
         <div>
           <h2>Aligned pricing. <em>Free where it matters.</em></h2>
         </div>
@@ -3167,9 +3565,10 @@ html[data-theme="dark"] .zd-stages-bento .feature .feat-visual{
     <div class="container">
       <div class="zd-sec-head">
         <div>
-          <div class="meta">section 8 &middot; stakeholder grid</div>
+          <div class="meta">section 9 &middot; stakeholder grid</div>
           <h2>Built for every seat <em>in the room.</em></h2>
         </div>
+        <p class="sub">Platform engineers ship without building. CTOs eject without lock-in. Audit reads one trail, not five.</p>
       </div>
 
       <div class="zd-stake-grid">
