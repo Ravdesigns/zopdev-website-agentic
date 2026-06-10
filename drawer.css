@@ -1,0 +1,564 @@
+/* =========================================================================
+   DRAWER · slides up from the bottom · shows expanded feature details
+   Shared across index.html and zopday.html (and any other page that
+   wants the bento drawer pattern).
+   ========================================================================= */
+.feat-drawer-tpl{ display:none; }
+
+/* "Read" expand button · top-right of any card with a drawer template */
+.feat-expand{
+  position:absolute; top:22px; right:22px;
+  height:30px; padding:0 10px 0 12px;
+  background:var(--paper);
+  border:1px solid var(--line);
+  color:var(--ink);
+  display:inline-flex; align-items:center; gap:8px;
+  cursor:pointer;
+  font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase; font-weight:500;
+  transition:border-color 160ms var(--ease-out, ease-out), background 160ms var(--ease-out, ease-out), color 160ms var(--ease-out, ease-out);
+  z-index:3;
+}
+.feat-expand::before{ content:'Read'; }
+.feat-expand svg{ width:12px; height:12px; display:block; }
+.feat-expand:hover,
+.zd-card:hover .feat-expand,
+.feature[data-feature]:hover .feat-expand{
+  background:var(--ink); color:var(--paper); border-color:var(--ink);
+}
+.zd-card{ cursor:pointer; }
+
+.drawer-scrim{
+  /* z-index matched to homepage inline drawer (1100) so the scrim sits
+     above .btn-celest-wrap, mob-nav, dropdowns, etc. on every page. */
+  position:fixed; inset:0; z-index:1100;
+  background:rgba(10,10,10,0.5);
+  opacity:0; visibility:hidden;
+  transition:opacity var(--dur-med, 250ms) var(--ease-out, cubic-bezier(.22,1,.36,1)), visibility var(--dur-med, 250ms);
+}
+.drawer-scrim.open{ opacity:1; visibility:visible; }
+
+.drawer{
+  /* z-index matched to homepage inline drawer (1101) — sits one above
+     the scrim, above every other floating element on subpages. */
+  position:fixed; left:0; right:0; bottom:0; z-index:1101;
+  background:var(--paper);
+  border-top:1px solid var(--line);
+  height:85vh; max-height:85vh;
+  transform:translateY(100%);
+  transition:transform 480ms var(--ease-out, cubic-bezier(.22,1,.36,1));
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  display:flex; flex-direction:column;
+}
+.drawer.open{ transform:translateY(0); box-shadow:0 -12px 0 -6px var(--zop-orange); }
+.drawer-inner{
+  max-width:var(--max, 1200px); width:100%; margin:0 auto;
+  padding:16px var(--gutter, 32px) 120px;
+  position:relative;
+}
+.drawer-grab{
+  position:sticky; top:0; z-index:4;
+  width:100%; padding:12px 0;
+  display:flex; justify-content:center; align-items:center;
+  background:var(--paper); border-bottom:1px solid transparent;
+  flex-shrink:0;
+}
+.drawer-grab::after{
+  content:''; width:48px; height:4px; background:var(--line);
+}
+.drawer.is-scrolled .drawer-grab{ border-bottom-color:var(--line); }
+.drawer-close{
+  position:sticky; top:12px; z-index:5;
+  align-self:flex-end;
+  margin:-36px 32px 0 auto;
+  width:40px; height:40px;
+  background:var(--paper); border:1px solid var(--line);
+  color:var(--ink); font-family:var(--mono); font-size:18px; font-weight:500;
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+  flex-shrink:0;
+  transition:transform 160ms var(--ease-out, cubic-bezier(.22,1,.36,1)),
+             border-color 160ms var(--ease-out, cubic-bezier(.22,1,.36,1)),
+             box-shadow 160ms var(--ease-out, cubic-bezier(.22,1,.36,1)),
+             background 160ms var(--ease-out, cubic-bezier(.22,1,.36,1));
+}
+.drawer-close:hover{
+  transform:translateY(-2px);
+  background:var(--ink); color:var(--paper); border-color:var(--ink);
+  box-shadow:0 4px 0 -2px var(--zop-orange);
+}
+
+/* Drawer content blocks */
+/* Orange eyebrow removed per request, drawer opens straight into the heading. */
+.drw-num{ display:none !important; }
+.drawer-content h3{
+  font-size:clamp(36px, 4.2vw, 56px);
+  font-weight:700; letter-spacing:-0.04em; line-height:1.02;
+  max-width:860px; margin:0 0 20px;
+}
+.drawer-content h3 em{ font-style:normal; color:var(--zop-orange); }
+.drawer-content .drw-lede{
+  font-size:17px; color:var(--g-600);
+  max-width:720px; line-height:1.5; margin:0 0 40px;
+}
+.drawer-content .drw-lede em{ font-style:normal; color:var(--ink); font-weight:500; }
+.drw-grid{
+  display:grid; grid-template-columns:repeat(2, 1fr);
+  gap:0; border-top:1px solid var(--line);
+}
+.drw-grid > div{
+  padding:24px 0 24px 0;
+  border-bottom:1px solid var(--line);
+}
+.drw-grid > div:nth-child(odd){ padding-right:40px; border-right:1px solid var(--line); }
+.drw-grid > div:nth-child(even){ padding-left:40px; }
+.drw-grid .k{
+  display:block; margin-bottom:6px;
+  font-family:'Space Grotesk', system-ui, sans-serif;
+  font-size:15px; font-weight:600;
+  color:var(--ink);
+  letter-spacing:-0.01em; text-transform:none;
+  line-height:1.25;
+}
+.drw-grid p{
+  font-size:14px; color:var(--ink); line-height:1.55; margin:0;
+  letter-spacing:-0.01em;
+}
+@media (max-width:768px){
+  .drw-grid{ grid-template-columns:1fr; }
+  .drw-grid > div:nth-child(odd){ padding-right:0; border-right:0; }
+  .drw-grid > div:nth-child(even){ padding-left:0; }
+}
+
+/* Outcome bullets · 5-checkmark grid */
+.drw-bullets{
+  list-style:none; padding:0; margin:0 0 40px;
+  display:grid; grid-template-columns:repeat(2, 1fr);
+  gap:14px 32px;
+  max-width:860px;
+}
+.drw-bullets li{
+  display:flex; align-items:flex-start; gap:12px;
+  font-size:14px; line-height:1.5; color:var(--ink);
+  letter-spacing:-0.01em;
+}
+.drw-bullets li::before{
+  content:''; flex-shrink:0;
+  width:14px; height:14px;
+  /* Center the 14px check on the first line of the 14px/1.5 text.
+     First-line visual mid = (1.5em - 14px) / 2 ≈ 3.5px from top. */
+  margin-top:calc((1.5em - 14px) / 2);
+  background:var(--zop-orange);
+  -webkit-mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M3 8 L7 12 L13 4' stroke='black' stroke-width='2.5' fill='none' stroke-linecap='square' stroke-linejoin='miter'/></svg>") no-repeat center / contain;
+          mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M3 8 L7 12 L13 4' stroke='black' stroke-width='2.5' fill='none' stroke-linecap='square' stroke-linejoin='miter'/></svg>") no-repeat center / contain;
+}
+@media (max-width:768px){ .drw-bullets{ grid-template-columns:1fr; } }
+
+/* "More to discover" · Space Grotesk black heading (was mono uppercase orange) */
+.drw-discover-head{
+  margin:56px 0 20px;
+  font-family:'Space Grotesk', system-ui, sans-serif;
+  font-size:18px; font-weight:700; color:var(--ink);
+  letter-spacing:-0.02em; text-transform:none; line-height:1.2;
+  display:block;
+}
+.drw-discover-head::before{ content:none; }
+.drw-discover{
+  display:grid; grid-template-columns:repeat(3, 1fr);
+  gap:24px;
+  margin:0 0 48px;
+}
+.drw-discover article{
+  border:1px solid var(--line);
+  padding:0 0 24px;
+  display:flex; flex-direction:column; gap:12px;
+  background:var(--paper);
+  transition:border-color .18s ease, transform .18s ease;
+  overflow:hidden;
+}
+.drw-discover article > h4,
+.drw-discover article > p,
+.drw-discover article > a{ padding:0 24px; }
+.drw-discover article:hover{ border-color:var(--ink); transform:translateY(-2px); }
+
+.drw-vis{
+  width:100%; height:120px;
+  background:var(--g-50, #f7f7f8);
+  border-bottom:1px solid var(--line);
+  display:flex; align-items:center; justify-content:center;
+  position:relative; overflow:hidden;
+  font-family:var(--mono); font-size:10px; color:var(--g-600);
+  letter-spacing:.04em;
+}
+.drw-vis svg{ display:block; max-width:88%; max-height:90%; }
+
+.drw-discover h4{
+  font-size:20px; font-weight:700; letter-spacing:-0.02em; line-height:1.2;
+  margin:0; color:var(--ink);
+}
+.drw-discover p{
+  font-size:14px; color:var(--g-600); line-height:1.55; margin:0;
+  letter-spacing:-0.01em;
+}
+/* Bullet list support inside discover cards · short, glanceable points
+   instead of paragraph walls. */
+.drw-discover article ul.drw-bullet-list{
+  list-style:none; padding:0 24px; margin:0;
+  display:flex; flex-direction:column; gap:8px;
+  font-size:14px; color:var(--g-600); line-height:1.5; letter-spacing:-0.01em;
+}
+.drw-discover article ul.drw-bullet-list li{
+  position:relative; padding-left:18px;
+}
+.drw-discover article ul.drw-bullet-list li::before{
+  content:''; position:absolute; left:0;
+  /* Center the 1.5px dash on the first line of the 14px/1.5 text.
+     First-line visual mid = ~0.75em → bullet top = 0.75em - 0.75px. */
+  top:calc(0.75em - 0.75px);
+  width:8px; height:1.5px; background:var(--zop-orange);
+}
+.drw-discover article ul.drw-bullet-list li strong{
+  color:var(--ink); font-weight:600;
+}
+/* "SEE THE …" mono uppercase CTA link removed per request */
+.drw-discover article > a{ display:none !important; }
+@media (max-width:900px){ .drw-discover{ grid-template-columns:1fr; } }
+
+/* Customer evidence quote block · matches the stat-callout layout
+   in index.html. Quote on the left, brand-orange stat card on the
+   right pulling the headline number from the quote. */
+.drw-evidence{
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  padding:32px 0;
+  margin:0 0 40px;
+  display:grid;
+  grid-template-columns:1.4fr 1fr;
+  gap:36px;
+  align-items:center;
+}
+.drw-evidence > .drw-evidence-tag{
+  grid-column:1; grid-row:1; margin:0;
+}
+.drw-evidence > div{
+  grid-column:1; grid-row:2;
+  display:flex; flex-direction:column; gap:10px;
+  min-width:0;
+}
+.drw-evidence > .drw-evidence-stat{
+  grid-column:2; grid-row:1 / span 2;
+}
+.drw-evidence:not(:has(.drw-evidence-stat)){
+  grid-template-columns:1fr;
+}
+.drw-evidence:not(:has(.drw-evidence-stat)) > .drw-evidence-tag,
+.drw-evidence:not(:has(.drw-evidence-stat)) > div{
+  grid-column:1;
+}
+.drw-evidence-tag{
+  display:inline-flex; align-items:center;
+  font-family:inherit;
+  font-size:13px; color:var(--g-600);
+  letter-spacing:0; text-transform:none;
+  font-weight:500;
+  white-space:normal;
+}
+.drw-evidence blockquote{
+  margin:0; padding:0;
+  font-size:22px; line-height:1.4; color:var(--ink);
+  letter-spacing:-0.018em;
+  font-weight:600;
+  max-width:none;
+}
+.drw-evidence cite{
+  display:block;
+  font-style:normal; font-size:13px; color:var(--g-600);
+  letter-spacing:0;
+}
+.drw-evidence-stat{
+  background:var(--zop-orange);
+  color:#0F0F12;
+  padding:24px 28px;
+  display:flex; flex-direction:column; gap:10px;
+}
+.drw-evidence-stat-eyebrow{
+  font-family:var(--mono);
+  font-size:10.5px; font-weight:700;
+  letter-spacing:.14em; text-transform:uppercase;
+  color:rgba(15, 15, 18, .75);
+}
+.drw-evidence-stat-num{
+  font-family:'Space Grotesk', system-ui, sans-serif;
+  font-size:clamp(32px, 4.4vw, 48px);
+  font-weight:700;
+  letter-spacing:-.022em;
+  line-height:1;
+  color:#0F0F12;
+}
+.drw-evidence-stat-cap{
+  font-size:14px; line-height:1.45; color:#0F0F12;
+  font-weight:500; max-width:300px;
+}
+.drw-evidence-stat-chip{
+  display:inline-flex; align-self:flex-start;
+  font-family:var(--mono);
+  font-size:10.5px; font-weight:700;
+  letter-spacing:.08em; text-transform:uppercase;
+  padding:5px 10px;
+  background:#0F0F12; color:var(--zop-orange);
+  margin-top:4px;
+}
+@media (max-width:880px){
+  .drw-evidence{ grid-template-columns:1fr; gap:24px; }
+}
+@media (max-width:768px){
+  .drw-evidence blockquote{ font-size:18px; }
+  .drw-evidence-stat{ padding:20px 22px; }
+}
+
+/* CTA pair at the end of every drawer */
+.drw-cta{
+  display:flex; flex-wrap:wrap; gap:16px; align-items:center;
+  margin:0 0 8px;
+}
+.drw-cta .btn{ margin:0; }
+.drw-cta-tag{
+  font-family:var(--mono); font-size:11px; color:var(--g-600);
+  letter-spacing:.08em; margin:0; padding-left:8px;
+}
+
+/* ============================================================================
+   DARK-MODE OVERRIDES FOR DRAWER VISUALS
+   ----------------------------------------------------------------------------
+   The inline SVG mockups inside `.drw-vis` (one per "More to discover" card)
+   were authored with light-theme hex values:
+     #FAF7EC  paper / chip background
+     #D9D3BF  line / chip border
+     #0F0F12  ink / primary text
+     #525252  g-600 / secondary text
+   In dark mode the cream rectangles become near-invisible against the dark
+   drawer surface and ink text disappears. SVG element-level attribute
+   selectors flip these to dark-theme equivalents while preserving the
+   brand-color accents (orange / green / amber / red) which already pass.
+   ============================================================================ */
+html[data-theme="dark"] .drw-vis,
+html[data-theme="dark"] .drw-discover article{
+  background: #0F0F12;
+}
+html[data-theme="dark"] .drw-vis{
+  border-bottom-color: #2a2a30;
+}
+/* Light surfaces inside SVG → dark surfaces */
+html[data-theme="dark"] .drw-vis svg [fill="#FAF7EC"]{ fill: #0F0F12; }
+/* Hairline borders inside SVG → dark hairlines */
+html[data-theme="dark"] .drw-vis svg [stroke="#D9D3BF"]{ stroke: #3a3a42; }
+/* Primary ink text → cream */
+html[data-theme="dark"] .drw-vis svg [fill="#0F0F12"]{ fill: #F0EBDB; }
+/* Secondary text → AA-safe cream-grey */
+html[data-theme="dark"] .drw-vis svg [fill="#525252"]{ fill: #B8B0A0; }
+
+/* Keep the orange / green / amber / red brand accents unchanged in dark mode
+   (their fills/strokes pass AA on both light AND dark surfaces). */
+
+/* The .drw-vis frame's neutral fallback also needs a dark equivalent so the
+   slot itself isn't a glaring white box on dark drawers. */
+html[data-theme="dark"] .drw-vis{ background: #0F0F12; }
+
+/* The "More to discover" card's hover border-color was already var(--ink),
+   which resolves correctly in dark mode (cream). No override needed. */
+
+/* ════════════════════════════════════════════════════════════════════
+   BOTTOM-ANCHORED DASHBOARD VISUAL · injected by drawer JS into every
+   drawer when it opens. Same flowing-rows pattern as the homepage
+   recommendations card, themed per feature. Sits at 40% viewport
+   height, full-bleed inside the drawer's max-width inner container.
+   ════════════════════════════════════════════════════════════════════ */
+.drw-bottom-viz{
+  position:relative;
+  margin:48px calc(var(--gutter, 32px) * -1) 0;
+  height:40vh;
+  min-height:280px;
+  background:#0F0F12;
+  border-top:1px solid var(--line);
+  overflow:hidden;
+}
+.drw-bottom-viz canvas{
+  width:100%; height:100%; display:block;
+}
+.drw-bottom-viz-label{
+  position:absolute; top:16px; left:24px;
+  font-family:'Space Grotesk', system-ui, -apple-system, sans-serif;
+  font-size:10px; font-weight:600;
+  letter-spacing:.16em; text-transform:uppercase;
+  color:rgba(240,235,219,0.62);
+  display:inline-flex; align-items:center; gap:8px;
+  z-index:2;
+}
+.drw-bottom-viz-label::before{
+  content:''; width:7px; height:7px;
+  background:#7FB236; border-radius:50%;
+  box-shadow:0 0 0 0 rgba(127,178,54,.55);
+  animation: drw-viz-dot 2s ease-out infinite;
+}
+@keyframes drw-viz-dot{
+  0%   { box-shadow:0 0 0 0 rgba(127,178,54,.5); }
+  70%  { box-shadow:0 0 0 6px rgba(127,178,54,0); }
+  100% { box-shadow:0 0 0 0 rgba(127,178,54,0); }
+}
+.drw-bottom-viz-corner{
+  position:absolute; top:16px; right:24px;
+  font-family:'Space Grotesk', system-ui, -apple-system, sans-serif;
+  font-size:9.5px; letter-spacing:.18em; text-transform:uppercase;
+  color:rgba(240,235,219,0.32);
+  z-index:2;
+}
+@media (max-width:720px){
+  .drw-bottom-viz{ height:36vh; min-height:240px; }
+  .drw-bottom-viz-label{ font-size:9.5px; left:16px; top:12px; }
+  .drw-bottom-viz-corner{ display:none; }
+}
+@media (prefers-reduced-motion: reduce){
+  .drw-bottom-viz canvas{ animation:none; }
+  .drw-bottom-viz-label::before{ animation:none; }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   CANONICAL DRAWER LAYOUT · drw-rec-hero + drw-rec-three
+   Used by every product drawer that ships its own custom layout
+   (Tailored Recommendations, Three Stages, etc). Two-column hero
+   block with text/CTA on the left + outcome bullets on the right,
+   followed by a 3-pillar Stripe-style paragraph block.
+   ══════════════════════════════════════════════════════════════════ */
+.drw-rec-hero{
+  display:grid; grid-template-columns:minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap:48px;
+  align-items:start;
+  margin:0 0 56px;
+  padding:0 0 40px;
+}
+@media (max-width:880px){
+  .drw-rec-hero{ grid-template-columns:1fr; gap:28px; padding-bottom:28px; }
+}
+.drw-rec-hero-text{ display:flex; flex-direction:column; gap:18px; }
+.drw-rec-h{
+  margin:0;
+  font-size:clamp(28px, 3vw, 40px);
+  font-weight:600; letter-spacing:-.02em; line-height:1.1;
+  color:var(--ink);
+}
+.drw-rec-sub{
+  margin:0;
+  font-size:clamp(18px, 2vw, 22px);
+  font-weight:500; line-height:1.3;
+  color:var(--ink); letter-spacing:-.015em;
+}
+.drw-rec-hero-text .drw-lede{
+  margin:0;
+  font-size:15px; line-height:1.6; color:var(--ink-3);
+  max-width:54ch;
+}
+.drw-rec-cta{ margin-top:8px; }
+.drw-rec-cta .btn{ margin:0; }
+
+.drw-rec-hero-aside{ display:flex; flex-direction:column; gap:24px; }
+.drw-outcome-list{
+  list-style:none; padding:0; margin:0;
+  display:flex; flex-direction:column; gap:14px;
+}
+.drw-outcome-list li{
+  display:flex; gap:12px; align-items:flex-start;
+  padding:0;
+  font-size:14.5px; line-height:1.5; color:var(--ink-3);
+  letter-spacing:-.005em;
+}
+.drw-outcome-list li::before{ display:none !important; }
+.drw-outcome-list li strong{ color:var(--ink); font-weight:600; }
+.drw-outcome-check{
+  display:inline-flex; align-items:center; justify-content:center;
+  flex:none;
+  width:22px; height:22px;
+  margin-top:1px;
+  background:rgba(127,178,54,.12);
+  color:#16805a;
+  border-radius:50%;
+}
+.drw-outcome-check svg{ width:14px; height:14px; display:block; }
+html[data-theme="dark"] .drw-outcome-check{
+  background:rgba(127,178,54,.18); color:#7FB236;
+}
+
+/* Legacy small `$/MO · $/YR · 88% CONF · COMMITMENT · r5.4xlarge` SVG
+   diagram · superseded by the per-drawer animated `.drw-feat-vis`
+   visuals. Hidden across every drawer on every page so the new
+   animated visual is the only feature graphic shown. */
+.drw-rec-diagram{ display:none !important; }
+
+/* 3-pillar Stripe-style paragraph block */
+.drw-rec-three{
+  display:grid; grid-template-columns:repeat(3, minmax(0, 1fr));
+  gap:36px;
+  margin:0 0 56px;
+}
+@media (max-width:980px){
+  .drw-rec-three{ grid-template-columns:1fr; gap:28px; }
+}
+.drw-rec-pillar{
+  display:flex; flex-direction:column; gap:10px;
+}
+.drw-rec-pillar-icon{
+  width:32px; height:32px;
+  display:inline-flex; align-items:center; justify-content:center;
+  color:var(--zop-orange);
+  margin-bottom:4px;
+}
+.drw-rec-pillar-icon svg{ width:28px; height:28px; }
+.drw-rec-pillar h4{
+  margin:0;
+  font-size:18px; font-weight:600; color:var(--ink);
+  letter-spacing:-.015em; line-height:1.25;
+}
+.drw-rec-pillar p{
+  margin:0;
+  font-size:14px; line-height:1.6; color:var(--ink-3);
+  letter-spacing:-.005em;
+}
+.drw-rec-pillar p strong{ color:var(--ink); font-weight:600; }
+
+/* Callout strip · used to highlight a one-line proposition inside a
+   pillar (e.g. "No agentic AI. No black-box ML."). Brand-orange left
+   bar, ink text, no body fade — sits below the main pillar paragraph
+   so the audit-ready claim reads as a single declarative line. */
+.drw-rec-pillar .drw-rec-callout{
+  margin-top:12px;
+  padding:10px 14px;
+  border-left:3px solid var(--zop-orange);
+  background:var(--paper);
+  font-family:var(--mono, 'Space Grotesk', monospace);
+  font-size:12.5px; line-height:1.4;
+  letter-spacing:.04em;
+  color:var(--ink);
+}
+.drw-rec-pillar .drw-rec-callout strong{
+  color:var(--ink); font-weight:700; letter-spacing:.04em;
+}
+
+/* Methodology link under customer evidence · plain ink underline,
+   no orange mono shout. */
+.drw-evidence-methodology{
+  display:inline-flex; align-items:center; gap:6px;
+  order:4;
+  font-family:inherit;
+  font-size:13.5px; font-weight:600;
+  letter-spacing:0;
+  color:var(--ink); text-decoration:none;
+  border-bottom:1px solid var(--ink);
+  padding-bottom:1px;
+  align-self:flex-start;
+  transition:opacity 180ms cubic-bezier(.22,1,.36,1);
+}
+.drw-evidence-methodology:hover{ opacity:.7; }
+.drw-evidence-methodology span[aria-hidden]{
+  transition:transform 180ms cubic-bezier(.22,1,.36,1);
+  display:inline-block;
+}
+.drw-evidence-methodology:hover span[aria-hidden]{ transform:translateX(3px); }

@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Statement · scroll animation lab · ZopDev</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ==== Brand tokens (subset, lab-only) =============================== */
+    :root{
+      --paper:#FAF7EC; --paper-2:#F0EBDB;
+      --ink:#0A0A0A; --ink-2:#525252; --ink-3:#9C9588; --ink-4:#B8B0A0;
+      --line:#D9D3BF;
+      --orange:#F58549; --blue:#2A4494; --green:#7FB236;
+      --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+      --mono:'Space Grotesk',Menlo,Monaco,monospace;
+      --ease-out:cubic-bezier(.22,1,.36,1);
+    }
+    *{box-sizing:border-box;}
+    html,body{margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{
+      background:var(--paper); color:var(--ink); font-family:var(--font);
+      -webkit-font-smoothing:antialiased; overflow-x:hidden;
+    }
+
+    /* ==== Lab chrome (fixed header + variant TOC) ======================= */
+    .lab-head{
+      position:fixed; top:0; left:0; right:0; z-index:100;
+      padding:14px 24px;
+      background:rgba(250,247,236,.92);
+      backdrop-filter:saturate(140%) blur(10px);
+      -webkit-backdrop-filter:saturate(140%) blur(10px);
+      border-bottom:1px solid var(--line);
+      display:flex; align-items:center; gap:20px;
+      font-family:var(--mono); font-size:11px; font-weight:600;
+      letter-spacing:1.4px; text-transform:uppercase;
+    }
+    .lab-brand{ display:inline-flex; align-items:center; gap:8px; color:var(--ink); }
+    .lab-brand::before{
+      content:''; width:10px; height:10px; background:var(--orange);
+    }
+    .lab-toc{ display:flex; gap:14px; margin-left:auto; flex-wrap:wrap; }
+    .lab-toc a{
+      color:var(--ink-3); text-decoration:none;
+      transition:color .14s ease;
+    }
+    .lab-toc a:hover, .lab-toc a.is-active{ color:var(--ink); }
+    .lab-toc a.is-active{ color:var(--orange); }
+
+    /* ==== Page intro ==================================================== */
+    .intro{
+      max-width:920px; margin:0 auto; padding:140px 32px 80px;
+    }
+    .intro h1{
+      margin:0 0 18px;
+      font-size:clamp(36px,5vw,68px);
+      font-weight:700; letter-spacing:-0.04em; line-height:1.05;
+    }
+    .intro h1 em{
+      font-style:normal; color:var(--orange);
+      font-weight:700;
+    }
+    .intro p{
+      margin:0 0 12px;
+      font-size:17px; line-height:1.55; color:var(--ink-2); max-width:680px;
+    }
+    .intro .copy-callout{
+      margin:36px 0 0; padding:18px 22px;
+      background:var(--paper-2); border-left:3px solid var(--orange);
+      font-family:var(--mono); font-size:13px; line-height:1.65;
+      color:var(--ink-2);
+    }
+    .intro .copy-callout b{
+      color:var(--ink); font-weight:600;
+    }
+
+    /* ==== Variant section shell ======================================== */
+    .variant{
+      position:relative;
+      border-top:1px solid var(--line);
+    }
+    .variant-header{
+      position:relative; z-index:3;
+      max-width:920px; margin:0 auto; padding:80px 32px 48px;
+    }
+    .variant-tag{
+      display:inline-flex; align-items:center; gap:10px;
+      font-family:var(--mono); font-size:11px; font-weight:600;
+      letter-spacing:1.4px; text-transform:uppercase;
+      color:var(--orange); margin:0 0 12px;
+    }
+    .variant-tag::before{
+      content:''; width:10px; height:10px; background:var(--orange);
+    }
+    .variant-title{
+      margin:0 0 8px;
+      font-size:clamp(28px,3.5vw,42px);
+      font-weight:700; letter-spacing:-0.03em; line-height:1.1;
+    }
+    .variant-desc{
+      margin:0; font-size:15px; line-height:1.6; color:var(--ink-2);
+      max-width:640px;
+    }
+
+    /* ==== Pinned stage shared by all variants =========================== */
+    .pin-stage{
+      position:sticky; top:0; height:100vh;
+      display:flex; align-items:center; justify-content:center;
+      overflow:hidden;
+    }
+    .pin-stage::after{
+      /* corner index hint */
+      content:attr(data-idx);
+      position:absolute; bottom:24px; right:32px;
+      font-family:var(--mono); font-size:11px; font-weight:600;
+      letter-spacing:1.4px; text-transform:uppercase; color:var(--ink-4);
+      pointer-events:none;
+    }
+
+    /* ====================================================================
+       V1 · Scrub-linked sequential reveal
+       ==================================================================== */
+    #v1{ height:220vh; }
+    .v1-stage .v1-line{
+      display:block;
+      font-size:clamp(2.4rem, 6vw, 5.4rem);
+      font-weight:700; letter-spacing:-0.035em; line-height:1.08;
+      text-align:center; color:var(--ink);
+      opacity:0;
+      transform:translateY(36px);
+      transition:opacity .35s var(--ease-out), transform .35s var(--ease-out);
+    }
+    .v1-stage .v1-line + .v1-line{ margin-top:.12em; }
+    .v1-stage .v1-line.is-on{
+      opacity:1;
+      transform:translateY(0);
+    }
+
+    /* ====================================================================
+       V2 · Word-by-word kinetic type
+       ==================================================================== */
+    #v2{ height:280vh; }
+    .v2-stage .v2-line{
+      display:block;
+      font-size:clamp(2.4rem, 6vw, 5.4rem);
+      font-weight:800; letter-spacing:-0.04em; line-height:1.05;
+      text-align:center; color:var(--ink);
+    }
+    .v2-stage .v2-line + .v2-line{ margin-top:.08em; }
+    .v2-stage .v2-word{
+      display:inline-block;
+      opacity:0;
+      transform:translateY(38px) scale(.94);
+      transition:opacity .42s var(--ease-out), transform .52s var(--ease-out), color .42s var(--ease-out);
+      will-change:transform,opacity;
+    }
+    .v2-stage .v2-word + .v2-word{ margin-left:.28em; }
+    .v2-stage .v2-word.is-on{
+      opacity:1;
+      transform:translateY(0) scale(1);
+    }
+    .v2-stage .v2-word.is-on.is-accent{
+      color:var(--orange);
+    }
+
+    /* ====================================================================
+       V3 · Single morphing line
+       ==================================================================== */
+    #v3{ height:200vh; }
+    .v3-stage{ position:relative; }
+    .v3-stage .v3-line{
+      position:absolute; left:0; right:0;
+      text-align:center;
+      font-size:clamp(2.6rem, 6.5vw, 6rem);
+      font-weight:700; letter-spacing:-0.038em; line-height:1.05;
+      opacity:0;
+      transform:translateY(28px);
+      transition:opacity .55s var(--ease-out), transform .55s var(--ease-out);
+      pointer-events:none;
+    }
+    .v3-stage .v3-line.is-on{
+      opacity:1;
+      transform:translateY(0);
+    }
+    .v3-stage .v3-line.is-leaving{
+      opacity:0;
+      transform:translateY(-26px);
+    }
+    .v3-progress{
+      position:absolute; bottom:18%; left:50%;
+      transform:translateX(-50%);
+      display:flex; gap:8px;
+    }
+    .v3-progress span{
+      width:34px; height:3px; background:var(--line);
+      transition:background .3s var(--ease-out), width .3s var(--ease-out);
+    }
+    .v3-progress span.is-on{ background:var(--orange); width:48px; }
+
+    /* ====================================================================
+       V4 · Pinned with parallax layers
+       ==================================================================== */
+    #v4{ height:220vh; }
+    .v4-stage{ position:relative; width:100%; height:100%; display:block; }
+    .v4-stage .v4-line{
+      position:absolute; left:50%;
+      transform:translate(-50%, 0);
+      font-weight:800; letter-spacing:-0.04em; line-height:1;
+      white-space:nowrap;
+      will-change:transform,opacity;
+    }
+    /* Three layers, back to front, scale + opacity differ for depth */
+    .v4-stage .v4-line.back{
+      top:18%; font-size:clamp(3rem,8vw,7.2rem);
+      color:var(--ink-4);
+      opacity:.85;
+    }
+    .v4-stage .v4-line.mid{
+      top:44%; font-size:clamp(3.2rem,9vw,8rem);
+      color:var(--ink-2);
+    }
+    .v4-stage .v4-line.front{
+      top:70%; font-size:clamp(3.6rem,10vw,9rem);
+      color:var(--ink);
+    }
+    .v4-stage .v4-line .accent{ color:var(--orange); }
+
+    /* ==== Notes block between variants ================================== */
+    .notes{
+      max-width:920px; margin:0 auto; padding:80px 32px 100px;
+      border-top:1px solid var(--line); margin-top:80px;
+    }
+    .notes h3{
+      margin:0 0 14px; font-size:18px; font-weight:600;
+      letter-spacing:-0.01em;
+    }
+    .notes ul{ margin:0; padding-left:18px; }
+    .notes li{
+      margin-bottom:7px; font-size:14px; line-height:1.55; color:var(--ink-2);
+    }
+    .notes li b{ color:var(--ink); font-weight:500; }
+
+    /* ==== Foot ========================================================== */
+    .foot{
+      border-top:1px solid var(--line);
+      padding:48px 32px 64px; max-width:920px; margin:0 auto;
+      font-family:var(--mono); font-size:12px; color:var(--ink-3);
+      letter-spacing:.04em; line-height:1.7;
+    }
+    .foot b{ color:var(--ink); font-weight:600; }
+  </style>
+</head>
+<body>
+
+<!-- =================================================================
+     Lab chrome
+     ================================================================= -->
+<header class="lab-head">
+  <span class="lab-brand">ZopDev &middot; Lab</span>
+  <nav class="lab-toc">
+    <a href="#intro">intro</a>
+    <a href="#v1">v1 &middot; scrub reveal</a>
+    <a href="#v2">v2 &middot; word kinetic</a>
+    <a href="#v3">v3 &middot; morph</a>
+    <a href="#v4">v4 &middot; parallax</a>
+  </nav>
+</header>
+
+<!-- =================================================================
+     Intro
+     ================================================================= -->
+<section class="intro" id="intro">
+  <span class="variant-tag">Statement &middot; scroll lab</span>
+  <h1>Four scroll animations.<br/>One copy. <em>Pick the one.</em></h1>
+  <p>The homepage statement &mdash; <b style="color:var(--ink);">"Ship faster. Spend smarter. Stay audit-ready."</b> &mdash; currently auto-reveals on a timer once the section pins. This lab rebuilds it four different ways, all tied to scroll position instead of a timer. Scroll through each variant to feel how it reads, then call which one to ship (or hybrid the ones you like).</p>
+  <div class="copy-callout">
+    <b>Shared rules across all four variants:</b><br/>
+    &middot; Same copy &mdash; "Ship faster. / Spend smarter. / Stay audit-ready."<br/>
+    &middot; Same type system &mdash; Inter, ink color, tight letter-spacing<br/>
+    &middot; Section pins for 100vh, scroll budget varies (1.0&ndash;1.8 extra vh)<br/>
+    &middot; All driven by raw scroll progress &mdash; no autoplay timers, no jank
+  </div>
+</section>
+
+<!-- =================================================================
+     V1 · Scrub-linked sequential reveal
+     ================================================================= -->
+<section class="variant" id="v1" data-variant="1">
+  <div class="variant-header">
+    <span class="variant-tag">01 &middot; Scrub-linked sequential reveal</span>
+    <h2 class="variant-title">Three lines, each tied to a third of the scroll.</h2>
+    <p class="variant-desc">Section pins for the full duration. Line 1 reveals at 15% scroll progress, line 2 at 40%, line 3 at 65%. Scrub back up and they unwind. The feel is "controlled and cinematic" &mdash; user dictates the pace.</p>
+  </div>
+  <div class="pin-stage v1-stage" data-idx="V1">
+    <div>
+      <span class="v1-line" data-on="0.15">Ship faster.</span>
+      <span class="v1-line" data-on="0.40">Spend smarter.</span>
+      <span class="v1-line" data-on="0.65">Stay audit-ready.</span>
+    </div>
+  </div>
+</section>
+
+<!-- =================================================================
+     V2 · Word-by-word kinetic type
+     ================================================================= -->
+<section class="variant" id="v2" data-variant="2">
+  <div class="variant-header">
+    <span class="variant-tag">02 &middot; Word-by-word kinetic type</span>
+    <h2 class="variant-title">Each word lands on its own beat.</h2>
+    <p class="variant-desc">Every word reveals independently as the user scrolls. Subtle scale + lift on each word, the verbs ("Ship", "Spend", "Stay") flash orange briefly to anchor each statement. Most cinematic, takes the most scroll budget. Heaviest motion.</p>
+  </div>
+  <div class="pin-stage v2-stage" data-idx="V2">
+    <div>
+      <span class="v2-line">
+        <span class="v2-word is-accent" data-on="0.08">Ship</span><span class="v2-word" data-on="0.16">faster.</span>
+      </span>
+      <span class="v2-line">
+        <span class="v2-word is-accent" data-on="0.34">Spend</span><span class="v2-word" data-on="0.42">smarter.</span>
+      </span>
+      <span class="v2-line">
+        <span class="v2-word is-accent" data-on="0.60">Stay</span><span class="v2-word" data-on="0.68">audit-ready.</span>
+      </span>
+    </div>
+  </div>
+</section>
+
+<!-- =================================================================
+     V3 · Single morphing line
+     ================================================================= -->
+<section class="variant" id="v3" data-variant="3">
+  <div class="variant-header">
+    <span class="variant-tag">03 &middot; Single morphing line</span>
+    <h2 class="variant-title">One line at a time, scrolled through.</h2>
+    <p class="variant-desc">Same center spot, three states. Scroll cross-fades between them &mdash; "Ship faster" lifts out as "Spend smarter" lifts in. Tighter focus, shorter pin (50% less scroll budget). Risk: feels less weighty than three lines together.</p>
+  </div>
+  <div class="pin-stage v3-stage" data-idx="V3">
+    <div style="position:relative; width:100%;">
+      <span class="v3-line is-on" data-state="0">Ship faster.</span>
+      <span class="v3-line" data-state="1">Spend smarter.</span>
+      <span class="v3-line" data-state="2">Stay audit-ready.</span>
+    </div>
+    <div class="v3-progress" aria-hidden="true">
+      <span class="is-on" data-dot="0"></span>
+      <span data-dot="1"></span>
+      <span data-dot="2"></span>
+    </div>
+  </div>
+</section>
+
+<!-- =================================================================
+     V4 · Pinned with parallax layers
+     ================================================================= -->
+<section class="variant" id="v4" data-variant="4">
+  <div class="variant-header">
+    <span class="variant-tag">04 &middot; Pinned with parallax layers</span>
+    <h2 class="variant-title">All three at once, at three depths.</h2>
+    <p class="variant-desc">Lines sit at different vertical positions and travel at different speeds as the user scrolls. Back layer drifts slowest + lightest, front layer moves fastest + sharpest. Reads as one slow-moving statement with depth &mdash; like text floating through a viewport.</p>
+  </div>
+  <div class="pin-stage v4-stage" data-idx="V4">
+    <span class="v4-line back" data-speed="-0.18">Ship <span class="accent">faster.</span></span>
+    <span class="v4-line mid" data-speed="0.0">Spend <span class="accent">smarter.</span></span>
+    <span class="v4-line front" data-speed="0.18">Stay <span class="accent">audit-ready.</span></span>
+  </div>
+</section>
+
+<!-- =================================================================
+     Notes / picker
+     ================================================================= -->
+<section class="notes">
+  <h3>How to pick</h3>
+  <ul>
+    <li><b>V1 &middot; Scrub reveal</b> &mdash; safest, classiest, fits the existing brand pace. Most "ZopDev". 130&ndash;220vh total budget.</li>
+    <li><b>V2 &middot; Word kinetic</b> &mdash; biggest "wow" but heaviest motion + longest pin (280vh). Risk: viewer scrolls past before the build completes.</li>
+    <li><b>V3 &middot; Morph</b> &mdash; shortest budget (200vh) and biggest type. Reads like ad copy. Lets the brand statement own the whole viewport.</li>
+    <li><b>V4 &middot; Parallax</b> &mdash; most "designed". Looks more agency than product. Distinctive, but might fight the rest of the homepage's restraint.</li>
+  </ul>
+  <h3 style="margin-top:32px;">My read</h3>
+  <ul>
+    <li>For shipping to <code style="font-family:var(--mono); font-size:13px;">index.html</code> right now: <b>V1 with a touch of V2's accent-color trick</b> on the verbs. Keeps the existing pace, adds the brand orange as a load-bearing rhythm.</li>
+    <li>If the goal is the homepage hero moment (the thing people screenshot): <b>V3</b>.</li>
+    <li>If we want a portfolio piece: <b>V2</b>.</li>
+  </ul>
+</section>
+
+<footer class="foot">
+  <p><b>statement-scroll-lab.html</b> &middot; four scroll-driven reveals of the homepage statement &middot; ZopDev internal</p>
+  <p>Pick one (or hybrid), then I'll port the winner into <code style="font-family:var(--mono); font-size:11px;">index.html</code> replacing the timer-based reveal currently at line 9679.</p>
+</footer>
+
+<!-- =================================================================
+     Animation engine
+     ================================================================= -->
+<script>
+(function(){
+  'use strict';
+
+  // ── Scroll progress helper ─────────────────────────────────────────
+  // Returns a [0,1] number representing how far the user has scrolled
+  // through a section that uses sticky-top:0 + height:Nvh.
+  // 0 = section just entered viewport top; 1 = section about to exit.
+  function progressOf(section){
+    var rect = section.getBoundingClientRect();
+    var vh   = window.innerHeight;
+    var totalScrollable = section.offsetHeight - vh;
+    if(totalScrollable <= 0) return 0;
+    // -rect.top = scroll distance into the section
+    var p = (-rect.top) / totalScrollable;
+    return Math.max(0, Math.min(1, p));
+  }
+
+  // ── V1 · scrub-linked sequential reveal ────────────────────────────
+  var v1Section = document.getElementById('v1');
+  var v1Lines   = v1Section.querySelectorAll('.v1-line');
+  function updateV1(){
+    var p = progressOf(v1Section);
+    v1Lines.forEach(function(line){
+      var threshold = parseFloat(line.dataset.on);
+      line.classList.toggle('is-on', p >= threshold);
+    });
+  }
+
+  // ── V2 · word-by-word kinetic type ─────────────────────────────────
+  var v2Section = document.getElementById('v2');
+  var v2Words   = v2Section.querySelectorAll('.v2-word');
+  function updateV2(){
+    var p = progressOf(v2Section);
+    v2Words.forEach(function(word){
+      var threshold = parseFloat(word.dataset.on);
+      word.classList.toggle('is-on', p >= threshold);
+    });
+  }
+
+  // ── V3 · single morphing line ──────────────────────────────────────
+  var v3Section = document.getElementById('v3');
+  var v3Lines   = v3Section.querySelectorAll('.v3-line');
+  var v3Dots    = v3Section.querySelectorAll('.v3-progress span');
+  function updateV3(){
+    var p = progressOf(v3Section);
+    // 3 states, distributed across scroll: 0.0-0.33 = line 1, 0.33-0.66 = line 2, 0.66-1.0 = line 3
+    var state;
+    if(p < 0.33)      state = 0;
+    else if(p < 0.66) state = 1;
+    else              state = 2;
+
+    v3Lines.forEach(function(line, i){
+      var s = parseInt(line.dataset.state, 10);
+      line.classList.remove('is-on','is-leaving');
+      if(s === state)      line.classList.add('is-on');
+      else if(s < state)   line.classList.add('is-leaving');
+    });
+    v3Dots.forEach(function(dot, i){
+      dot.classList.toggle('is-on', i === state);
+    });
+  }
+
+  // ── V4 · pinned parallax layers ────────────────────────────────────
+  var v4Section = document.getElementById('v4');
+  var v4Lines   = v4Section.querySelectorAll('.v4-line');
+  function updateV4(){
+    var p = progressOf(v4Section);
+    // Each line moves vertically at its own speed coefficient.
+    // Travel range is -300px to +300px across the scroll budget.
+    v4Lines.forEach(function(line){
+      var speed = parseFloat(line.dataset.speed);
+      // p=0 → start position (top of viewport intent); p=1 → drifted off
+      var shift = (p - 0.5) * 600 * speed;
+      // Lines also fade up at start + down at end for cleaner entry/exit
+      var fade = 1;
+      if(p < 0.08)      fade = p / 0.08;
+      else if(p > 0.92) fade = (1 - p) / 0.08;
+      line.style.transform = 'translate(-50%, ' + shift + 'px)';
+      line.style.opacity   = fade;
+    });
+  }
+
+  // ── Active section in nav ──────────────────────────────────────────
+  var tocLinks = document.querySelectorAll('.lab-toc a');
+  var sections = [
+    document.getElementById('intro'),
+    v1Section, v2Section, v3Section, v4Section,
+  ];
+  function updateActiveLink(){
+    var vh = window.innerHeight;
+    var activeIdx = 0;
+    sections.forEach(function(sec, i){
+      var rect = sec.getBoundingClientRect();
+      if(rect.top < vh * 0.4) activeIdx = i;
+    });
+    tocLinks.forEach(function(a, i){
+      a.classList.toggle('is-active', i === activeIdx);
+    });
+  }
+
+  // ── Main loop (rAF-throttled) ──────────────────────────────────────
+  var ticking = false;
+  function onScroll(){
+    if(ticking) return;
+    ticking = true;
+    requestAnimationFrame(function(){
+      updateV1();
+      updateV2();
+      updateV3();
+      updateV4();
+      updateActiveLink();
+      ticking = false;
+    });
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', onScroll, {passive:true});
+  onScroll(); // initial pass
+})();
+</script>
+
+</body>
+</html>

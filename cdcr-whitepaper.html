@@ -1,0 +1,2111 @@
+<!DOCTYPE html>
+<!--
+  ========================================================================
+  ZopDev · _shell.html
+  ------------------------------------------------------------------------
+  PAGE TEMPLATE, not a real page. The underscore prefix signals that.
+
+  Copy this file when starting any new page. The canonical nav, footer,
+  live-ops strip, and SVG symbols are already wired. Only edit the three
+  clearly-marked TEMPLATE blocks:
+
+     1 · <title> + meta-description in <head>
+     2 · .nav-links, mark the active tab
+     3 · <main class="page" id="main-content"> content between nav and footer
+
+  Everything else, tokens, chrome styles, logo symbols, reduced-motion
+  gate, comes from tokens.css + chrome.css. Do not redefine locally.
+  ========================================================================
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<script>(function(){try{var t=localStorage.getItem('zop-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg"/>
+
+<title>CDCR · Continuous Detection, Continuous Remediation · The whitepaper · ZopDev</title>
+<meta name="description" content="A reference brief on CDCR &mdash; Continuous Detection, Continuous Remediation. The loop that closes the FinOps Operate gap. Vendor landscape, maturity model, 90-day adoption path."/>
+<link rel="canonical" href="https://zopdev.com/cdcr-whitepaper.html"/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://zopdev.com/cdcr-whitepaper.html"/>
+<meta property="og:title" content="CDCR · Continuous Detection, Continuous Remediation · The whitepaper · ZopDev"/>
+<meta property="og:description" content="A reference brief on CDCR &mdash; Continuous Detection, Continuous Remediation. The loop that closes the FinOps Operate gap. Vendor landscape, maturity model, 90-day adoption path."/>
+<meta property="og:image" content="https://zopdev.com/og-default.png"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="CDCR · Continuous Detection, Continuous Remediation · The whitepaper · ZopDev"/>
+<meta name="twitter:description" content="A reference brief on CDCR &mdash; Continuous Detection, Continuous Remediation. The loop that closes the FinOps Operate gap. Vendor landscape, maturity model, 90-day adoption path."/>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="stylesheet" href="chrome.css"/>
+<link rel="stylesheet" href="chrome-footer.css">
+
+<style>
+/* no-italic-site-wide */ em,i,cite,dfn,var,address,blockquote{font-style:normal}
+/* ======================================================================
+   Page-specific CSS goes here.
+   Rules of engagement:
+     · tokens only (no hex literals except brand exceptions)
+     · no gradients · no blurs · no backdrop-filter
+     · sharp corners (border-radius: 0), pills (9999px) for status only
+     · hard offset shadows: 0 8px 0 -4px <color>
+   ====================================================================== */
+
+/* section rhythm */
+.page{ padding:0; }
+.page > section{ padding:var(--sec-pad) 0; border-bottom:0; }
+.page > section:last-child{ border-bottom:0; }
+
+/* breadcrumb, used at the top of every subpage */
+.crumb{
+  padding:var(--sp-7) 0 var(--sp-4);
+  max-width:var(--max); margin:0 auto;
+  padding-left:var(--gutter); padding-right:var(--gutter);
+  font-family:var(--mono); font-size:var(--t-11); color:var(--ink-4);
+  letter-spacing:var(--ls-meta-tight); text-transform:uppercase;
+}
+.crumb a{ color:var(--ink-3); }
+.crumb a:hover{ color:var(--ink); }
+.crumb .sep{ color:var(--ink-5); margin:0 var(--sp-2); }
+
+/* page heading, shared across subpages */
+.page-head{
+  padding:var(--sp-10) 0 var(--sp-12);
+  max-width:var(--max); margin:0 auto;
+  padding-left:var(--gutter); padding-right:var(--gutter);
+  border-bottom:1px solid var(--line);
+}
+.page-head .meta{
+  font-family:var(--mono); font-size:var(--t-11);
+  color:var(--zop-orange); letter-spacing:var(--ls-meta);
+  text-transform:uppercase; margin-bottom:var(--sp-4);
+  display:inline-flex; align-items:center; gap:var(--sp-2);
+}
+.page-head .meta::before{ content:''; width:10px; height:10px; background:var(--zop-orange); }
+.page-head h1{
+  font-size:clamp(48px, 6vw, 88px);
+  font-weight:var(--fw-bold); letter-spacing:var(--ls-display);
+  line-height:var(--lh-display);
+  max-width:1000px; margin:0 0 var(--sp-5);
+}
+.page-head h1 em{ font-style:normal; color:var(--zop-orange); }
+.page-head p.lede{
+  font-size:var(--t-20); color:var(--ink-3);
+  max-width:720px; line-height:1.45; margin:0;
+}
+.page-head p.lede strong{ color:var(--ink); font-weight:var(--fw-medium); }
+
+@media (max-width:768px){
+  .page > section{ padding:var(--sec-pad-sm) 0; }
+}
+
+/* ======================================================================
+   PRODUCT DOCUMENTATION · two-column layout
+   --------------------------------------------------------------------
+   Left: sticky table of contents (sections + sub-sections).
+   Right: long-form content blocks, each anchored for deep-linking.
+   Drops to single-column below 960px (TOC moves above content).
+   ====================================================================== */
+.docs-layout{
+  display:grid; grid-template-columns:260px 1fr;
+  gap:var(--sp-12);
+  max-width:var(--max); margin:0 auto;
+  padding:var(--sp-10) var(--gutter) var(--sp-14);
+}
+.docs-toc{
+  position:sticky; top:84px; align-self:start;
+  font-family:var(--mono); font-size:var(--t-12);
+  max-height:calc(100vh - 100px); overflow-y:auto;
+  padding-right:var(--sp-3);
+  border-right:1px solid var(--line);
+}
+.docs-toc h4{
+  font-size:var(--t-10); color:var(--ink-4);
+  letter-spacing:var(--ls-meta); text-transform:uppercase;
+  font-weight:var(--fw-medium); margin:0 0 var(--sp-3);
+}
+.docs-toc ol{ list-style:none; padding:0; margin:0; counter-reset:doc; }
+.docs-toc ol > li{ counter-increment:doc; margin:var(--sp-1) 0; }
+.docs-toc ol > li > a{
+  display:flex; gap:var(--sp-2);
+  color:var(--ink-3); padding:6px 0; line-height:1.4;
+  transition:color .14s;
+  border-left:2px solid transparent; padding-left:var(--sp-3); margin-left:calc(var(--sp-3) * -1);
+}
+.docs-toc ol > li > a::before{
+  content:counter(doc, decimal-leading-zero);
+  color:var(--ink-5); font-size:var(--t-10);
+  flex-shrink:0; padding-top:1px;
+}
+.docs-toc ol > li > a:hover{ color:var(--ink); border-left-color:var(--zop-orange); }
+.docs-toc ol > li > a.active{ color:var(--zop-orange); border-left-color:var(--zop-orange); }
+
+.docs-body{ min-width:0; }
+/* Audit · docs sections tightened for a denser reference-doc feel.
+   Smaller h2, tighter section padding, shorter line-height — pattern
+   matches the rest of the site's compact card vocabulary. */
+.docs-section{
+  padding:var(--sp-7) 0;
+  border-bottom:1px solid var(--line);
+  scroll-margin-top:80px;
+}
+.docs-section:first-child{ padding-top:0; }
+.docs-section:last-child{ border-bottom:0; padding-bottom:0; }
+.docs-section .num{
+  font-family:var(--mono); font-size:var(--t-11);
+  color:var(--zop-orange); letter-spacing:var(--ls-meta);
+  text-transform:uppercase; margin:0 0 var(--sp-2);
+  display:inline-flex; align-items:center; gap:var(--sp-2);
+}
+.docs-section .num::before{ content:''; width:8px; height:8px; background:var(--zop-orange); }
+.docs-section h2{
+  font-size:clamp(22px, 2.4vw, 30px);
+  font-weight:700;
+  letter-spacing:-.02em; line-height:1.15;
+  margin:0 0 var(--sp-4); max-width:780px;
+}
+.docs-section h2 em{ color:var(--zop-orange); font-style:normal; }
+.docs-section h3{
+  font-size:var(--t-17); margin:var(--sp-6) 0 var(--sp-2);
+  font-weight:600;
+  letter-spacing:-.012em; line-height:1.25;
+  scroll-margin-top:80px;
+}
+.docs-section h4{
+  font-size:var(--t-14); margin:var(--sp-5) 0 var(--sp-2);
+  font-weight:600; letter-spacing:-.005em;
+  text-transform:uppercase;
+  color:var(--ink-3);
+  letter-spacing:.04em;
+}
+.docs-section p{
+  font-size:var(--t-14); color:var(--ink-2);
+  line-height:1.6; margin:0 0 var(--sp-3); max-width:760px;
+}
+.docs-section p strong{ color:var(--ink); font-weight:var(--fw-medium); }
+.docs-section ul, .docs-section ol{
+  font-size:var(--t-15); color:var(--ink-2);
+  line-height:1.7; margin:0 0 var(--sp-4); padding-left:var(--sp-5);
+  max-width:760px;
+}
+.docs-section li{ margin:var(--sp-2) 0; }
+.docs-section li strong{ color:var(--ink); font-weight:var(--fw-medium); }
+.docs-section code{
+  font-family:var(--mono); font-size:0.9em;
+  background:var(--bg-2); padding:2px 6px;
+  border:1px solid var(--line);
+}
+
+/* Reference table · clean borders, monospace data */
+.docs-table{
+  width:100%; max-width:none;
+  border-collapse:collapse; border:1px solid var(--line);
+  margin:var(--sp-4) 0 var(--sp-6); font-size:var(--t-13);
+}
+.docs-table th, .docs-table td{
+  text-align:left; padding:var(--sp-3) var(--sp-4);
+  border-bottom:1px solid var(--line); vertical-align:top;
+  line-height:1.5; color:var(--ink-2);
+}
+.docs-table th{
+  background:var(--bg-2); color:var(--ink-4);
+  font-family:var(--mono); font-size:var(--t-10);
+  letter-spacing:var(--ls-meta); text-transform:uppercase;
+  font-weight:var(--fw-medium);
+}
+.docs-table tr:last-child td{ border-bottom:0; }
+.docs-table td:first-child{ font-family:var(--mono); font-size:var(--t-12); color:var(--ink); white-space:nowrap; }
+.docs-table code{ background:transparent; border:0; padding:0; }
+
+/* Callout · highlighted advisory boxes */
+.docs-callout{
+  border-left:3px solid var(--zop-orange);
+  padding:var(--sp-4) var(--sp-5);
+  background:var(--bg-2);
+  margin:var(--sp-5) 0;
+  max-width:760px;
+}
+.docs-callout strong{ color:var(--ink); display:block; margin-bottom:var(--sp-1); font-weight:var(--fw-medium); }
+.docs-callout p{ margin:0; font-size:var(--t-14); }
+
+@media (max-width:960px){
+  .docs-layout{ grid-template-columns:1fr; gap:var(--sp-6); }
+  .docs-toc{ position:static; max-height:none; border-right:0; border-bottom:1px solid var(--line); padding:0 0 var(--sp-5); }
+}
+
+/* ======================================================================
+   WHITEPAPER · CDCR-specific overrides
+   --------------------------------------------------------------------
+   Editorial hero (eyebrow + meta-row + CTA row), ASCII flow diagram,
+   sticky-TOC footer, the About block at the end. Built on top of the
+   docs-style chrome — every selector is scoped under .wp- so it can't
+   leak into developer-documentation.html or future docs pages.
+   ====================================================================== */
+.wp-head{ padding-bottom:var(--sp-10) !important; }
+.wp-eyebrow{
+  display:inline-flex; align-items:center; gap:var(--sp-2);
+  font-family:var(--mono); font-size:var(--t-11);
+  letter-spacing:var(--ls-meta); text-transform:uppercase;
+  color:var(--zop-orange); margin-bottom:var(--sp-4);
+}
+.wp-eyebrow-mark{ width:10px; height:10px; background:var(--zop-orange); display:inline-block; }
+.wp-head h1{ max-width:980px; line-height:1.05; }
+.wp-head h1 em{ font-style:normal; color:var(--zop-orange); }
+.wp-head p.lede{ max-width:780px; }
+.wp-meta-row{
+  display:flex; flex-wrap:wrap; align-items:center; gap:var(--sp-2);
+  margin-top:var(--sp-6);
+  font-family:var(--mono); font-size:var(--t-12);
+  color:var(--ink-3); letter-spacing:.02em;
+}
+.wp-meta-row strong{ color:var(--ink); font-weight:var(--fw-medium); }
+.wp-meta-row .wp-dot{ color:var(--ink-5); }
+.wp-cta-row{
+  display:flex; flex-wrap:wrap; align-items:center; gap:var(--sp-3);
+  margin-top:var(--sp-6);
+}
+.wp-cta-share{
+  font-family:var(--mono); font-size:var(--t-12);
+  color:var(--ink-3); padding:var(--sp-2) var(--sp-3);
+  border-bottom:1px solid transparent;
+}
+.wp-cta-share:hover{ color:var(--ink); border-bottom-color:var(--zop-orange); }
+
+/* TOC foot · two compact action links below the contents list */
+.wp-toc-foot{
+  margin-top:var(--sp-5); padding-top:var(--sp-4);
+  border-top:1px solid var(--line);
+  display:flex; flex-direction:column; gap:var(--sp-2);
+}
+.wp-toc-foot-link{
+  font-family:var(--mono); font-size:var(--t-11);
+  color:var(--ink-3); letter-spacing:.04em;
+  padding:6px 0; transition:color .14s;
+}
+.wp-toc-foot-link:hover{ color:var(--ink); }
+.wp-toc-foot-link--accent{ color:var(--zop-orange); }
+.wp-toc-foot-link--accent:hover{ color:var(--zop-orange); text-decoration:underline; }
+
+/* ASCII flow diagram · the 4-node CDCR loop. Pre-formatted text
+   monospace, container scrolls horizontally on narrow viewports. */
+.wp-ascii{
+  background:var(--bg-2);
+  border:1px solid var(--line);
+  padding:var(--sp-5) var(--sp-5);
+  margin:var(--sp-5) 0 var(--sp-7);
+  font-family:var(--mono);
+  font-size:11px; line-height:1.35;
+  color:var(--ink-2);
+  overflow-x:auto; white-space:pre;
+  max-width:880px;
+}
+.wp-ascii code{
+  background:transparent; border:0; padding:0;
+  font-family:inherit; font-size:inherit; color:inherit;
+}
+
+/* About ZopNight · closing block, tags + contact links */
+.wp-about{ background:var(--bg-2); margin:var(--sp-10) -9999px 0; padding:var(--sp-8) 9999px var(--sp-8) !important; border-top:1px solid var(--line); border-bottom:0; }
+.wp-about .num{ color:var(--ink-4); }
+.wp-about .num::before{ background:var(--ink-4); }
+.wp-about-row{ display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-6); margin:var(--sp-5) 0; max-width:760px; }
+.wp-about-block{ display:flex; flex-direction:column; gap:6px; }
+.wp-about-tag{
+  font-family:var(--mono); font-size:var(--t-11);
+  color:var(--ink-4); letter-spacing:var(--ls-meta);
+  text-transform:uppercase;
+}
+.wp-about-link{
+  font-family:var(--mono); font-size:var(--t-14);
+  color:var(--zop-orange);
+  padding-bottom:2px;
+  border-bottom:1px solid transparent;
+}
+.wp-about-link:hover{ border-bottom-color:var(--zop-orange); }
+.wp-copyright{
+  font-family:var(--mono); font-size:var(--t-11);
+  color:var(--ink-5); letter-spacing:.04em;
+  text-transform:uppercase; margin-top:var(--sp-5) !important;
+}
+
+/* Closing callout · slightly heavier — this is the brief's punchline */
+.wp-callout-close{ background:rgba(245,133,73,.06); border-left-width:4px; }
+.wp-callout-close strong{ font-size:var(--t-17); }
+
+@media (max-width:720px){
+  .wp-about-row{ grid-template-columns:1fr; }
+  .wp-ascii{ font-size:9px; }
+}
+</style>
+<script src="chrome-navmenu.js" defer></script>
+<script src="chrome-pagetransition.js" defer></script>
+<script src="chrome-mobilenav.js" defer></script>
+<script src="chrome-footer.js" defer></script>
+</head>
+<body>
+<a class="skip-to-main" href="#main-content">Skip to main content</a>
+<style id="skip-to-main-css">.skip-to-main{position:absolute;left:-9999px;top:0;z-index:9999;padding:10px 16px;background:var(--ink,#0F0F12);color:var(--paper,#F0EBDB);font-family:var(--mono,monospace);font-size:13px;letter-spacing:.04em;text-decoration:none}.skip-to-main:focus{left:8px;top:8px;outline:2px solid var(--zop-orange,#F58549);outline-offset:2px}</style>
+
+<!-- ========================================================================
+     SVG defs, the canonical logo + marks. Identical on every page.
+     ======================================================================== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="mark-zopdev" viewBox="0 0 32 32">
+      <rect x="0" y="0" width="16" height="16" fill="var(--logo-blue, #2A4494)"/>
+      <rect x="16" y="0" width="16" height="16" fill="#F58549"/>
+      <rect x="16" y="16" width="16" height="16" fill="#7FB236"/>
+    </symbol>
+    <symbol id="mark-zopnight" viewBox="0 0 32 32">
+      <rect x="0" y="0" width="32" height="32" fill="var(--logo-blue, #2A4494)"/>
+      <circle cx="16" cy="16" r="8" fill="#FFFFFF"/>
+    </symbol>
+    <symbol id="mark-zopday" viewBox="0 0 32 32">
+      <rect x="0" y="0" width="32" height="32" fill="#F58549"/>
+      <circle cx="16" cy="16" r="8" fill="#FFFFFF"/>
+    </symbol>
+    <symbol id="mark-zopcloud" viewBox="0 0 32 32">
+      <!-- Brand playbook: pixel-cloud silhouette on family-blue container -->
+      <rect x="0" y="0" width="32" height="32" fill="#2A4494"/>
+      <rect x="12" y="8" width="8" height="6" fill="#FFFFFF"/>
+      <rect x="6" y="14" width="20" height="10" fill="#FFFFFF"/>
+    </symbol>
+    <symbol id="logo-zopdev" viewBox="0 0 715 276">
+      <path d="M7.452 229V201.784L63.504 137.308V134.716H9.072V115.6H85.86V142.816L29.808 207.292V209.884H86.184V229H7.452ZM136.786 231.268C128.794 231.268 121.612 229.648 115.24 226.408C108.868 223.168 103.846 218.47 100.174 212.314C96.5022 206.158 94.6662 198.76 94.6662 190.12V187.528C94.6662 178.888 96.5022 171.49 100.174 165.334C103.846 159.178 108.868 154.48 115.24 151.24C121.612 148 128.794 146.38 136.786 146.38C144.778 146.38 151.96 148 158.332 151.24C164.704 154.48 169.726 159.178 173.398 165.334C177.07 171.49 178.906 178.888 178.906 187.528V190.12C178.906 198.76 177.07 206.158 173.398 212.314C169.726 218.47 164.704 223.168 158.332 226.408C151.96 229.648 144.778 231.268 136.786 231.268ZM136.786 213.124C143.05 213.124 148.234 211.126 152.338 207.13C156.442 203.026 158.494 197.194 158.494 189.634V188.014C158.494 180.454 156.442 174.676 152.338 170.68C148.342 166.576 143.158 164.524 136.786 164.524C130.522 164.524 125.338 166.576 121.234 170.68C117.13 174.676 115.078 180.454 115.078 188.014V189.634C115.078 197.194 117.13 203.026 121.234 207.13C125.338 211.126 130.522 213.124 136.786 213.124ZM192.888 261.4V148.648H212.976V158.368H215.892C217.728 155.236 220.59 152.482 224.478 150.106C228.366 147.622 233.928 146.38 241.164 146.38C247.644 146.38 253.638 148 259.146 151.24C264.654 154.372 269.082 159.016 272.43 165.172C275.778 171.328 277.452 178.78 277.452 187.528V190.12C277.452 198.868 275.778 206.32 272.43 212.476C269.082 218.632 264.654 223.33 259.146 226.57C253.638 229.702 247.644 231.268 241.164 231.268C236.304 231.268 232.2 230.674 228.852 229.486C225.612 228.406 222.966 227.002 220.914 225.274C218.97 223.438 217.404 221.602 216.216 219.766H213.3V261.4H192.888ZM235.008 213.448C241.38 213.448 246.618 211.45 250.722 207.454C254.934 203.35 257.04 197.41 257.04 189.634V188.014C257.04 180.238 254.934 174.352 250.722 170.356C246.51 166.252 241.272 164.2 235.008 164.2C228.744 164.2 223.506 166.252 219.294 170.356C215.082 174.352 212.976 180.238 212.976 188.014V189.634C212.976 197.41 215.082 203.35 219.294 207.454C223.506 211.45 228.744 213.448 235.008 213.448ZM287.446 229V210.208H302.35V134.392H287.446V115.6H334.102C349.33 115.6 360.886 119.488 368.77 127.264C376.762 134.932 380.758 146.38 380.758 161.608V182.992C380.758 198.22 376.762 209.722 368.77 217.498C360.886 225.166 349.33 229 334.102 229H287.446ZM323.734 209.56H334.426C343.066 209.56 349.384 207.292 353.38 202.756C357.376 198.22 359.374 191.848 359.374 183.64V160.96C359.374 152.644 357.376 146.272 353.38 141.844C349.384 137.308 343.066 135.04 334.426 135.04H323.734V209.56ZM430.981 231.268C422.989 231.268 415.915 229.594 409.759 226.246C403.711 222.79 398.959 217.984 395.503 211.828C392.155 205.564 390.481 198.22 390.481 189.796V187.852C390.481 179.428 392.155 172.138 395.503 165.982C398.851 159.718 403.549 154.912 409.597 151.564C415.645 148.108 422.665 146.38 430.657 146.38C438.541 146.38 445.399 148.162 451.231 151.726C457.063 155.182 461.599 160.042 464.839 166.306C468.079 172.462 469.699 179.644 469.699 187.852V194.818H411.217C411.433 200.326 413.485 204.808 417.373 208.264C421.261 211.72 426.013 213.448 431.629 213.448C437.353 213.448 441.565 212.206 444.265 209.722C446.965 207.238 449.017 204.484 450.421 201.46L467.107 210.208C465.595 213.016 463.381 216.094 460.465 219.442C457.657 222.682 453.877 225.49 449.125 227.866C444.373 230.134 438.325 231.268 430.981 231.268ZM411.379 179.59H448.963C448.531 174.946 446.641 171.22 443.293 168.412C440.053 165.604 435.787 164.2 430.495 164.2C424.987 164.2 420.613 165.604 417.373 168.412C414.133 171.22 412.135 174.946 411.379 179.59ZM497.482 229L471.886 148.648H493.594L512.224 214.096H515.14L533.77 148.648H555.478L529.882 229H497.482Z" fill="currentColor"/>
+      <rect x="537" width="89" height="89" fill="var(--logo-blue, #2A4494)"/>
+      <rect x="626" width="89" height="89" fill="#F58549"/>
+      <rect x="626" y="89" width="89" height="89" fill="#7FB236"/>
+    </symbol>
+  </defs>
+</svg>
+
+
+<!-- ========================================================================
+     LIVE-OPS STRIP, identical on every page
+     ======================================================================== -->
+<!-- ========================================================================
+     NAV, identical on every page · CANONICAL.
+     If you change this block, run the chrome sweep so every subpage
+     stays in sync. Driven by data-menu/data-pane attributes, chrome.css
+     and chrome-mobilenav.js wire the dropdown overlay.
+     ======================================================================== -->
+<link rel="stylesheet" href="homepage-chrome.css"/>
+<div class="topbar-split" role="region" aria-label="Top announcements">
+  <a class="live-strip live-strip-cta topbar-calc" href="cur-calculator.html" aria-label="Open the savings calculator">
+    <span class="ls-cta-anchor">
+      <span class="ls-live"><span class="ls-livedot"></span>Calculator</span>
+    </span>
+    <span class="ls-cta-msg">See how much your cloud is wasting right now.</span>
+    <span class="ls-cta-arrow">Try it <span class="ls-arrow">→</span></span>
+  </a>
+  <div class="topbar-news" aria-label="Live announcements">
+    <div class="topbar-news-track">
+      <span class="tn-item"><span class="tn-tag tn-up">ZN</span><span class="tn-text">ZopNight v1.5 &middot; Live Kubernetes cluster state</span><span class="tn-delta tn-up">NEW</span></span>
+      <span class="tn-item"><span class="tn-tag tn-up">FIN</span><span class="tn-text">$57K/mo recovered on Azure &middot; Fortune 1000 estate</span><span class="tn-delta tn-up">&#9650; 31.4%</span></span>
+      <span class="tn-item"><span class="tn-tag">ZD</span><span class="tn-text">ZopDay &middot; Push-to-deploy across AWS, GCP, Azure</span><span class="tn-delta">LIVE</span></span>
+      <span class="tn-item"><span class="tn-tag tn-up">SCH</span><span class="tn-text">Smart Scheduling captures 73% of non-prod cycle</span><span class="tn-delta tn-up">&#9650; 73%</span></span>
+      <span class="tn-item"><span class="tn-tag">EVT</span><span class="tn-text">Event Readiness ships per-scope verdicts</span><span class="tn-delta">UPDATED</span></span>
+      <span class="tn-item"><span class="tn-tag tn-up">AR</span><span class="tn-text">Auto-Remediation &middot; 20 certified rules &middot; DBs untouched</span><span class="tn-delta tn-up">&#9650; 4 rules</span></span>
+      <span class="tn-item"><span class="tn-tag">CDCR</span><span class="tn-text">Continuous Detection, Continuous Remediation &middot; on every cloud</span><span class="tn-delta">SHIPPED</span></span>
+      <!-- Duplicate the sequence so the marquee loops seamlessly -->
+      <span class="tn-item" aria-hidden="true"><span class="tn-tag tn-up">ZN</span><span class="tn-text">ZopNight v1.5 &middot; Live Kubernetes cluster state</span><span class="tn-delta tn-up">NEW</span></span>
+      <span class="tn-item" aria-hidden="true"><span class="tn-tag tn-up">FIN</span><span class="tn-text">$57K/mo recovered on Azure &middot; Fortune 1000 estate</span><span class="tn-delta tn-up">&#9650; 31.4%</span></span>
+      <span class="tn-item" aria-hidden="true"><span class="tn-tag">ZD</span><span class="tn-text">ZopDay &middot; Push-to-deploy across AWS, GCP, Azure</span><span class="tn-delta">LIVE</span></span>
+      <span class="tn-item" aria-hidden="true"><span class="tn-tag tn-up">SCH</span><span class="tn-text">Smart Scheduling captures 73% of non-prod cycle</span><span class="tn-delta tn-up">&#9650; 73%</span></span>
+      <span class="tn-item" aria-hidden="true"><span class="tn-tag">EVT</span><span class="tn-text">Event Readiness ships per-scope verdicts</span><span class="tn-delta">UPDATED</span></span>
+      <span class="tn-item" aria-hidden="true"><span class="tn-tag tn-up">AR</span><span class="tn-text">Auto-Remediation &middot; 20 certified rules &middot; DBs untouched</span><span class="tn-delta tn-up">&#9650; 4 rules</span></span>
+      <span class="tn-item" aria-hidden="true"><span class="tn-tag">CDCR</span><span class="tn-text">Continuous Detection, Continuous Remediation &middot; on every cloud</span><span class="tn-delta">SHIPPED</span></span>
+    </div>
+  </div>
+</div>
+
+<style id="topbar-split-css">
+  /* Split topbar · the prior `.live-strip-cta` becomes the LEFT half;
+     the new `.topbar-news` ticker occupies the RIGHT half. Shared
+     30px bar height; both halves use the same dark base so the strip
+     reads as one continuous element. */
+  .topbar-split{
+    display: grid;
+    grid-template-columns: minmax(260px, auto) 1fr;
+    align-items: stretch;
+    background: #0a0a0d;
+    color: #F0EBDB;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+  /* Left · keep the existing calc-CTA chrome but cap its width so the
+     ticker on the right has the lion's share of the bar. The base
+     `.live-strip-cta` rules in chrome.css still apply. */
+  .topbar-split .topbar-calc{
+    background: #0a0a0d;
+    justify-content: flex-start;
+    padding: 0 14px 0 16px;
+    border-right: 1px solid rgba(255,255,255,.08);
+  }
+  /* Right · scrolling announcements track. Stock-exchange style:
+     mono tags, brand-orange "up" deltas, continuous left-drift. */
+  .topbar-news{
+    position: relative;
+    overflow: hidden;
+    height: 30px;
+    display: flex;
+    align-items: center;
+  }
+  .topbar-news::before,
+  .topbar-news::after{
+    content: '';
+    position: absolute; top: 0; bottom: 0; width: 28px;
+    pointer-events: none; z-index: 2;
+  }
+  .topbar-news::before{
+    left: 0;
+    background: linear-gradient(to right, #0a0a0d 0%, rgba(10,10,13,0) 100%);
+  }
+  .topbar-news::after{
+    right: 0;
+    background: linear-gradient(to left, #0a0a0d 0%, rgba(10,10,13,0) 100%);
+  }
+  .topbar-news-track{
+    display: inline-flex; align-items: center;
+    gap: 32px;
+    white-space: nowrap;
+    will-change: transform;
+    animation: topbar-news-roll 60s linear infinite;
+  }
+  .topbar-news:hover .topbar-news-track{ animation-play-state: paused; }
+  @keyframes topbar-news-roll{
+    from{ transform: translateX(0); }
+    to  { transform: translateX(-50%); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .topbar-news-track{ animation: none; }
+  }
+  /* Individual ticker items · ticker tag chip + headline + delta */
+  .tn-item{
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--font-body, 'Inter', system-ui, sans-serif);
+    font-size: 11.5px;
+    letter-spacing: .02em;
+    color: #C7C7CD;
+  }
+  .tn-tag{
+    font-family: var(--mono);
+    font-size: 9.5px; font-weight: 700;
+    letter-spacing: .14em;
+    padding: 2px 6px;
+    border: 1px solid rgba(255,255,255,.18);
+    color: #A8A8AF;
+  }
+  .tn-tag.tn-up{
+    color: var(--zop-orange);
+    border-color: rgba(245,133,73,.4);
+  }
+  .tn-text{ color: #E8E8EA; }
+  .tn-delta{
+    font-family: var(--mono);
+    font-size: 10px; font-weight: 700;
+    letter-spacing: .08em;
+    color: #A8A8AF;
+  }
+  .tn-delta.tn-up{ color: var(--zop-orange); }
+  @media (max-width: 760px){
+    /* Phone · drop the ticker so the calc CTA gets the full bar */
+    .topbar-split{ grid-template-columns: 1fr; }
+    .topbar-news{ display: none; }
+    .topbar-split .topbar-calc{
+      justify-content: center;
+      border-right: 0;
+    }
+  }
+</style>
+
+
+<!-- ============================================================
+     NAVBAR
+     ============================================================ -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="logo-lockup sm" aria-label="ZopDev">
+      <svg viewBox="0 0 715 276"><use href="#logo-zopdev"/></svg>
+    </a>
+    <div class="nav-links" id="nav-links">
+      <div class="nav-item" data-menu="product">
+        <a>Product <span class="nav-caret" aria-hidden="true"></span></a>
+      </div>
+      <div class="nav-item" data-menu="resources">
+        <a>Resources <span class="nav-caret" aria-hidden="true"></span></a>
+      </div>
+      <a href="pricing.html">Pricing</a>
+      <div class="nav-item" data-menu="company">
+        <a>Company <span class="nav-caret" aria-hidden="true"></span></a>
+      </div>
+      <a href="community.html">Community</a>
+    </div>
+
+    <!-- Shared dropdown overlay. Content crossfades, panel slides left/right -->
+    <div class="nav-overlay" id="nav-overlay" aria-hidden="true">
+      <div class="nav-panes" id="nav-panes">
+
+        <!-- ═══════ PRODUCT · 2 hero bentos + ZopCloud strip ═══════ -->
+        <div class="nav-pane" data-pane="product">
+          <div class="np-bento np-bento--products-v2">
+            <!-- ZopNight · large hero with sidebar/topbar/stat dashboard peek
+                 sliding up on hover. Brand-blue accents. -->
+            <a class="np-prod-card np-prod-card--night" data-product="zopnight" href="zopnight.html">
+              <span class="np-prod-badge live">live</span>
+              <div class="np-prod-head">
+                <svg class="np-prod-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><use href="#mark-zopnight"/></svg>
+                <h3 class="np-prod-title">ZopNight</h3>
+              </div>
+              <p class="np-prod-desc">Autonomous cloud governance + FinOps. AWS, Azure, GCP.</p>
+              <span class="np-prod-cta">Explore ZopNight <span class="np-prod-arrow" aria-hidden="true">→</span></span>
+              <!-- Dashboard peek · mini-mock of the ZopNight savings
+                   console (sidebar + monthly-savings hero number + stat
+                   tiles + breakdown chart). Hidden by translateY(70%);
+                   rises on hover so the user glimpses the real dashboard. -->
+              <span class="np-prod-peek np-prod-peek--night" aria-hidden="true">
+                <span class="np-peek-side">
+                  <span class="np-peek-brand">
+                    <span class="np-peek-brand-mark"></span>
+                    <span class="np-peek-brand-name">Zop<b>Night</b></span>
+                  </span>
+                  <span class="np-peek-sec">Cloud Estate</span>
+                  <span class="np-peek-nav">Dashboard</span>
+                  <span class="np-peek-nav">Inventory</span>
+                  <span class="np-peek-sec">Optimization</span>
+                  <span class="np-peek-nav np-peek-nav--on">Recommendations</span>
+                  <span class="np-peek-nav">Schedules</span>
+                  <span class="np-peek-nav">Auto-Remediate</span>
+                </span>
+                <span class="np-peek-main">
+                  <span class="np-peek-top">
+                    <span class="np-peek-top-title">Monthly Savings</span>
+                    <span class="np-peek-pill">live</span>
+                  </span>
+                  <span class="np-peek-hero">
+                    <span class="np-peek-hero-num">$42,180</span>
+                    <span class="np-peek-hero-delta">▲ 12.4%</span>
+                  </span>
+                  <span class="np-peek-stats">
+                    <span class="np-peek-stat"><span class="np-peek-stat-k">Idle</span><span class="np-peek-stat-v">218</span></span>
+                    <span class="np-peek-stat"><span class="np-peek-stat-k">Scheduled</span><span class="np-peek-stat-v">73%</span></span>
+                    <span class="np-peek-stat"><span class="np-peek-stat-k">Verified</span><span class="np-peek-stat-v">$31k</span></span>
+                  </span>
+                  <span class="np-peek-chart"></span>
+                </span>
+              </span>
+            </a>
+
+            <!-- ZopDay · large hero with the Deployment Spaces console
+                 peek (sidebar + page-head + filter row + provider table).
+                 Brand-orange accents. -->
+            <a class="np-prod-card np-prod-card--day" data-product="zopday" href="zopday.html">
+              <span class="np-prod-badge live">live</span>
+              <div class="np-prod-head">
+                <svg class="np-prod-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><use href="#mark-zopday"/></svg>
+                <h3 class="np-prod-title">ZopDay</h3>
+              </div>
+              <p class="np-prod-desc">Internal Developer Platform across AWS, GCP, Azure.</p>
+              <span class="np-prod-cta">Explore ZopDay <span class="np-prod-arrow" aria-hidden="true">→</span></span>
+              <span class="np-prod-peek np-prod-peek--day" aria-hidden="true">
+                <span class="np-peek-side">
+                  <span class="np-peek-brand">
+                    <span class="np-peek-brand-mark"></span>
+                    <span class="np-peek-brand-name">Zop<b>Day</b></span>
+                  </span>
+                  <span class="np-peek-sec">Infrastructure</span>
+                  <span class="np-peek-nav">Provision</span>
+                  <span class="np-peek-nav">Datastore</span>
+                  <span class="np-peek-nav">Cluster</span>
+                  <span class="np-peek-sec">Deployment</span>
+                  <span class="np-peek-nav np-peek-nav--on">Spaces</span>
+                  <span class="np-peek-nav">Projects</span>
+                </span>
+                <span class="np-peek-main">
+                  <span class="np-peek-top">
+                    <span class="np-peek-top-title">Deployment Spaces</span>
+                    <span class="np-peek-pill">5 healthy</span>
+                  </span>
+                  <span class="np-peek-filters">
+                    <span class="np-peek-chip np-peek-chip--on">All</span>
+                    <span class="np-peek-chip">Healthy</span>
+                    <span class="np-peek-chip">Issues</span>
+                    <span class="np-peek-chip">Pending</span>
+                  </span>
+                  <span class="np-peek-rows">
+                    <span class="np-peek-row"><span class="np-peek-prov np-peek-prov--gcp">G</span><span class="np-peek-row-name">us-prod</span><span class="np-peek-row-dot"></span><span class="np-peek-row-tag">GCP</span></span>
+                    <span class="np-peek-row"><span class="np-peek-prov np-peek-prov--aws">aws</span><span class="np-peek-row-name">eu-prod</span><span class="np-peek-row-dot"></span><span class="np-peek-row-tag">AWS</span></span>
+                    <span class="np-peek-row"><span class="np-peek-prov np-peek-prov--aws">aws</span><span class="np-peek-row-name">eu-staging</span><span class="np-peek-row-dot"></span><span class="np-peek-row-tag">AWS</span></span>
+                    <span class="np-peek-row"><span class="np-peek-prov np-peek-prov--az">A</span><span class="np-peek-row-name">apac-prod</span><span class="np-peek-row-dot"></span><span class="np-peek-row-tag">AZ</span></span>
+                  </span>
+                </span>
+              </span>
+            </a>
+
+            <!-- ZopCloud · spans full width below as the "coming soon" strip -->
+            <a class="np-prod-strip" href="zopcloud.html">
+              <svg class="np-prod-mark np-prod-mark--cloud" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><use href="#mark-zopcloud"/></svg>
+              <span class="np-prod-strip-body">
+                <h3 class="np-prod-strip-title">ZopCloud</h3>
+                <p class="np-prod-strip-desc">Multi-cloud resource graph and topology view.</p>
+              </span>
+              <span class="np-prod-badge soon">coming soon</span>
+            </a>
+          </div>
+          <div class="np-promo-row">
+            <span><strong>Live in Claude &amp; Codex</strong> · run ZopNight from your MCP client</span>
+            <a href="developers.html">Try MCP →</a>
+          </div>
+        </div>
+
+        <!-- ═══════ RESOURCES · Latest hero + compact icon list ═══════ -->
+        <div class="nav-pane" data-pane="resources">
+          <div class="np-bento np-bento--resources-v2">
+            <!-- Featured · "Latest from the blog" hero card. Text sits
+                 on the top-left (eyebrow + title + meta + CTA); the
+                 cover image is anchored at the bottom and is only
+                 partly visible at rest (translateY 55%). On card hover
+                 the image slides up so the cover reads clearly. Same
+                 peek pattern as the product dropdown ZopNight card. -->
+            <a class="np-res-hero" href="blog.html">
+              <span class="np-res-hero-body">
+                <span class="np-res-hero-eyebrow">
+                  <span class="np-res-hero-dot" aria-hidden="true"></span>
+                  Latest from the blog
+                </span>
+                <h3 class="np-res-hero-title">CDCR: making cost continuous, not quarterly.</h3>
+                <span class="np-res-hero-meta">8 min read &middot; Engineering</span>
+                <span class="np-res-hero-cta">Read post <span class="np-res-hero-arrow" aria-hidden="true">→</span></span>
+              </span>
+              <span class="np-res-hero-peek" aria-hidden="true">
+                <img src="event-cover-1.svg" alt="" loading="lazy" decoding="async">
+              </span>
+            </a>
+            <!-- Compact list · 8 links, icon + title only, no descriptions -->
+            <div class="np-res-list">
+              <a class="np-res-row" href="blog.html">
+                <span class="np-res-row-icon">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4 4h12v12H4z" stroke="currentColor" stroke-width="1.5"/><path d="M7 8h6M7 11h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>
+                </span>
+                Blog
+              </a>
+              <a class="np-res-row" href="free-ebooks.html">
+                <span class="np-res-row-icon">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M3 4h7v13H3zM10 4h7v13h-7z" stroke="currentColor" stroke-width="1.5"/><path d="M10 4v13" stroke="currentColor" stroke-width="1.5"/></svg>
+                </span>
+                Ebooks
+              </a>
+              <a class="np-res-row" href="customers.html">
+                <span class="np-res-row-icon">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M3 16c0-3 3-5 7-5s7 2 7 5" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/></svg>
+                </span>
+                Case studies
+              </a>
+              <a class="np-res-row" href="solutions.html">
+                <span class="np-res-row-icon">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="6" height="6" stroke="currentColor" stroke-width="1.5"/><rect x="11" y="3" width="6" height="6" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="11" width="6" height="6" stroke="currentColor" stroke-width="1.5"/><rect x="11" y="11" width="6" height="6" stroke="currentColor" stroke-width="1.5"/></svg>
+                </span>
+                Use cases
+              </a>
+              <a class="np-res-row" href="product-documentation.html">
+                <span class="np-res-row-icon">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4 4h12v12H4z" stroke="currentColor" stroke-width="1.5"/><path d="M8 7l4 3-4 3z" fill="currentColor"/></svg>
+                </span>
+                Product docs
+              </a>
+              <a class="np-res-row" href="kubernetes-guide.html">
+                <span class="np-res-row-icon">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 2l7 4v8l-7 4-7-4V6z" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="10" r="2" stroke="currentColor" stroke-width="1.3"/></svg>
+                </span>
+                Kubernetes guide
+              </a>
+              <a class="np-res-row" href="changelog.html">
+                <span class="np-res-row-icon">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M10 6v4l2.5 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>
+                </span>
+                Changelog
+              </a>
+              <a class="np-res-row" href="developer-documentation.html">
+                <span class="np-res-row-icon">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7 6L3 10l4 4M13 6l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="round"/></svg>
+                </span>
+                Developer docs
+              </a>
+              <a class="np-res-row" href="assets.html">
+                <span class="np-res-row-icon">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M3 4h11v12H3z" stroke="currentColor" stroke-width="1.5"/><path d="M14 7h3v9h-3" stroke="currentColor" stroke-width="1.5"/><path d="M6 8h5M6 11h5M6 14h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="square"/></svg>
+                </span>
+                Media kit
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════ COMPANY · About hero + Careers / Contact stack ═══════ -->
+        <div class="nav-pane" data-pane="company">
+          <div class="np-bento np-bento--company-v2">
+            <!-- About · larger hero card with a stylized company peek
+                 (wordmark + founder avatars + location strip) that
+                 slides up on hover, monochrome at rest. -->
+            <a class="np-comp-card" href="about.html">
+              <span class="np-comp-eyebrow">
+                <svg class="np-comp-eyebrow-mark" viewBox="0 0 715 276" aria-hidden="true" focusable="false"><use href="#logo-zopdev"/></svg>
+                <span>About ZopDev</span>
+              </span>
+              <h3 class="np-comp-title">Founded 2024.</h3>
+              <p class="np-comp-desc">The autopilot for multi-cloud cost.</p>
+              <span class="np-comp-cta">Meet the team <span class="np-comp-arrow" aria-hidden="true">→</span></span>
+              <!-- Photo stack · 3 company photos overlapping with a
+                   subtle offset + rotation. On card hover they fan out
+                   horizontally so all three are visible at once. -->
+              <span class="np-comp-stack" aria-hidden="true">
+                <img class="np-comp-stack-img np-comp-stack-img--3" src="office-2-600w.jpg" alt="" loading="lazy" decoding="async">
+                <img class="np-comp-stack-img np-comp-stack-img--2" src="founders-2-800w.jpg" alt="" loading="lazy" decoding="async">
+                <img class="np-comp-stack-img np-comp-stack-img--1" src="founders-1-800w.jpg" alt="" loading="lazy" decoding="async">
+              </span>
+            </a>
+            <!-- Media kit · compact cell, takes the row-1 slot that
+                 was previously Careers. Direct path to the press
+                 assets page. -->
+            <a class="np-comp-cell" href="assets.html">
+              <div class="np-cell-icon">
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"><path d="M3 4h11v12H3z"/><path d="M14 7h3v9h-3"/><path d="M6 8h5M6 11h5M6 14h3" stroke-width="1.3" stroke-linecap="square"/></svg>
+              </div>
+              <h3 class="np-cell-title">Media kit</h3>
+              <p class="np-cell-desc">Logos &middot; brand assets &middot; press</p>
+            </a>
+            <!-- Contact · compact cell -->
+            <a class="np-comp-cell" href="contact.html">
+              <div class="np-cell-icon">
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"><path d="M3 5h14v10H3z"/><path d="M3 5l7 5 7-5"/></svg>
+              </div>
+              <h3 class="np-cell-title">Contact</h3>
+              <p class="np-cell-desc">Talk to sales &middot; founders reply within 24h</p>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="nav-cta">
+      <div class="nav-pg-wrap">
+        <a class="chip-playground" href="playground.html" aria-haspopup="menu" aria-expanded="false">
+          <span>Playground</span>
+          <span class="nav-caret nav-pg-caret" aria-hidden="true"></span>
+        </a>
+        <div class="nav-pg-menu" role="menu" aria-label="Playground options">
+          <a class="nav-pg-card nav-pg-card--night" href="playground.html#zopnight" role="menuitem">
+            <span class="nav-pg-card-head">
+              <span class="nav-pg-mark">
+                  <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><use href="#mark-zopnight"/></svg>
+                </span>
+                <span class="nav-pg-body">
+                  <span class="nav-pg-name">ZopNight playground</span>
+                  <span class="nav-pg-desc">Cost loop &middot; idle, schedules, anomalies</span>
+                </span>
+                <span class="nav-pg-arrow" aria-hidden="true">&rarr;</span>
+            </span>
+          <span class="nav-pg-peek nav-pg-peek--night" aria-hidden="true">
+            <span class="nav-pg-peek-top"><span class="nav-pg-peek-dot"></span>ZopNight &middot; cost console</span>
+            <span class="nav-pg-peek-body">
+              <span class="nav-pg-peek-tile"><span class="nav-pg-peek-label">Idle</span><span class="nav-pg-peek-val nav-pg-peek-val--accent">$1.2k</span></span>
+              <span class="nav-pg-peek-tile"><span class="nav-pg-peek-label">Save</span><span class="nav-pg-peek-val">38%</span></span>
+              <span class="nav-pg-peek-tile"><span class="nav-pg-peek-label">Anom</span><span class="nav-pg-peek-val">4</span></span>
+            </span>
+          </span>
+          </a>
+          <a class="nav-pg-card nav-pg-card--day" href="playground.html#zopday" role="menuitem">
+            <span class="nav-pg-card-head">
+              <span class="nav-pg-mark">
+                  <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><use href="#mark-zopday"/></svg>
+                </span>
+                <span class="nav-pg-body">
+                  <span class="nav-pg-name">ZopDay playground</span>
+                  <span class="nav-pg-desc">Deploy loop &middot; clusters, datastores, push</span>
+                </span>
+                <span class="nav-pg-arrow" aria-hidden="true">&rarr;</span>
+            </span>
+          <span class="nav-pg-peek nav-pg-peek--day" aria-hidden="true">
+            <span class="nav-pg-peek-top"><span class="nav-pg-peek-dot"></span>ZopDay &middot; deploy console</span>
+            <span class="nav-pg-peek-body">
+              <span class="nav-pg-peek-tile"><span class="nav-pg-peek-label">Push</span><span class="nav-pg-peek-val nav-pg-peek-val--accent">12s</span></span>
+              <span class="nav-pg-peek-tile"><span class="nav-pg-peek-label">Env</span><span class="nav-pg-peek-val">3</span></span>
+              <span class="nav-pg-peek-tile"><span class="nav-pg-peek-label">Pass</span><span class="nav-pg-peek-val">99%</span></span>
+            </span>
+          </span>
+          </a>
+        </div>
+      </div>
+      <a class="sign" href="signin.html">Sign In</a>
+      <a class="btn btn-accent" href="demo.html"><span>Book a Demo</span> <span class="arrow">→</span></a>
+    </div>
+    <button class="mob-nav-toggle" id="mob-nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="mob-nav-drawer" type="button">
+      <span class="bars" aria-hidden="true"><span></span><span></span><span></span></span>
+    </button>
+  </div>
+</nav>
+
+
+
+<!-- ========================================================================
+     TEMPLATE BLOCK 3 · page content between nav and footer
+     ======================================================================== -->
+<main class="page">
+
+  <div class="crumb"><a href="index.html">home</a> <span class="sep">/</span> resources <span class="sep">/</span> <a href="free-ebooks.html">whitepapers</a> <span class="sep">/</span> cdcr</div>
+
+  <header class="page-head wp-head">
+    <span class="wp-eyebrow"><span class="wp-eyebrow-mark" aria-hidden="true"></span>Whitepaper &middot; May 2026 &middot; ZopDev research</span>
+    <h1>CDCR. <em>Continuous Detection,</em><br/>Continuous Remediation.</h1>
+    <p class="lede"><strong>CI/CD for code. CDCR for the cloud.</strong> A reference brief on the loop that closes the FinOps Operate gap &mdash; vendor landscape, maturity model, and the 90-day adoption path.</p>
+    <div class="wp-meta-row">
+      <span><strong>PDF</strong> + web</span>
+      <span class="wp-dot">&middot;</span>
+      <span><strong>10</strong> sections</span>
+      <span class="wp-dot">&middot;</span>
+      <span><strong>~24</strong> min read</span>
+      <span class="wp-dot">&middot;</span>
+      <span>By the ZopNight research team</span>
+    </div>
+    <div class="wp-cta-row">
+      <a class="btn btn-accent" href="demo.html"><span>See CDCR live</span> <span aria-hidden="true">&rarr;</span></a>
+      <button type="button" class="eb-readnow" id="eb-readnow-trigger">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <path d="M3 4 L10 6 L17 4 V16 L10 18 L3 16 Z"/>
+          <path d="M10 6 L10 18"/>
+        </svg>
+        <span>Read in browser, focused mode</span>
+        <span class="eb-readnow-arrow" aria-hidden="true">&rarr;</span>
+      </button>
+      <a class="wp-cta-share" href="mailto:?subject=CDCR%20whitepaper&body=https%3A%2F%2Fzopdev.com%2Fcdcr-whitepaper.html">Share by email</a>
+    </div>
+  </header>
+
+  <div class="docs-layout">
+
+    <!-- Sticky table of contents -->
+    <aside class="docs-toc" aria-label="Whitepaper table of contents">
+      <h4>// contents</h4>
+      <ol>
+        <li><a href="#executive-summary">Executive summary</a></li>
+        <li><a href="#cost-drift">The state of cloud cost drift</a></li>
+        <li><a href="#operate-stall">Why FinOps stalls at Operate</a></li>
+        <li><a href="#cdcr-defined">CDCR defined</a></li>
+        <li><a href="#four-functions">The four functions</a></li>
+        <li><a href="#anatomy">Anatomy of three actions</a></li>
+        <li><a href="#vendor-landscape">Vendor landscape</a></li>
+        <li><a href="#maturity">The maturity model</a></li>
+        <li><a href="#adoption">Customer patterns &amp; 90&#8209;day adoption</a></li>
+        <li><a href="#whats-next">Where the category goes next</a></li>
+      </ol>
+      <div class="wp-toc-foot">
+        <a href="#about-zopnight" class="wp-toc-foot-link">About ZopNight &rarr;</a>
+        <a href="demo.html" class="wp-toc-foot-link wp-toc-foot-link--accent">Book a CDCR demo &rarr;</a>
+      </div>
+    </aside>
+
+    <!-- Documentation sections -->
+    <article class="docs-body">
+    <article class="docs-body wp-body">
+
+      <section class="docs-section" id="executive-summary">
+        <div class="num">01 &middot; executive summary</div>
+        <h2>CI/CD did this for code. CDCR <em>does it for the cloud.</em></h2>
+        <p>CI/CD took software deployment from "click buttons in Jenkins and hope" to a continuous, automated loop that runs on every commit. Drift between intent and reality used to be the norm. Now it is the exception.</p>
+        <p>Cloud cost management is still in the pre-CI/CD era. Teams detect waste, then click through cloud consoles to fix it. The fixes hold for a week. Then the drift comes back. The FinOps Foundation's 2025 State of FinOps survey puts the waste rate at <strong>27 to 32 percent</strong>. Flexera's 2024 State of the Cloud report agrees. The figure has not moved in three years.</p>
+        <p>This brief introduces <strong>CDCR: Continuous Detection, Continuous Remediation.</strong> It is the category of platform that runs the same kind of automated loop CI/CD pipelines run, but for cloud cost state. CDCR detects cost drift continuously, classifies findings by dollar impact and severity, remediates the safe classes automatically, and verifies every action with a full audit trail.</p>
+        <p>CDCR is the action layer inside FinOps. It does not replace the Inform layer (cost dashboards) or the Optimize layer (recommendations). It executes them.</p>
+        <div class="docs-callout">
+          <strong>The straightforward read</strong>
+          <p>Cloud teams that still run quarterly cost reviews against a cloud that drifts daily are operating on the wrong cadence. <strong>CDCR is the cadence correction.</strong></p>
+        </div>
+      </section>
+
+      <section class="docs-section" id="cost-drift">
+        <div class="num">02 &middot; the state of cloud cost drift</div>
+        <h2>$830B in spend. 27&ndash;32% of it is <em>drift.</em></h2>
+        <p>Worldwide public cloud spend will cross <strong>$830 billion in 2026</strong> (Gartner, IDC). Wasted spend is <strong>27 to 32 percent</strong> of that (Flexera, FinOps Foundation). The waste rate has been stable for three years despite measurable growth in FinOps tools, certified practitioners, and dedicated teams.</p>
+        <p>Cost drift is the more useful frame than cost waste. Cost waste is a snapshot. <strong>Drift is the continuous motion that produces the waste.</strong> Resources get oversized. Tags fall off. Schedules expire. Idle resources accumulate. Anomalies happen. Each one is small. The cumulative effect is the 27 to 32 percent.</p>
+        <p>A representative cost drift inventory from a mid-sized cloud estate:</p>
+        <table class="docs-table">
+          <thead><tr><th>Drift class</th><th>Typical monthly volume</th><th>Dollar impact</th></tr></thead>
+          <tbody>
+            <tr><td>Newly untagged resources</td><td>800&ndash;1,200</td><td>Low individually, blocks chargeback</td></tr>
+            <tr><td>Expired schedule overrides</td><td>40&ndash;80</td><td>Medium</td></tr>
+            <tr><td>Idle non-production resources</td><td>200&ndash;400</td><td>High</td></tr>
+            <tr><td>Cost anomalies (WoW &gt; 25%)</td><td>15&ndash;30</td><td>High</td></tr>
+            <tr><td>Oversized instances</td><td>60&ndash;150</td><td>High</td></tr>
+            <tr><td>Orphaned resources (vols, snaps, EIPs)</td><td>100&ndash;300</td><td>Medium</td></tr>
+            <tr><td>Storage class drift (gp2, old gp3, unused IOPS)</td><td>50&ndash;200</td><td>Medium</td></tr>
+          </tbody>
+        </table>
+        <p>Every line in this table is detectable today. The persistence of the drift across all of them is the same: <strong>detection without continuous remediation produces reports, not lower bills.</strong></p>
+      </section>
+
+      <section class="docs-section" id="operate-stall">
+        <div class="num">03 &middot; why FinOps stalls at Operate</div>
+        <h2>Inform is solved. Optimize is solved. <em>Operate isn&rsquo;t.</em></h2>
+        <p>The FinOps Foundation framework has three phases: <strong>Inform, Optimize, Operate.</strong></p>
+        <h3>Inform</h3>
+        <p>Visibility, allocation, chargeback. The major platforms (CloudHealth, Apptio Cloudability, CloudZero, Vantage, Anodot) ship reliable dashboards. <strong>Phase 1 is solved.</strong></p>
+        <h3>Optimize</h3>
+        <p>Recommendations. The same platforms produce accurate right-sizing, commitment, and idle-resource recommendations. Native cloud advisors (AWS Trusted Advisor, GCP Active Assist, Azure Advisor) supplement them. <strong>Phase 2 is largely solved.</strong></p>
+        <h3>Operate</h3>
+        <p>Execute change. The 2025 FinOps Foundation State of FinOps survey ranks "getting engineers to take action on recommendations" as the <strong>top reported challenge for the fourth consecutive year.</strong> The reasons are structural, not cultural.</p>
+        <p>A mid-sized cloud estate produces <strong>800 to 2,000 recommendations per month.</strong> Manual action at that scale requires either a dedicated remediation team or a heavy ticketing process. Most organizations action <strong>5 to 15 percent</strong> of recommendations. The rest age out.</p>
+        <p>Cost dashboards generate recommendations they do not execute. Executing carries blast radius they do not own. The Operate phase has historically depended on engineering teams to do the executing. <strong>That dependency is the bottleneck.</strong></p>
+        <div class="docs-callout">
+          <strong>The fix</strong>
+          <p>CDCR removes the dependency by running the loop continuously, with policy-bound automation for the safe classes and guided execution for the rest.</p>
+        </div>
+      </section>
+
+      <section class="docs-section" id="cdcr-defined">
+        <div class="num">04 &middot; cdcr defined</div>
+        <h2>A continuous loop for the Operate <em>phase.</em></h2>
+        <p><strong>Continuous Detection, Continuous Remediation (CDCR)</strong> is the category of platform that runs an automated detect-classify-remediate-verify loop across cloud cost state. The loop runs <strong>continuously, not on a scan schedule.</strong> Every action it takes is logged. Every action it takes can be rolled back.</p>
+        <p>The clearest analogy is CI/CD. Before continuous integration, teams ran tests manually and deployed weekly. Most software production was drift management: code in production diverged from main, fixes regressed, releases broke. CI/CD did not change the discipline of testing or deploying. <strong>It changed the execution model</strong> &mdash; from manual-on-schedule to automated-on-event.</p>
+        <p>CDCR does the same thing for the cloud cost Operate phase. It does not change the FinOps framework. It changes the execution model. The loop runs on events, not on schedule.</p>
+        <h3>The working definition</h3>
+        <p>A CDCR platform must run <strong>all four functions</strong> of the loop:</p>
+        <ol>
+          <li><strong>Detect</strong> cost drift continuously across the cloud estate</li>
+          <li><strong>Classify</strong> findings by severity and projected dollar impact</li>
+          <li><strong>Remediate</strong> safe classes automatically and guide humans through the rest</li>
+          <li><strong>Verify</strong> every action in an audit trail that meets compliance evidence requirements</li>
+        </ol>
+        <p>Platforms that do <strong>(1) only</strong> are cost dashboards. Platforms that do <strong>(1), (2), and partial (3)</strong> without (4) are recommendation engines. <strong>CDCR requires all four.</strong></p>
+      </section>
+
+      <section class="docs-section" id="four-functions">
+        <div class="num">05 &middot; the four functions</div>
+        <h2>Detect &middot; Classify &middot; Remediate &middot; <em>Verify.</em></h2>
+
+        <pre class="wp-ascii" aria-hidden="false"><code>&#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;    &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;
+&#x2502;  &#x25FC;  DETECT                 &#x2502;    &#x2502;  &#x25FC;  CLASSIFY               &#x2502;
+&#x2502;  Cost drift                &#x2502;&#x2500;&#x2500;&#x2500;&#x2500;&#x2502;  Severity + dollar         &#x2502;
+&#x2502;  K8s &middot; schedules &middot; tags    &#x2502;    &#x2502;  450+ audit rules          &#x2502;
+&#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;    &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;
+              &#x2502;                                &#x2502;
+              &#x2502;            &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;    &#x2502;
+              &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2524;     LOOP     &#x251C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;
+                           &#x2502;    ACTIVE    &#x2502;
+              &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2524;              &#x251C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;
+              &#x2502;            &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;    &#x2502;
+              &#x2502;                                &#x2502;
+&#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;    &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;
+&#x2502;  &#x25FC;  REMEDIATE              &#x2502;    &#x2502;  &#x25FC;  VERIFY                 &#x2502;
+&#x2502;  Certified or guided       &#x2502;&#x2500;&#x2500;&#x2500;&#x2500;&#x2502;  Audit log                 &#x2502;
+&#x2502;  scoped &middot; logged           &#x2502;    &#x2502;  actor &middot; timestamp &middot; delta &#x2502;
+&#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;    &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;</code></pre>
+
+        <h3>Detect, continuously</h3>
+        <p>Cost drift detection runs at <strong>minute-level granularity.</strong> The signals collected go wider than the cloud bill itself.</p>
+        <p>Anomaly detection runs across <strong>five dimensions</strong> &mdash; org, cloud account, resource group, resource, and team. A spike that hides at the org level often shows up at the resource group level. The five-dimension scan catches the spikes that single-dimension anomaly tools miss.</p>
+        <p>Other detection signals: drift on Kubernetes clusters, expired schedule overrides, newly untagged resources, idle resource accumulation, storage class regression, and compliance gaps that quietly reopened after a prior fix.</p>
+        <p><strong>Sample rate matters.</strong> A platform that polls every 15 minutes will miss anomalies that a platform polling every 60 seconds catches.</p>
+
+        <h3>Classify, by impact</h3>
+        <p>A flat list of 2,000 findings is unworkable. A classified queue is. CDCR platforms apply rule libraries that score every finding by severity and projected dollar impact. <strong>ZopNight runs 450+ audit rules across AWS, GCP, and Azure.</strong></p>
+        <p>Classification sets the work order. Drift on a production resource ranks above an idle dev box. A $2,000/month anomaly ranks above a $30/month one. The queue reflects the actual stakes, not just the rule count. Without classification, a CDCR platform reduces to a noisy alert system.</p>
+
+        <h3>Remediate, continuously</h3>
+        <p>Remediation is <strong>two-tier.</strong></p>
+        <h4>Auto-remediate</h4>
+        <p>For the safe classes: tag application from accepted Tagger predictions, schedule enforcement, idle resources stopped, scale-to-zero on certified workloads, pause on certified service-tier targets. These run without human approval because the actions are reversible, the blast radius is bounded, and the policy is explicit.</p>
+        <h4>Guided remediation</h4>
+        <p>For the rest. Each guided action carries a <strong>confidence score</strong> (how sure the platform is that this is the right fix) and a <strong>complexity score</strong> (how risky the action is to execute). The human approves; the platform executes.</p>
+        <p>Production writes are admin-gated, scoped to the resources covered by the policy, and fully logged. <strong>Customer databases are explicitly excluded from mutation.</strong> This is a design choice, not a limitation. The platform refuses to touch state that should never be auto-touched.</p>
+        <div class="docs-callout">
+          <strong>The architectural choice</strong>
+          <p>Two-tier remediation is what separates a serious CDCR platform from a recommendation engine.</p>
+        </div>
+
+        <h3>Verify, every action</h3>
+        <p>Every action the platform takes lands in the audit trail. The record includes <strong>actor</strong> (platform or human), <strong>timestamp</strong>, the policy that triggered the action, the resources affected, and the <strong>dollar delta</strong> where applicable.</p>
+        <p>Quarterly reviews read measurable outcomes, not forecasts. "We saved $312K this quarter on these 1,400 actions" is a different conversation from "we estimate we could save $400K if we acted on these recommendations."</p>
+        <p>Verification is also the layer that satisfies <strong>SOC 2 Type II and ISO 27001</strong> evidence requirements. Without it, CDCR is unusable in regulated industries.</p>
+      </section>
+
+      <section class="docs-section" id="anatomy">
+        <div class="num">06 &middot; anatomy of three CDCR actions</div>
+        <h2>Watch one finding move through <em>the loop.</em></h2>
+        <p>The clearest way to understand the loop is to watch one finding move through it. Three composite examples below.</p>
+
+        <h3>Action 1 &middot; Idle development cluster (auto-remediated)</h3>
+        <table class="docs-table">
+          <thead><tr><th>Stage</th><th>What happens</th></tr></thead>
+          <tbody>
+            <tr><td>Detect</td><td>A development EKS cluster shows below 5% average CPU utilization for 14 consecutive days. Detected on day 14.</td></tr>
+            <tr><td>Classify</td><td>Projected monthly impact: $1,840. Severity: low (non-production resource). Tagged <code>env:dev</code>. No <code>keep-on</code> override.</td></tr>
+            <tr><td>Remediate</td><td>Policy match: scheduled shutdown for dev clusters with sustained low utilization. Schedule applied: weekdays 8 PM to 8 AM local. No approval required.</td></tr>
+            <tr><td>Verify</td><td>Action logged with policy ID, timestamp, resources affected. After 30 days: <strong>$1,120 actual savings vs $1,840 projected</strong> (variance from teams toggling the override).</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Action 2 &middot; Oversized production RDS (guided remediation)</h3>
+        <table class="docs-table">
+          <thead><tr><th>Stage</th><th>What happens</th></tr></thead>
+          <tbody>
+            <tr><td>Detect</td><td>An RDS <code>db.r6g.4xlarge</code> instance shows sustained average CPU below 18% over 30 days. Memory utilization 32%.</td></tr>
+            <tr><td>Classify</td><td>Projected monthly impact: $1,820. Severity: medium (production, customer-facing service). Confidence: 94%. Complexity: medium (requires maintenance window).</td></tr>
+            <tr><td>Remediate</td><td>Guided action surfaced to the on-call DBA. Recommendation: downsize to <code>db.r6g.2xlarge</code>. Maintenance window suggested. DBA approves; platform executes during the next pre-approved window.</td></tr>
+            <tr><td>Verify</td><td>Action logged. Performance metrics monitored for 14 days post-change. P95 query latency held within baseline. <strong>$1,820/month savings confirmed.</strong></td></tr>
+          </tbody>
+        </table>
+
+        <h3>Action 3 &middot; Customer database, oversized (rejected)</h3>
+        <table class="docs-table">
+          <thead><tr><th>Stage</th><th>What happens</th></tr></thead>
+          <tbody>
+            <tr><td>Detect</td><td>A customer-managed RDS instance shows utilization patterns consistent with right-size opportunity.</td></tr>
+            <tr><td>Classify</td><td>Projected monthly impact: $4,200. Severity: high (customer database).</td></tr>
+            <tr><td>Remediate</td><td><strong>Platform refuses.</strong> Customer databases are excluded from mutation by design. The finding is surfaced as an advisory to the customer&rsquo;s DBA team via dashboard and weekly digest. No write is attempted.</td></tr>
+            <tr><td>Verify</td><td>Advisory logged. No execution. Audit log shows the finding was raised and excluded per policy.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="docs-callout">
+          <strong>The third example is the most important</strong>
+          <p>A CDCR platform that does not refuse to act on certain resource classes is not safe to run in production. The refusal is part of the design.</p>
+        </div>
+      </section>
+
+      <section class="docs-section" id="vendor-landscape">
+        <div class="num">07 &middot; vendor landscape</div>
+        <h2>The seven questions a buyer should <em>ask.</em></h2>
+        <p>CDCR is an early category. Most vendors making the claim do not yet pass the four-function test in section 5. A buyer evaluating the space should ask:</p>
+        <ol>
+          <li>Does the platform poll <strong>continuously</strong>, or scan on schedule?</li>
+          <li>How are findings <strong>classified by impact</strong>, and on what rule base?</li>
+          <li>Are remediation actions <strong>executed</strong> by the platform, or generated as recommendations for a human to apply?</li>
+          <li>What is the <strong>maximum blast radius</strong> the platform accepts under policy without human approval?</li>
+          <li>What resource classes does the platform <strong>refuse to touch</strong>, by design?</li>
+          <li>What does the audit log show? Does it meet <strong>SOC 2 Type II</strong> evidence?</li>
+          <li>Does coverage extend across <strong>AWS, GCP, and Azure</strong>, or only one cloud?</li>
+        </ol>
+
+        <h3>A read of the current market (May 2026, expect movement)</h3>
+        <table class="docs-table">
+          <thead><tr><th>Vendor</th><th>Type</th><th>CDCR loop coverage</th></tr></thead>
+          <tbody>
+            <tr><td>CloudHealth (VMware)</td><td>Inform layer</td><td>Detect + partial Classify only</td></tr>
+            <tr><td>Apptio Cloudability</td><td>Inform layer</td><td>Detect + partial Classify only</td></tr>
+            <tr><td>CloudZero</td><td>Inform (unit economics)</td><td>Detect + Classify, no Remediate</td></tr>
+            <tr><td>Vantage</td><td>Inform (mid-market)</td><td>Detect only</td></tr>
+            <tr><td>Spot.io (NetApp)</td><td>Workload automation</td><td>Full loop, EC2 Spot and EKS only</td></tr>
+            <tr><td>Cast.ai</td><td>Workload automation</td><td>Full loop, Kubernetes only</td></tr>
+            <tr><td>Zesty</td><td>Workload automation</td><td>Full loop, EC2 commitments and EBS only</td></tr>
+            <tr><td>Densify</td><td>Right-sizing</td><td>Detect + Classify, limited Remediate</td></tr>
+            <tr><td><strong>ZopNight</strong></td><td><strong>CDCR</strong></td><td><strong>Full loop across the cloud cost estate</strong></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="docs-section" id="maturity">
+        <div class="num">08 &middot; the maturity model</div>
+        <h2>Crawl, Walk, Run, <em>Fly.</em></h2>
+        <p>The FinOps Foundation&rsquo;s Crawl-Walk-Run model maps onto CDCR adoption.</p>
+
+        <h3>Crawl &middot; 18% of organizations</h3>
+        <p>Cost reviews are quarterly. Allocation is partial. No automation.</p>
+
+        <h3>Walk &middot; 54% of organizations</h3>
+        <p>A cost dashboard is in place. Allocation and chargeback work for most spend. The team acts on top recommendations each month. <strong>No continuous remediation.</strong> This is the industry&rsquo;s largest stuck point.</p>
+
+        <h3>Run &middot; 22% of organizations</h3>
+        <p>Continuous remediation is in place for predictable drift classes (non-production scheduling, snapshot lifecycle, storage class migration). Right-sizing and orphan cleanup are automated under policy.</p>
+
+        <h3>Fly &middot; 6% of organizations</h3>
+        <p>The cost estate self-optimizes against explicit policy. Humans approve only high-blast-radius decisions.</p>
+
+        <div class="docs-callout">
+          <strong>The single largest unlock in FinOps maturity</strong>
+          <p>Moving from Walk to Run. That move is gated on Operate-layer tooling. <strong>CDCR is the tooling.</strong></p>
+        </div>
+      </section>
+
+      <section class="docs-section" id="adoption">
+        <div class="num">09 &middot; customer patterns &amp; 90-day adoption</div>
+        <h2>Three estates. Three outcomes. <em>One pattern.</em></h2>
+
+        <h3>Pattern A &middot; Mid-stage SaaS, $180K/month AWS</h3>
+        <p>A Series B SaaS company with eight engineers and a Notion-based FinOps practice. Existing recommendations were reviewed monthly and rarely executed. CDCR adoption began with non-production scheduling, unattached EBS cleanup, gp2 to gp3 migration, and RDS right-sizing.</p>
+        <p><strong>After 90 days the bill was $124K/month, a 31% reduction.</strong> Engineering hours on cost work dropped from roughly 6/week to under 1.</p>
+
+        <h3>Pattern B &middot; Late-stage consumer, $2.4M/month across AWS and GCP</h3>
+        <p>A Series D consumer company with a four-person FinOps team and custom Looker dashboards. Despite mature Inform-layer tooling, the team estimated $600K/month of recoverable waste. CDCR adoption added Event Readiness automation for product launches, autoscaling policies, snapshot lifecycle rules, and Auto Tagging for cross-team chargeback.</p>
+        <p><strong>After six months the bill was $1.78M/month, a 26% reduction.</strong></p>
+
+        <h3>Pattern C &middot; Regulated financial services, $5.1M/month</h3>
+        <p>A US financial services firm with strict change management. Every cost optimization required a CAB ticket. The team executed roughly 3 cost actions per quarter. CDCR adoption <strong>inverted the CAB process</strong>: the CAB pre-approved the policy, and the platform executed within it with full audit logging.</p>
+        <p><strong>After 12 months the bill was $3.9M/month, a 23% reduction.</strong> Action velocity moved from 3/quarter to ~400/month.</p>
+
+        <h3>The 90-day adoption path</h3>
+        <table class="docs-table">
+          <thead><tr><th>Window</th><th>What happens</th></tr></thead>
+          <tbody>
+            <tr><td>Weeks 1&ndash;2</td><td>Connect to cloud accounts in <strong>read-only mode.</strong> Auto-discovery completes inventory. Reconcile against the existing cost dashboard. Output: a baseline of recoverable drift by category and account.</td></tr>
+            <tr><td>Weeks 3&ndash;4</td><td>Turn on <strong>non-production scheduling.</strong> Highest-savings, lowest-risk first move. First-month bill reduction is typically <strong>12&ndash;18%.</strong></td></tr>
+            <tr><td>Weeks 5&ndash;8</td><td>Move to <strong>right-sizing and orphan cleanup.</strong> Approve in batch. Implement Auto Tagging to fix the ownership gap. Cumulative reduction is typically <strong>22&ndash;28%.</strong></td></tr>
+            <tr><td>Weeks 9&ndash;12</td><td>Convert from approval-required to <strong>policy-driven</strong> for the action classes that have shown reliable safety. Define guardrails for autonomous classes versus approval-required ones. The loop now runs continuously.</td></tr>
+          </tbody>
+        </table>
+        <p><strong>Cross-customer pattern:</strong> 23 to 31% bill reduction within 6 to 12 months. Variance correlates with how aggressively the team trusts policy-driven automation.</p>
+      </section>
+
+      <section class="docs-section" id="whats-next">
+        <div class="num">10 &middot; where the category goes next</div>
+        <h2>Four predictions for the next <em>24 months.</em></h2>
+        <p>CDCR is the working name for what the next decade of cloud cost operations will run on. A few predictions for the next 24 months.</p>
+
+        <h3>1 &middot; The Inform-layer vendors will consolidate</h3>
+        <p>Cost dashboards will buy or build CDCR capability, or they will lose ground to platforms that already run the full loop. <strong>At least two acquisitions in the category are probable by mid-2027.</strong></p>
+
+        <h3>2 &middot; The category will deepen in cost before it widens</h3>
+        <p>Expect richer policy languages, better confidence and complexity scoring on guided actions, and more resource classes safely covered by auto-remediation. The bar for "what the platform will run without human approval" will rise as track records accumulate.</p>
+
+        <h3>3 &middot; The FinOps Foundation framework will evolve</h3>
+        <p>The Operate phase, historically the least defined of the three, will get explicit tooling capability requirements. The next FinOps Framework revision (expected <strong>late 2026</strong>) is likely to include automation maturity as a first-class evaluation dimension.</p>
+
+        <h3>4 &middot; The CI/CD analogy holds up here too</h3>
+        <p>In 2010, "we deploy weekly via SSH scripts" was acceptable. By 2018, it was a competitive liability. The same arc applies to cloud cost. <strong>Teams that still run quarterly reviews against a cloud that drifts daily are operating on the wrong cadence.</strong></p>
+
+        <div class="docs-callout wp-callout-close">
+          <strong>CDCR is the cadence correction.</strong>
+          <p>That is the entire premise. The rest of this brief is implementation detail.</p>
+        </div>
+      </section>
+
+      <section class="docs-section wp-about" id="about-zopnight">
+        <div class="num">about &middot; zopnight</div>
+        <h2>About <em>ZopNight.</em></h2>
+        <p>ZopNight is a cloud cost optimization platform that runs the CDCR loop across <strong>AWS, GCP, and Azure.</strong> It covers schedules, idle resources, right-sizing, cost anomaly detection across five dimensions (org, cloud account, resource group, resource, team), auto-tagging, snapshot lifecycle, and Kubernetes cost drift.</p>
+        <p><strong>450+ audit rules.</strong> Two-tier remediation (auto-remediate the safe classes, guided remediation for the rest). Full audit trail with actor, timestamp, and dollar delta. <strong>Customer databases are excluded from mutation by design.</strong></p>
+        <div class="wp-about-row">
+          <div class="wp-about-block">
+            <span class="wp-about-tag">For evaluation</span>
+            <a class="wp-about-link" href="mailto:hello@zopnight.com">hello@zopnight.com</a>
+          </div>
+          <div class="wp-about-block">
+            <span class="wp-about-tag">For a working demo</span>
+            <a class="wp-about-link" href="demo.html">zopnight.com/demo &rarr;</a>
+          </div>
+        </div>
+        <p class="wp-copyright">&copy; 2026 ZopNight &middot; A ZopDev product</p>
+      </section>
+
+    </article>
+    </article>
+  </div>
+
+</main>
+
+
+<!-- ============================================================
+     IN-BROWSER READER · CDCR whitepaper · full-screen overlay
+     Sticky chapter TOC on the left, scrollable prose on the right.
+     Mirrors the eb-reader pattern from state-of-cloud-waste-2026.
+     ============================================================ -->
+<div class="eb-reader-scrim" id="eb-reader-scrim" aria-hidden="true"></div>
+<div class="eb-reader" id="eb-reader" aria-hidden="true" role="dialog" aria-modal="true" aria-label="CDCR whitepaper &middot; in-browser reader">
+  <header class="eb-reader-head">
+    <div class="eb-reader-head-meta">
+      <span class="eb-reader-eyebrow">
+        <span class="eb-reader-eyebrow-sq" aria-hidden="true"></span>
+        ZopDev research &middot; Whitepaper &middot; May 2026
+      </span>
+      <span class="eb-reader-title-h">CDCR &middot; Continuous Detection, Continuous Remediation</span>
+    </div>
+    <div class="eb-reader-head-actions">
+      <span class="eb-reader-progress" id="eb-reader-progress" aria-hidden="true"><span class="eb-reader-progress-fill"></span></span>
+      <a class="eb-reader-dl" href="demo.html">See it live &rarr;</a>
+      <button class="eb-reader-close" id="eb-reader-close" type="button" aria-label="Close reader">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <path d="M5 5 L15 15 M15 5 L5 15" stroke-linecap="square"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="eb-reader-body">
+    <aside class="eb-reader-toc" aria-label="Chapters">
+      <span class="eb-reader-toc-label">Chapters</span>
+      <ol class="eb-reader-toc-list">
+        <li><a href="#eb-ch-01" data-ch="01" class="eb-toc-link is-active"><span class="eb-toc-num">01</span><span class="eb-toc-name">Executive summary</span></a></li>
+        <li><a href="#eb-ch-02" data-ch="02" class="eb-toc-link"><span class="eb-toc-num">02</span><span class="eb-toc-name">The state of cloud cost drift</span></a></li>
+        <li><a href="#eb-ch-03" data-ch="03" class="eb-toc-link"><span class="eb-toc-num">03</span><span class="eb-toc-name">Why FinOps stalls at Operate</span></a></li>
+        <li><a href="#eb-ch-04" data-ch="04" class="eb-toc-link"><span class="eb-toc-num">04</span><span class="eb-toc-name">CDCR defined</span></a></li>
+        <li><a href="#eb-ch-05" data-ch="05" class="eb-toc-link"><span class="eb-toc-num">05</span><span class="eb-toc-name">The four functions</span></a></li>
+        <li><a href="#eb-ch-06" data-ch="06" class="eb-toc-link"><span class="eb-toc-num">06</span><span class="eb-toc-name">Anatomy of three actions</span></a></li>
+        <li><a href="#eb-ch-07" data-ch="07" class="eb-toc-link"><span class="eb-toc-num">07</span><span class="eb-toc-name">Vendor landscape</span></a></li>
+        <li><a href="#eb-ch-08" data-ch="08" class="eb-toc-link"><span class="eb-toc-num">08</span><span class="eb-toc-name">The maturity model</span></a></li>
+        <li><a href="#eb-ch-09" data-ch="09" class="eb-toc-link"><span class="eb-toc-num">09</span><span class="eb-toc-name">Customer patterns &amp; 90-day adoption</span></a></li>
+        <li><a href="#eb-ch-10" data-ch="10" class="eb-toc-link"><span class="eb-toc-num">10</span><span class="eb-toc-name">Where the category goes next</span></a></li>
+      </ol>
+      <div class="eb-reader-toc-foot">
+        <p>10 chapters &middot; ~24 min read</p>
+      </div>
+    </aside>
+
+    <main class="eb-reader-content" id="eb-reader-content">
+
+      <article class="eb-ch" id="eb-ch-01">
+        <span class="eb-ch-num">Chapter 01 &middot; Executive summary</span>
+        <h2 class="eb-ch-h">CI/CD did this for code. CDCR does it for the cloud.</h2>
+        <p class="eb-ch-lede">CI/CD took software deployment from "click buttons in Jenkins and hope" to a continuous, automated loop that runs on every commit. Cloud cost management is still in the pre-CI/CD era.</p>
+        <p>Teams detect waste, then click through cloud consoles to fix it. The fixes hold for a week. Then the drift comes back. The FinOps Foundation&rsquo;s 2025 State of FinOps survey puts the waste rate at <strong>27 to 32 percent</strong>. Flexera&rsquo;s 2024 State of the Cloud report agrees. The figure has not moved in three years.</p>
+        <p>This brief introduces <strong>CDCR: Continuous Detection, Continuous Remediation</strong>. It is the category of platform that runs the same kind of automated loop CI/CD pipelines run, but for cloud cost state. CDCR detects cost drift continuously, classifies findings by dollar impact and severity, remediates the safe classes automatically, and verifies every action with a full audit trail.</p>
+        <p>CDCR is the action layer inside FinOps. It does not replace the Inform layer (cost dashboards) or the Optimize layer (recommendations). <em>It executes them.</em></p>
+        <aside class="eb-ch-callout">
+          <span class="eb-ch-callout-label">The straightforward read</span>
+          <p>Cloud teams that still run quarterly cost reviews against a cloud that drifts daily are operating on the wrong cadence. <strong>CDCR is the cadence correction.</strong></p>
+        </aside>
+      </article>
+
+      <article class="eb-ch" id="eb-ch-02">
+        <span class="eb-ch-num">Chapter 02 &middot; The state of cloud cost drift</span>
+        <h2 class="eb-ch-h">$830B in spend. 27&ndash;32% of it is drift.</h2>
+        <p class="eb-ch-lede">Worldwide public cloud spend will cross $830 billion in 2026 (Gartner, IDC). Wasted spend is 27 to 32 percent of that. The waste rate has been stable for three years.</p>
+        <p>Despite measurable growth in FinOps tools, certified practitioners, and dedicated teams, the number has not budged. The frame that&rsquo;s more useful here is <em>cost drift</em>, not cost waste. Waste is a snapshot. <strong>Drift is the continuous motion that produces the waste.</strong></p>
+        <p>Resources get oversized. Tags fall off. Schedules expire. Idle resources accumulate. Anomalies happen. Each one is small. The cumulative effect is the 27 to 32 percent.</p>
+        <div class="eb-ch-stat-row">
+          <div class="eb-ch-stat"><strong>27&ndash;32%</strong><span>median wasted spend, stable across three years</span></div>
+          <div class="eb-ch-stat"><strong>800&ndash;2,000</strong><span>recommendations a mid-sized estate produces monthly</span></div>
+          <div class="eb-ch-stat"><strong>5&ndash;15%</strong><span>of those recommendations the team actually actions</span></div>
+        </div>
+        <p>Every line in the drift inventory is detectable today. The persistence of the drift across all of them is the same: <strong>detection without continuous remediation produces reports, not lower bills.</strong></p>
+      </article>
+
+      <article class="eb-ch" id="eb-ch-03">
+        <span class="eb-ch-num">Chapter 03 &middot; Why FinOps stalls at Operate</span>
+        <h2 class="eb-ch-h">Inform is solved. Optimize is solved. Operate isn&rsquo;t.</h2>
+        <p class="eb-ch-lede">The FinOps Foundation framework has three phases &mdash; Inform, Optimize, Operate. The first two are largely solved. The third is the bottleneck.</p>
+        <p><strong>Inform</strong> handles visibility, allocation, and chargeback. The major platforms (CloudHealth, Apptio Cloudability, CloudZero, Vantage, Anodot) ship reliable dashboards. <strong>Optimize</strong> generates recommendations &mdash; accurate right-sizing, commitment, and idle-resource recs. Native advisors supplement them.</p>
+        <h3>Operate is where it stops</h3>
+        <p>The 2025 State of FinOps survey ranks "getting engineers to take action on recommendations" as the top reported challenge for the fourth consecutive year. The reasons are structural, not cultural.</p>
+        <p>A mid-sized cloud estate produces 800 to 2,000 recommendations per month. Manual action at that scale requires either a dedicated remediation team or a heavy ticketing process. Most organisations action 5 to 15 percent of recommendations. The rest age out.</p>
+        <p>Cost dashboards generate recommendations they do not execute. Executing carries blast radius they do not own. The Operate phase has historically depended on engineering teams to do the executing. <strong>That dependency is the bottleneck.</strong></p>
+        <aside class="eb-ch-callout">
+          <span class="eb-ch-callout-label">The fix</span>
+          <p>CDCR removes the dependency by running the loop continuously, with policy-bound automation for the safe classes and guided execution for the rest.</p>
+        </aside>
+      </article>
+
+      <article class="eb-ch" id="eb-ch-04">
+        <span class="eb-ch-num">Chapter 04 &middot; CDCR defined</span>
+        <h2 class="eb-ch-h">A continuous loop for the Operate phase.</h2>
+        <p class="eb-ch-lede">Continuous Detection, Continuous Remediation (CDCR) is the category of platform that runs an automated detect-classify-remediate-verify loop across cloud cost state.</p>
+        <p>The loop runs <strong>continuously, not on a scan schedule</strong>. Every action it takes is logged. Every action it takes can be rolled back.</p>
+        <p>The clearest analogy is CI/CD. Before continuous integration, teams ran tests manually and deployed weekly. Most software production was drift management: code in production diverged from main, fixes regressed, releases broke. CI/CD did not change the discipline of testing or deploying &mdash; <em>it changed the execution model</em>, from manual-on-schedule to automated-on-event.</p>
+        <p>CDCR does the same thing for the cloud cost Operate phase. It does not change the FinOps framework. It changes the execution model. The loop runs on events, not on schedule.</p>
+        <h3>The working definition</h3>
+        <p>A CDCR platform must run <strong>all four functions</strong> of the loop:</p>
+        <p>(1) <strong>Detect</strong> cost drift continuously across the cloud estate. (2) <strong>Classify</strong> findings by severity and projected dollar impact. (3) <strong>Remediate</strong> safe classes automatically and guide humans through the rest. (4) <strong>Verify</strong> every action in an audit trail that meets compliance evidence requirements.</p>
+        <p>Platforms that do <strong>(1) only</strong> are cost dashboards. Platforms that do <strong>(1), (2), and partial (3)</strong> without (4) are recommendation engines. <strong>CDCR requires all four.</strong></p>
+      </article>
+
+      <article class="eb-ch" id="eb-ch-05">
+        <span class="eb-ch-num">Chapter 05 &middot; The four functions</span>
+        <h2 class="eb-ch-h">Detect &middot; Classify &middot; Remediate &middot; Verify.</h2>
+        <p class="eb-ch-lede">Each function has a specific shape and a specific failure mode. Together they form the loop.</p>
+        <h3>Detect, continuously</h3>
+        <p>Cost drift detection runs at <strong>minute-level granularity</strong>. The signals collected go wider than the cloud bill itself. Anomaly detection runs across <strong>five dimensions</strong> &mdash; org, cloud account, resource group, resource, and team. A spike that hides at the org level often shows up at the resource group level.</p>
+        <p>Other signals: drift on Kubernetes clusters, expired schedule overrides, newly untagged resources, idle accumulation, storage class regression, compliance gaps that quietly reopened after a prior fix. <strong>Sample rate matters.</strong> A platform that polls every 15 minutes will miss anomalies that one polling every 60 seconds catches.</p>
+        <h3>Classify, by impact</h3>
+        <p>A flat list of 2,000 findings is unworkable. A classified queue is. CDCR platforms apply rule libraries that score every finding by severity and projected dollar impact. <strong>ZopNight runs 450+ audit rules across AWS, GCP, and Azure.</strong> Classification sets the work order. Drift on a production resource ranks above an idle dev box. A $2,000/month anomaly ranks above a $30/month one.</p>
+        <h3>Remediate, continuously</h3>
+        <p>Remediation is <strong>two-tier</strong>. Auto-remediate for the safe classes: tag application, schedule enforcement, idle resources stopped, scale-to-zero on certified workloads. Guided remediation for the rest &mdash; each action carries a confidence score and a complexity score; the human approves; the platform executes.</p>
+        <p>Production writes are admin-gated, scoped to the resources covered by the policy, and fully logged. <strong>Customer databases are explicitly excluded from mutation.</strong> This is a design choice, not a limitation. The platform refuses to touch state that should never be auto-touched.</p>
+        <aside class="eb-ch-callout">
+          <span class="eb-ch-callout-label">The architectural choice</span>
+          <p>Two-tier remediation is what separates a serious CDCR platform from a recommendation engine.</p>
+        </aside>
+        <h3>Verify, every action</h3>
+        <p>Every action lands in the audit trail. The record includes <strong>actor</strong> (platform or human), <strong>timestamp</strong>, the policy that triggered the action, the resources affected, and the <strong>dollar delta</strong>. Quarterly reviews read measurable outcomes, not forecasts. Verification is also the layer that satisfies <strong>SOC 2 Type II and ISO 27001</strong> evidence requirements. Without it, CDCR is unusable in regulated industries.</p>
+      </article>
+
+      <article class="eb-ch" id="eb-ch-06">
+        <span class="eb-ch-num">Chapter 06 &middot; Anatomy of three actions</span>
+        <h2 class="eb-ch-h">Watch one finding move through the loop.</h2>
+        <p class="eb-ch-lede">The clearest way to understand the loop is to watch one finding move through it. Three composite examples.</p>
+        <h3>Action 1 &middot; Idle development cluster (auto-remediated)</h3>
+        <p>A development EKS cluster shows below 5% average CPU utilisation for 14 consecutive days. Detected on day 14. Projected monthly impact: <strong>$1,840</strong>. Severity: low (non-production resource). Tagged <code>env:dev</code>. No <code>keep-on</code> override.</p>
+        <p>Policy match: scheduled shutdown for dev clusters with sustained low utilisation. Schedule applied: weekdays 8 PM to 8 AM local. No approval required. After 30 days: <strong>$1,120 actual savings versus $1,840 projected</strong> (variance from teams toggling the override).</p>
+        <h3>Action 2 &middot; Oversized production RDS (guided remediation)</h3>
+        <p>An RDS <code>db.r6g.4xlarge</code> shows sustained average CPU below 18% over 30 days. Memory utilisation 32%. Projected impact: $1,820/month. Severity: medium. Confidence: 94%. Complexity: medium (requires maintenance window).</p>
+        <p>Guided action surfaced to the on-call DBA. Recommendation: downsize to <code>db.r6g.2xlarge</code>. Maintenance window suggested. DBA approves; platform executes during the next pre-approved window. P95 query latency held within baseline. <strong>$1,820/month savings confirmed.</strong></p>
+        <h3>Action 3 &middot; Customer database, oversized (rejected)</h3>
+        <p>A customer-managed RDS instance shows utilisation patterns consistent with a right-size opportunity. Projected impact: $4,200/month. Severity: high. <strong>Platform refuses.</strong> Customer databases are excluded from mutation by design. The finding is surfaced as an advisory via dashboard and weekly digest. No write is attempted.</p>
+        <aside class="eb-ch-callout">
+          <span class="eb-ch-callout-label">The third example is the most important</span>
+          <p>A CDCR platform that does not refuse to act on certain resource classes is not safe to run in production. The refusal is part of the design.</p>
+        </aside>
+      </article>
+
+      <article class="eb-ch" id="eb-ch-07">
+        <span class="eb-ch-num">Chapter 07 &middot; Vendor landscape</span>
+        <h2 class="eb-ch-h">The seven questions a buyer should ask.</h2>
+        <p class="eb-ch-lede">CDCR is an early category. Most vendors making the claim do not yet pass the four-function test.</p>
+        <p>A buyer evaluating the space should ask: <strong>(1)</strong> Does the platform poll continuously, or scan on schedule? <strong>(2)</strong> How are findings classified by impact, and on what rule base? <strong>(3)</strong> Are remediation actions executed by the platform, or generated as recommendations for a human to apply? <strong>(4)</strong> What is the maximum blast radius the platform accepts under policy without human approval? <strong>(5)</strong> What resource classes does the platform refuse to touch, by design?</p>
+        <p><strong>(6)</strong> What does the audit log show? Does it meet SOC 2 Type II evidence? <strong>(7)</strong> Does coverage extend across AWS, GCP, and Azure, or only one cloud?</p>
+        <p>A read of the current market (May 2026, expect movement): <strong>CloudHealth</strong> and <strong>Apptio Cloudability</strong> cover Detect + partial Classify only. <strong>CloudZero</strong> adds Classify, no Remediate. <strong>Vantage</strong> is Detect only. <strong>Spot.io</strong>, <strong>Cast.ai</strong>, and <strong>Zesty</strong> run the full loop but only on narrow surfaces (EC2 Spot, Kubernetes, EBS respectively). <strong>Densify</strong> stops at limited Remediate.</p>
+        <p><strong>ZopNight</strong> is the only platform on the list running the full loop across the entire cloud cost estate &mdash; not just one cloud, not just one resource class. Full vendor landscape table in the standalone whitepaper page.</p>
+      </article>
+
+      <article class="eb-ch" id="eb-ch-08">
+        <span class="eb-ch-num">Chapter 08 &middot; The maturity model</span>
+        <h2 class="eb-ch-h">Crawl, Walk, Run, Fly.</h2>
+        <p class="eb-ch-lede">The FinOps Foundation Crawl-Walk-Run model maps onto CDCR adoption. The single largest unlock in maturity is the Walk-to-Run move.</p>
+        <p><strong>Crawl &middot; 18% of organisations.</strong> Cost reviews are quarterly. Allocation is partial. No automation.</p>
+        <p><strong>Walk &middot; 54% of organisations.</strong> A cost dashboard is in place. Allocation and chargeback work for most spend. The team acts on top recommendations each month. <em>No continuous remediation.</em> This is the industry&rsquo;s largest stuck point.</p>
+        <p><strong>Run &middot; 22% of organisations.</strong> Continuous remediation is in place for predictable drift classes (non-production scheduling, snapshot lifecycle, storage class migration). Right-sizing and orphan cleanup are automated under policy.</p>
+        <p><strong>Fly &middot; 6% of organisations.</strong> The cost estate self-optimises against explicit policy. Humans approve only high-blast-radius decisions.</p>
+        <aside class="eb-ch-callout">
+          <span class="eb-ch-callout-label">The single largest unlock</span>
+          <p>Moving from Walk to Run. That move is gated on Operate-layer tooling. <strong>CDCR is the tooling.</strong></p>
+        </aside>
+      </article>
+
+      <article class="eb-ch" id="eb-ch-09">
+        <span class="eb-ch-num">Chapter 09 &middot; Customer patterns &amp; 90-day adoption</span>
+        <h2 class="eb-ch-h">Three estates. Three outcomes. One pattern.</h2>
+        <p class="eb-ch-lede">Three composite customers across the SaaS, consumer, and regulated finance segments. The pattern is consistent: 23&ndash;31% bill reduction in 6&ndash;12 months.</p>
+        <h3>Pattern A &middot; Mid-stage SaaS, $180K/month AWS</h3>
+        <p>A Series B SaaS company with eight engineers and a Notion-based FinOps practice. CDCR adoption began with non-production scheduling, unattached EBS cleanup, gp2 to gp3 migration, and RDS right-sizing. <strong>After 90 days the bill was $124K/month, a 31% reduction.</strong> Engineering hours on cost work dropped from roughly 6/week to under 1.</p>
+        <h3>Pattern B &middot; Late-stage consumer, $2.4M/month across AWS + GCP</h3>
+        <p>A Series D consumer company with a four-person FinOps team and custom Looker dashboards. Despite mature Inform-layer tooling, the team estimated $600K/month of recoverable waste. CDCR added Event Readiness automation for product launches, autoscaling policies, snapshot lifecycle rules, and Auto Tagging. <strong>After six months the bill was $1.78M/month, a 26% reduction.</strong></p>
+        <h3>Pattern C &middot; Regulated financial services, $5.1M/month</h3>
+        <p>A US firm with strict change management. Every cost optimisation required a CAB ticket. The team executed roughly 3 cost actions per quarter. CDCR <em>inverted the CAB process</em>: the CAB pre-approved the policy, the platform executed within it with full audit logging. <strong>After 12 months the bill was $3.9M/month, a 23% reduction.</strong> Action velocity moved from 3/quarter to ~400/month.</p>
+        <h3>The 90-day adoption path</h3>
+        <p><strong>Weeks 1&ndash;2:</strong> connect cloud accounts in read-only mode. Auto-discovery completes inventory. Reconcile against the existing dashboard. Output: a baseline of recoverable drift by category and account.</p>
+        <p><strong>Weeks 3&ndash;4:</strong> turn on non-production scheduling. Highest-savings, lowest-risk first move. First-month reduction typically <strong>12&ndash;18%</strong>.</p>
+        <p><strong>Weeks 5&ndash;8:</strong> move to right-sizing and orphan cleanup. Approve in batch. Implement Auto Tagging. Cumulative reduction typically <strong>22&ndash;28%</strong>.</p>
+        <p><strong>Weeks 9&ndash;12:</strong> convert from approval-required to policy-driven for the action classes with reliable safety track records. Define guardrails. The loop now runs continuously.</p>
+        <blockquote class="eb-ch-quote">
+          &ldquo;The hardest part wasn&rsquo;t the math. It was getting the CAB to pre-approve a policy instead of approving each action one ticket at a time. Once they did, the savings velocity was a step-change.&rdquo;
+          <cite>&mdash; Platform lead, Pattern C customer (financial services)</cite>
+        </blockquote>
+      </article>
+
+      <article class="eb-ch" id="eb-ch-10">
+        <span class="eb-ch-num">Chapter 10 &middot; Where the category goes next</span>
+        <h2 class="eb-ch-h">Four predictions for the next 24 months.</h2>
+        <p class="eb-ch-lede">CDCR is the working name for what the next decade of cloud cost operations will run on. Four predictions for the next 24 months.</p>
+        <h3>1 &middot; The Inform-layer vendors will consolidate</h3>
+        <p>Cost dashboards will buy or build CDCR capability, or they will lose ground to platforms that already run the full loop. <strong>At least two acquisitions in the category are probable by mid-2027.</strong></p>
+        <h3>2 &middot; The category will deepen in cost before it widens</h3>
+        <p>Expect richer policy languages, better confidence and complexity scoring on guided actions, and more resource classes safely covered by auto-remediation. The bar for "what the platform will run without human approval" will rise as track records accumulate.</p>
+        <h3>3 &middot; The FinOps Foundation framework will evolve</h3>
+        <p>The Operate phase, historically the least defined of the three, will get explicit tooling capability requirements. The next FinOps Framework revision (expected <strong>late 2026</strong>) is likely to include automation maturity as a first-class evaluation dimension.</p>
+        <h3>4 &middot; The CI/CD analogy holds up here too</h3>
+        <p>In 2010, "we deploy weekly via SSH scripts" was acceptable. By 2018, it was a competitive liability. The same arc applies to cloud cost. <strong>Teams that still run quarterly reviews against a cloud that drifts daily are operating on the wrong cadence.</strong></p>
+        <aside class="eb-ch-callout eb-ch-callout--cta">
+          <span class="eb-ch-callout-label">CDCR is the cadence correction.</span>
+          <p>That is the entire premise. The rest of this brief is implementation detail. <a href="demo.html">See it live on your estate &rarr;</a></p>
+        </aside>
+        <p class="eb-ch-end">&mdash; End of whitepaper &mdash;</p>
+      </article>
+
+    </main>
+  </div>
+</div>
+
+
+<style id="eb-reader-css">
+  /* IN-BROWSER READER · full-screen overlay editorial reading
+     experience. Sticky chapter TOC on the left, scrollable prose on
+     the right. Always opens on top of the page (z-index 1100+ to
+     beat the drawer / nav). The reader is theme-aware: light theme
+     uses paper, dark uses ink. */
+  .eb-reader-scrim{
+    position:fixed; inset:0; z-index:1099;
+    background:rgba(10,10,10,0.5);
+    opacity:0; visibility:hidden;
+    transition:opacity .25s ease, visibility .25s;
+  }
+  .eb-reader-scrim.is-open{ opacity:1; visibility:visible; }
+  .eb-reader{
+    position:fixed; inset:0; z-index:1100;
+    background:var(--paper);
+    color:var(--ink);
+    display:flex; flex-direction:column;
+    transform:translateY(100%);
+    transition:transform .5s cubic-bezier(.22,1,.36,1);
+    overflow:hidden;
+  }
+  html[data-theme="dark"] .eb-reader{ background:#0F0F12; }
+  .eb-reader.is-open{ transform:translateY(0); }
+
+  /* Header · sticky, contains book title + close + download CTA */
+  .eb-reader-head{
+    flex-shrink:0;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:24px;
+    padding:16px 32px;
+    border-bottom:1px solid var(--line);
+    background:var(--paper);
+    position:sticky; top:0;
+    z-index:2;
+  }
+  html[data-theme="dark"] .eb-reader-head{ background:#0F0F12; border-bottom-color:#2a2a30; }
+  .eb-reader-head-meta{
+    display:flex; flex-direction:column; gap:4px; min-width:0;
+  }
+  .eb-reader-eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--mono, monospace);
+    font-size:10.5px; font-weight:600;
+    letter-spacing:.16em; text-transform:uppercase;
+    color:var(--ink-3);
+  }
+  .eb-reader-eyebrow-sq{
+    width:8px; height:8px; background:var(--zop-orange);
+  }
+  .eb-reader-title-h{
+    font-family:var(--font);
+    font-size:15px; font-weight:600;
+    letter-spacing:-.005em;
+    color:var(--ink);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .eb-reader-head-actions{
+    display:flex; align-items:center; gap:18px; flex-shrink:0;
+  }
+  .eb-reader-progress{
+    display:block; width:140px; height:3px;
+    background:var(--line);
+    position:relative;
+    overflow:hidden;
+  }
+  .eb-reader-progress-fill{
+    position:absolute; left:0; top:0; bottom:0;
+    width:0;
+    background:var(--zop-orange);
+    transition:width .12s ease-out;
+  }
+  .eb-reader-dl{
+    font-family:var(--mono);
+    font-size:11px; font-weight:600;
+    letter-spacing:.14em; text-transform:uppercase;
+    color:var(--ink);
+    padding:8px 14px; border:1px solid var(--line);
+    text-decoration:none;
+    transition:background .14s, color .14s, border-color .14s;
+  }
+  .eb-reader-dl:hover{
+    background:var(--ink); color:var(--paper); border-color:var(--ink);
+  }
+  .eb-reader-close{
+    width:36px; height:36px;
+    display:inline-flex; align-items:center; justify-content:center;
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--ink);
+    cursor:pointer;
+    transition:background .14s, color .14s, border-color .14s;
+  }
+  .eb-reader-close:hover{
+    background:var(--zop-orange); color:#0F0F12; border-color:var(--zop-orange);
+  }
+  .eb-reader-close svg{ width:18px; height:18px; }
+
+  /* Body · 2-col grid: sidebar TOC + main reading column */
+  .eb-reader-body{
+    flex:1; min-height:0;
+    display:grid;
+    grid-template-columns:280px 1fr;
+    overflow:hidden;
+  }
+  .eb-reader-toc{
+    border-right:1px solid var(--line);
+    padding:32px 24px;
+    overflow-y:auto;
+    background:var(--paper);
+  }
+  html[data-theme="dark"] .eb-reader-toc{ background:#15151B; border-right-color:#2a2a30; }
+  .eb-reader-toc-label{
+    display:block;
+    font-family:var(--mono); font-size:10.5px; font-weight:600;
+    letter-spacing:.16em; text-transform:uppercase;
+    color:var(--ink-3);
+    margin-bottom:16px;
+    padding-left:8px;
+  }
+  .eb-reader-toc-list{
+    list-style:none; padding:0; margin:0;
+    display:flex; flex-direction:column;
+  }
+  .eb-reader-toc-list li{ padding:0 !important; }
+  .eb-reader-toc-list li::before{ display:none !important; content:none !important; }
+  .eb-toc-link{
+    display:flex; align-items:baseline; gap:14px;
+    padding:10px 8px;
+    color:var(--ink-3);
+    text-decoration:none;
+    font-size:13.5px; line-height:1.4;
+    letter-spacing:-.005em;
+    border-left:2px solid transparent;
+    transition:color .14s, border-color .14s, background .14s;
+  }
+  .eb-toc-link:hover{ color:var(--ink); }
+  .eb-toc-link.is-active{
+    color:var(--ink);
+    border-left-color:var(--zop-orange);
+    background:rgba(245,133,73,.05);
+  }
+  .eb-toc-num{
+    font-family:var(--mono);
+    font-size:10.5px; font-weight:600;
+    letter-spacing:.12em;
+    color:var(--g-500);
+    flex-shrink:0;
+  }
+  .eb-toc-link.is-active .eb-toc-num{ color:var(--zop-orange); }
+  .eb-toc-name{ flex:1; min-width:0; }
+  .eb-reader-toc-foot{
+    margin-top:24px; padding:16px 8px 0;
+    border-top:1px solid var(--line);
+    font-family:var(--mono); font-size:11px;
+    color:var(--ink-3); letter-spacing:.04em;
+  }
+  .eb-reader-toc-foot p{ margin:0; }
+
+  /* Main reading column · editorial typography, generous line-length */
+  .eb-reader-content{
+    overflow-y:auto;
+    padding:56px 64px 120px;
+    scroll-behavior:smooth;
+  }
+  .eb-ch{
+    max-width:680px;
+    margin:0 auto 80px;
+    scroll-margin-top:96px;
+  }
+  .eb-ch:last-child{ margin-bottom:40px; }
+  .eb-ch-num{
+    display:block;
+    font-family:var(--mono); font-size:11px; font-weight:600;
+    letter-spacing:.16em; text-transform:uppercase;
+    color:var(--zop-orange);
+    margin-bottom:14px;
+  }
+  .eb-ch-h{
+    font-family:var(--font);
+    font-size:clamp(2rem, 3.4vw, 2.8rem);
+    font-weight:700; letter-spacing:-.025em; line-height:1.1;
+    color:var(--ink);
+    margin:0 0 20px;
+  }
+  .eb-ch-lede{
+    font-size:18px; line-height:1.6;
+    color:var(--ink-3);
+    letter-spacing:-.005em;
+    margin:0 0 36px;
+    max-width:60ch;
+  }
+  .eb-ch p{
+    font-family:var(--font);
+    font-size:16px; line-height:1.7;
+    color:var(--ink);
+    margin:0 0 22px;
+    letter-spacing:-.003em;
+    max-width:65ch;
+  }
+  .eb-ch p a{
+    color:var(--ink);
+    text-decoration:underline; text-underline-offset:3px;
+    text-decoration-color:var(--zop-orange);
+    text-decoration-thickness:1.5px;
+  }
+  .eb-ch p a:hover{ color:var(--zop-orange); }
+  .eb-ch h3{
+    font-size:20px; font-weight:700;
+    letter-spacing:-.015em; line-height:1.25;
+    color:var(--ink);
+    margin:36px 0 14px;
+  }
+  .eb-ch strong{ color:var(--ink); font-weight:600; }
+  .eb-ch em{ color:var(--zop-orange); font-style:normal; }
+  .eb-ch-callout{
+    border-left:3px solid var(--zop-orange);
+    padding:18px 22px;
+    background:rgba(245,133,73,.06);
+    margin:32px 0;
+    max-width:65ch;
+  }
+  .eb-ch-callout-label{
+    display:block;
+    font-family:var(--mono); font-size:10.5px; font-weight:600;
+    letter-spacing:.16em; text-transform:uppercase;
+    color:var(--zop-orange);
+    margin-bottom:8px;
+  }
+  .eb-ch-callout p{
+    margin:0; font-size:14.5px; color:var(--ink);
+  }
+  .eb-ch-callout--cta a{ color:var(--zop-orange) !important; font-weight:600; }
+  .eb-ch-stat-row{
+    display:grid; grid-template-columns:repeat(3, 1fr);
+    gap:24px; margin:32px 0;
+    border:1px solid var(--line);
+    background:var(--bg-0, var(--paper));
+  }
+  .eb-ch-stat{
+    padding:22px 20px;
+    border-right:1px solid var(--line);
+    display:flex; flex-direction:column; gap:6px;
+  }
+  .eb-ch-stat:last-child{ border-right:0; }
+  .eb-ch-stat strong{
+    font-family:var(--font); font-size:32px; font-weight:700;
+    letter-spacing:-.025em; line-height:1; color:var(--zop-orange);
+  }
+  .eb-ch-stat span{
+    font-size:12.5px; line-height:1.45;
+    color:var(--ink-3);
+  }
+  .eb-ch-quote{
+    margin:32px 0;
+    padding:0 0 0 24px;
+    border-left:3px solid var(--ink);
+    font-family:var(--font);
+    font-size:20px; line-height:1.45; font-weight:500;
+    letter-spacing:-.015em;
+    color:var(--ink);
+    max-width:60ch;
+  }
+  .eb-ch-quote cite{
+    display:block; margin-top:12px;
+    font-family:var(--mono); font-size:11px;
+    color:var(--ink-3); letter-spacing:.06em;
+    font-style:normal;
+  }
+  .eb-ch-end{
+    margin-top:48px;
+    text-align:center;
+    font-family:var(--mono); font-size:11px;
+    color:var(--ink-3); letter-spacing:.16em;
+    text-transform:uppercase;
+  }
+  html[data-theme="dark"] .eb-reader-content{ background:#0F0F12; }
+  html[data-theme="dark"] .eb-ch p,
+  html[data-theme="dark"] .eb-ch h3,
+  html[data-theme="dark"] .eb-ch-h,
+  html[data-theme="dark"] .eb-ch strong,
+  html[data-theme="dark"] .eb-ch-quote{ color:#F0EBDB; }
+  html[data-theme="dark"] .eb-ch-lede,
+  html[data-theme="dark"] .eb-ch-stat span,
+  html[data-theme="dark"] .eb-ch-quote cite,
+  html[data-theme="dark"] .eb-ch-end{ color:rgba(240,235,219,.7); }
+  html[data-theme="dark"] .eb-ch-callout{ background:rgba(245,133,73,.10); }
+  html[data-theme="dark"] .eb-ch-stat-row{ border-color:#2a2a30; }
+  html[data-theme="dark"] .eb-ch-stat{ border-right-color:#2a2a30; }
+
+  /* Read-now CTA in the hero · sits below the download form */
+  .eb-readnow-row{ margin-top:16px; }
+  .eb-readnow{
+    display:inline-flex; align-items:center; gap:10px;
+    padding:12px 18px;
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--ink);
+    font-family:var(--font);
+    font-size:14px; font-weight:600;
+    letter-spacing:-.005em;
+    cursor:pointer;
+    transition:background .14s, color .14s, border-color .14s,
+               transform .14s, box-shadow .14s;
+  }
+  .eb-readnow svg{ width:18px; height:18px; flex-shrink:0; opacity:.7; }
+  .eb-readnow:hover{
+    background:var(--ink); color:var(--paper); border-color:var(--ink);
+    transform:translateY(-2px);
+    box-shadow:0 6px 0 -3px var(--zop-orange);
+  }
+  .eb-readnow:hover svg{ opacity:1; }
+  .eb-readnow-arrow{
+    font-family:var(--mono); font-size:14px; opacity:.5;
+    transition:transform .14s, opacity .14s;
+  }
+  .eb-readnow:hover .eb-readnow-arrow{ transform:translateX(3px); opacity:1; }
+
+  /* Responsive · TOC collapses to a top bar on tablet, hidden on
+     small mobile (chapter links accessible via the top bar instead). */
+  @media (max-width:980px){
+    .eb-reader-body{ grid-template-columns:1fr; overflow:auto; }
+    .eb-reader-toc{
+      border-right:0; border-bottom:1px solid var(--line);
+      padding:18px 24px;
+      position:sticky; top:69px; z-index:1;
+    }
+    html[data-theme="dark"] .eb-reader-toc{ border-bottom-color:#2a2a30; }
+    .eb-reader-toc-list{ flex-direction:row; gap:6px; overflow-x:auto; padding-bottom:4px; }
+    .eb-reader-toc-list li{ flex-shrink:0; }
+    .eb-toc-link{
+      padding:8px 12px;
+      border-left:0; border-bottom:2px solid transparent;
+      white-space:nowrap;
+    }
+    .eb-toc-link.is-active{ border-left:0; border-bottom-color:var(--zop-orange); }
+    .eb-reader-toc-foot{ display:none; }
+    .eb-reader-content{ padding:32px 24px 100px; }
+  }
+  @media (max-width:640px){
+    .eb-reader-head{ padding:12px 16px; gap:10px; }
+    .eb-reader-title-h{ font-size:13.5px; }
+    .eb-reader-progress{ display:none; }
+    .eb-reader-dl{ font-size:10px; padding:6px 10px; letter-spacing:.1em; }
+    .eb-reader-close{ width:32px; height:32px; }
+    .eb-ch-h{ font-size:1.7rem; }
+    .eb-ch-lede{ font-size:15.5px; }
+    .eb-ch p{ font-size:15px; }
+    .eb-ch-stat-row{ grid-template-columns:1fr; }
+    .eb-ch-stat{ border-right:0; border-bottom:1px solid var(--line); }
+    .eb-ch-stat:last-child{ border-bottom:0; }
+  }
+  @media (prefers-reduced-motion:reduce){
+    .eb-reader{ transition:none; }
+    .eb-reader-content{ scroll-behavior:auto; }
+  }
+  body.eb-reader-open{ overflow:hidden; }
+</style>
+
+<script id="eb-reader-js">
+/* In-browser reader · open/close + scroll-spy TOC highlighting +
+   progress bar in the header. Close on Escape. Body scroll locked
+   while open. */
+(function(){
+  var trigger = document.getElementById('eb-readnow-trigger');
+  var scrim   = document.getElementById('eb-reader-scrim');
+  var reader  = document.getElementById('eb-reader');
+  var closeBtn= document.getElementById('eb-reader-close');
+  var content = document.getElementById('eb-reader-content');
+  var progress= document.querySelector('#eb-reader-progress .eb-reader-progress-fill');
+  var tocLinks= document.querySelectorAll('.eb-toc-link');
+  if(!trigger || !reader) return;
+
+  function open(){
+    scrim.classList.add('is-open');
+    scrim.setAttribute('aria-hidden', 'false');
+    reader.classList.add('is-open');
+    reader.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('eb-reader-open');
+    setTimeout(function(){ updateProgress(); updateActive(); }, 60);
+  }
+  function close(){
+    scrim.classList.remove('is-open');
+    scrim.setAttribute('aria-hidden', 'true');
+    reader.classList.remove('is-open');
+    reader.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('eb-reader-open');
+  }
+  trigger.addEventListener('click', open);
+  closeBtn.addEventListener('click', close);
+  scrim.addEventListener('click', close);
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && reader.classList.contains('is-open')) close();
+  });
+
+  /* TOC click · smooth scroll inside the reader (not the page) */
+  tocLinks.forEach(function(link){
+    link.addEventListener('click', function(e){
+      var href = link.getAttribute('href');
+      if(!href || href[0] !== '#') return;
+      e.preventDefault();
+      var target = document.getElementById(href.slice(1));
+      if(target){
+        var top = target.offsetTop - 24;
+        content.scrollTo({ top: top, behavior: 'smooth' });
+      }
+    });
+  });
+
+  /* In-content jump links · "see Chapter 02" inline anchors */
+  content.addEventListener('click', function(e){
+    var a = e.target.closest('a[data-jump]');
+    if(!a) return;
+    e.preventDefault();
+    var href = a.getAttribute('href');
+    var target = document.getElementById(href.slice(1));
+    if(target) content.scrollTo({ top: target.offsetTop - 24, behavior: 'smooth' });
+  });
+
+  function updateProgress(){
+    var max = content.scrollHeight - content.clientHeight;
+    if(max <= 0){ progress.style.width = '0%'; return; }
+    var p = Math.max(0, Math.min(1, content.scrollTop / max));
+    progress.style.width = (p * 100) + '%';
+  }
+  function updateActive(){
+    var chapters = content.querySelectorAll('.eb-ch');
+    var scrollY = content.scrollTop + 120;
+    var current = null;
+    chapters.forEach(function(ch){
+      if(ch.offsetTop <= scrollY) current = ch.id;
+    });
+    tocLinks.forEach(function(link){
+      var on = link.getAttribute('href') === ('#' + current);
+      link.classList.toggle('is-active', on);
+    });
+  }
+  var ticking = false;
+  content.addEventListener('scroll', function(){
+    if(ticking) return;
+    ticking = true;
+    requestAnimationFrame(function(){ updateProgress(); updateActive(); ticking = false; });
+  });
+})();
+</script>
+
+
+<!-- ========================================================================
+     FOOTER, identical on every page · CANONICAL.
+     5-cell grid (brand + 4 columns), trust badges, legal rail, bottom row.
+     If you change this block, run the chrome sweep so every subpage
+     stays in sync.
+     ======================================================================== -->
+<footer>
+  <div class="container">
+        <div class="foot-grid foot-grid--equal">
+      <div class="foot-col"><h3>product</h3><ul>
+        <li><a href="zopnight.html">ZopNight</a></li>
+        <li><a href="zopday.html">ZopDay</a></li>
+        <li><a href="k8s-view.html">Kubernetes View</a></li>
+        <li><a href="zopcloud.html">ZopCloud</a></li>
+        <li><a href="pricing.html">Pricing</a></li></ul></div>
+      <div class="foot-col"><h3>resources</h3><ul>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="free-ebooks.html">Ebooks</a></li>
+        <li><a href="customers.html">Case studies</a></li>
+        <li><a href="solutions.html">Use cases by industry</a></li>
+        <li><a href="product-documentation.html">Product documentation</a></li>
+        <li><a href="kubernetes-guide.html">Kubernetes guide</a></li>
+        <li><a href="changelog.html">Changelog</a></li>
+        <li><a href="developer-documentation.html">Developer documentation</a></li><li><a href="assets.html">Media kit</a></li></ul></div>
+      <div class="foot-col"><h3>company</h3><ul>
+        <li><a href="about.html">About</a></li></ul></div>
+      <div class="foot-col"><h3>community</h3><ul>
+        <li><a href="community.html">Community</a></li></ul></div>
+    </div>
+        <!-- ════════════════════════════════════════════════════════════
+         FOOTER BOTTOM PANEL · ZopDev wordmark left · world map right
+         ════════════════════════════════════════════════════════════ -->
+    
+    <!-- COMPLIANCE BADGES · SOC 2 + ISO white badges before logo + globe -->
+    
+    <div class="foot-globe">
+      <div class="foot-globe-left">
+        <a href="index.html" class="foot-globe-mark" aria-label="ZopDev">
+          <svg class="foot-globe-logo" viewBox="0 0 715 276" aria-hidden="true">
+            <use href="#logo-zopdev"/>
+          </svg>
+        </a>
+        <div class="foot-globe-badges" aria-label="Compliance certifications">
+          <span class="foot-globe-badge" aria-label="SOC 2 Type II">
+            <svg viewBox="0 0 64 64" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="32" cy="32" r="29" fill="none" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M32 8 a24 24 0 0 1 24 24 v6 a24 24 0 0 1 -24 24 a24 24 0 0 1 -24 -24 v-6 a24 24 0 0 1 24 -24 z" fill="none" stroke="currentColor" stroke-width="1" opacity=".5"/>
+              <path d="M22 32 l8 8 l14 -16" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="square" stroke-linejoin="miter"/>
+            </svg>
+            <span class="foot-globe-badge-label"><strong>SOC 2</strong> Type II</span>
+          </span>
+          <span class="foot-globe-badge" aria-label="ISO 27001:2022">
+            <svg viewBox="0 0 64 64" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+              <rect x="6" y="6" width="52" height="52" fill="none" stroke="currentColor" stroke-width="1.5"/>
+              <rect x="11" y="11" width="42" height="42" fill="none" stroke="currentColor" stroke-width="1" opacity=".5"/>
+              <text x="32" y="29" font-family="Space Grotesk, monospace" font-size="9" fill="currentColor" text-anchor="middle" letter-spacing="2">ISO</text>
+              <text x="32" y="42" font-family="Space Grotesk, sans-serif" font-size="11" font-weight="700" fill="currentColor" text-anchor="middle">27001</text>
+              <line x1="14" y1="50" x2="50" y2="50" stroke="currentColor" stroke-width="1"/>
+            </svg>
+            <span class="foot-globe-badge-label"><strong>ISO 27001</strong> 2022</span>
+          </span>
+        </div>
+      </div>
+      <div class="foot-globe-right">
+        <div class="foot-regions-v2" id="foot-regions-v2">
+          <canvas id="foot-regions-map"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom foot-bottom-3">
+      <div class="foot-copy">© <span data-year>2026</span> ZopDev · <a href="trust.html">privacy</a> · <a href="trust.html">terms</a></div>
+      <div class="foot-mid">made with <svg viewBox="0 0 7 6" aria-hidden="true"><rect x="1" y="0" width="1" height="1"/><rect x="2" y="0" width="1" height="1"/><rect x="4" y="0" width="1" height="1"/><rect x="5" y="0" width="1" height="1"/><rect x="0" y="1" width="7" height="1"/><rect x="0" y="2" width="7" height="1"/><rect x="1" y="3" width="5" height="1"/><rect x="2" y="4" width="3" height="1"/><rect x="3" y="5" width="1" height="1"/></svg> by <a href="https://zop.dev" target="_blank" rel="noopener">zop.dev</a></div>
+      <div class="foot-social">
+        <a href="https://linkedin.com/company/zopdev">linkedin</a>
+        <a href="https://twitter.com/zopdev">twitter</a>
+        <a href="https://github.com/zopdev">github</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // dynamic copyright year · announcement-bar dismiss
+  (function(){
+    document.querySelectorAll('[data-year]').forEach(function(el){ el.textContent = new Date().getFullYear(); });
+    var ann = document.getElementById('ann-bar');
+    var btn = document.getElementById('ann-close');
+    if(!ann || !btn) return;
+    var key = 'zop-ann-2026-mcp';
+    try{ if(localStorage.getItem(key) === '1') ann.style.display = 'none'; }catch(e){}
+    btn.addEventListener('click', function(){
+      ann.style.display = 'none';
+      try{ localStorage.setItem(key, '1'); }catch(e){}
+    });
+  })();
+</script>
+
+
+
+<!-- ═══════ MOBILE NAV · 2-level accordion drawer · injected sitewide ═══════ --><div class="mob-nav-scrim" id="mob-nav-scrim" aria-hidden="true"></div>
+
+<aside class="mob-nav" id="mob-nav-drawer" aria-hidden="true" aria-label="Mobile navigation">
+  <header class="mob-nav-head">
+    <a href="index.html" class="mob-nav-logo" aria-label="ZopDev">
+      <svg viewBox="0 0 715 276" aria-hidden="true"><use href="#logo-zopdev"/></svg>
+    </a>
+    <button class="mob-nav-close" id="mob-nav-close" aria-label="Close menu" type="button">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square">
+        <path d="M3 3 L13 13 M13 3 L3 13"/>
+      </svg>
+    </button>
+  </header>
+
+  <nav class="mob-nav-body" aria-label="Mobile menu items">
+    <!-- PRODUCT · expandable -->
+    <details class="mob-nav-group">
+      <summary>
+        <span>Product</span>
+        <svg class="mob-nav-chev" width="14" height="14" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 5 L6 8 L9 5"/></svg>
+      </summary>
+      <ul>
+        <li><a href="zopnight.html">
+          <svg class="mob-nav-mark" viewBox="0 0 32 32" aria-hidden="true">
+            <rect x="0" y="0" width="32" height="32" fill="#2A4494"/>
+            <circle cx="16" cy="16" r="8" fill="#FFFFFF"/>
+          </svg>
+          ZopNight<small>Cloud governance + FinOps</small>
+        </a></li>
+        <li><a href="zopday.html">
+          <svg class="mob-nav-mark" viewBox="0 0 32 32" aria-hidden="true">
+            <rect x="0" y="0" width="32" height="32" fill="#F58549"/>
+            <circle cx="16" cy="16" r="8" fill="#FFFFFF"/>
+          </svg>
+          ZopDay<small>Internal Developer Platform</small>
+        </a></li>
+        <li><a href="zopcloud.html">
+          <svg class="mob-nav-mark" viewBox="0 0 32 32" aria-hidden="true">
+            <rect x="0" y="0" width="32" height="32" fill="#2A4494"/>
+            <rect x="12" y="8" width="8" height="6" fill="#FFFFFF"/>
+            <rect x="6" y="14" width="20" height="10" fill="#FFFFFF"/>
+          </svg>
+          ZopCloud<small>Multi-cloud topology</small>
+        </a></li>
+      </ul>
+    </details>
+
+    <!-- RESOURCES · expandable -->
+    <details class="mob-nav-group">
+      <summary>
+        <span>Resources</span>
+        <svg class="mob-nav-chev" width="14" height="14" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 5 L6 8 L9 5"/></svg>
+      </summary>
+      <ul>
+        <li><a href="blog.html">Blog<small>Engineering + cost notes</small></a></li>
+        <li><a href="free-ebooks.html">Ebooks<small>Free playbooks</small></a></li>
+        <li><a href="customers.html">Case studies<small>Real teams, real cuts</small></a></li>
+        <li><a href="solutions.html">Use cases by industry<small>SaaS, fintech, retail</small></a></li>
+        <li><a href="product-documentation.html">Product documentation<small>Walkthroughs + tours</small></a></li>
+        <li><a href="kubernetes-guide.html">Kubernetes guide<small>Cluster basics to right-sizing</small></a></li>
+        <li><a href="changelog.html">Changelog<small>What shipped this week</small></a></li>
+        <li><a href="developer-documentation.html">Developer documentation<small>API, SDKs, MCP</small></a></li>
+        <li><a href="assets.html">Media kit<small>Logos, brand assets, press</small></a></li>
+      </ul>
+    </details>
+
+    <!-- PRICING · single link -->
+    <a class="mob-nav-link" href="pricing.html">Pricing</a>
+
+    <!-- COMPANY · expandable -->
+    <details class="mob-nav-group">
+      <summary>
+        <span>Company</span>
+        <svg class="mob-nav-chev" width="14" height="14" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 5 L6 8 L9 5"/></svg>
+      </summary>
+      <ul>
+        <li><a href="about.html">About<small>Founded 2024</small></a></li>
+        <li><a href="contact.html">Contact<small>Talk to sales</small></a></li>
+      </ul>
+    </details>
+
+    <!-- COMMUNITY · single link -->
+    <a class="mob-nav-link" href="community.html">Community</a>
+  </nav>
+
+  <footer class="mob-nav-foot">
+    <div class="mob-nav-foot-utils">
+      <button class="mob-nav-theme" id="mob-nav-theme" aria-label="Toggle theme" type="button">
+        <span class="tt-opt tt-sun" aria-hidden="true">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+            <circle cx="8" cy="8" r="3" fill="currentColor" stroke="none"/>
+            <path d="M8 1.5v1.3M8 13.2v1.3M1.5 8h1.3M13.2 8h1.3M3.4 3.4l.9.9M11.7 11.7l.9.9M3.4 12.6l.9-.9M11.7 4.3l.9-.9"/>
+          </svg>
+        </span>
+        <span class="tt-opt tt-moon" aria-hidden="true">
+          <svg viewBox="0 0 16 16" fill="currentColor">
+            <path d="M12.8 10.1a5.5 5.5 0 0 1-7-7 .5.5 0 0 0-.7-.6A6.5 6.5 0 1 0 13.4 10.8a.5.5 0 0 0-.6-.7z"/>
+          </svg>
+        </span>
+      </button>
+      <a class="mob-nav-playground" href="playground.html">Playground</a>
+    </div>
+    <a class="btn btn-secondary mob-nav-foot-cta" href="signin.html">Sign In</a>
+    <a class="btn btn-accent mob-nav-foot-cta" href="demo.html"><span>Book a Demo</span> <span aria-hidden="true">&rarr;</span></a>
+  </footer>
+</aside>
+
+<script>
+(function(){
+  var toggle = document.getElementById('mob-nav-toggle');
+  var drawer = document.getElementById('mob-nav-drawer');
+  var scrim  = document.getElementById('mob-nav-scrim');
+  var close  = document.getElementById('mob-nav-close');
+  if(!toggle || !drawer) return;
+  function open(){
+    drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false');
+    if(scrim){ scrim.classList.add('open'); scrim.setAttribute('aria-hidden','false'); }
+    toggle.setAttribute('aria-expanded','true');
+    document.body.style.overflow='hidden';
+  }
+  function shut(){
+    drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true');
+    if(scrim){ scrim.classList.remove('open'); scrim.setAttribute('aria-hidden','true'); }
+    toggle.setAttribute('aria-expanded','false');
+    document.body.style.overflow='';
+  }
+  toggle.addEventListener('click', open);
+  if(scrim) scrim.addEventListener('click', shut);
+  if(close) close.addEventListener('click', shut);
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') shut(); });
+})();
+</script>
+
+
+<script>
+(function(){
+  var btn = document.getElementById('mob-nav-theme');
+  if(!btn) return;
+  btn.addEventListener('click', function(){
+    var current = document.documentElement.getAttribute('data-theme') || 'light';
+    var next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('zop-theme', next); } catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZopDev · Transactional emails · use case showcase</title>
+  <!--
+    ════════════════════════════════════════════════════════════════════
+    ZopDev transactional emails · use-case showcase (carousel)
+    ════════════════════════════════════════════════════════════════════
+
+    Single self-contained HTML file showing all 9 transactional emails
+    side-by-side via a carousel. Each slide is a fully-rendered email
+    mock at the actual 600 px email width, using the same chrome (header
+    logo strip, orange eyebrow + dot, ink CTA, callout, foot) as the
+    canonical email-template.html. Content per slide comes verbatim from
+    the PM-approved "ZopDev Transactional Emails — Revamped Copy" doc:
+
+      1 · New on the ZopDev blog          · single-post drop
+      2 · This week on ZopDev              · weekly digest
+      3 · We've received your message     · contact confirmation
+      4 · Welcome to ZopDev                · subscriber welcome
+      5 · You're on the calendar           · demo confirmation
+      6 · You're on the ZopCloud waitlist  · waitlist confirm
+      7 · You're on the ZopDev changelog   · subscription confirm
+      8 · Your ebook is ready              · download delivery
+      9 · Your ZopNight Reclaim Forecast   · calculator output
+
+    Walk a dev through with the arrow keys, the tab nav, or the
+    prev/next buttons. For the production-ready single-email template,
+    open email-template.html. Logo is base64-embedded everywhere.
+  -->
+  <style>
+    /* ── Tokens · cribbed from tokens.css for the showcase wrapper ── */
+    :root{
+      --paper:#FAF7EC; --paper-2:#F0EBDB;
+      --ink:#0A0A0A; --ink-2:#525252; --ink-3:#9C9588; --ink-4:#B8B0A0;
+      --line:#D9D3BF;
+      --zop-orange:#F58549; --zop-blue:#2A4494; --zop-green:#7FB236;
+      --font: 'Inter', 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      --mono: 'Space Grotesk', Menlo, Monaco, monospace;
+    }
+    *{ box-sizing:border-box; }
+    html, body{ margin:0; padding:0; }
+    body{
+      background: #1B1B22;
+      font-family: var(--font);
+      color: var(--paper);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Showcase chrome ───────────────────────────────────────── */
+    .sc-head{
+      max-width: 1100px; margin: 0 auto;
+      padding: 32px 24px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 24px; flex-wrap: wrap;
+    }
+    .sc-brand{ display: inline-flex; align-items: center; gap: 10px;
+               font-size: 14px; font-weight: 600; color: var(--paper); }
+    .sc-brand-tag{
+      display: inline-block; padding: 2px 8px;
+      border: 1px solid rgba(245,133,73,.45);
+      color: var(--zop-orange);
+      font-family: var(--mono); font-size: 10px; font-weight: 700;
+      letter-spacing: 1.5px; text-transform: uppercase;
+    }
+    .sc-counter{
+      font-family: var(--mono); font-size: 11px; font-weight: 600;
+      letter-spacing: 1.2px; text-transform: uppercase; color: var(--ink-4);
+    }
+    .sc-counter b{ color: var(--paper); font-weight: 700; }
+
+    .sc-title{ max-width: 1100px; margin: 0 auto; padding: 8px 24px 12px; }
+    .sc-title h1{
+      margin: 0 0 6px 0;
+      font-size: clamp(24px, 3vw, 34px); font-weight: 700;
+      letter-spacing: -0.5px; line-height: 1.15; color: var(--paper);
+    }
+    .sc-title p{
+      margin: 0; font-size: 14px; color: var(--ink-4); max-width: 720px;
+    }
+
+    /* ── Tab nav · 9 use-case chips ─────────────────────────────── */
+    .sc-tabs{
+      max-width: 1100px; margin: 0 auto;
+      padding: 16px 24px 0;
+      display: flex; gap: 6px; flex-wrap: wrap;
+    }
+    .sc-tab{
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 9px 14px;
+      background: transparent; border: 1px solid #2A2A30; color: var(--ink-4);
+      font-family: var(--font); font-size: 12.5px; font-weight: 500;
+      letter-spacing: -0.005em; cursor: pointer;
+      transition: border-color .14s, color .14s, background .14s;
+    }
+    .sc-tab:hover{ border-color: #4A4A52; color: var(--paper); }
+    .sc-tab.is-active{
+      border-color: var(--zop-orange); color: var(--paper);
+      background: rgba(245,133,73,.08);
+    }
+    .sc-tab-num{
+      font-family: var(--mono); font-size: 10px;
+      color: var(--ink-4); letter-spacing: .04em;
+    }
+    .sc-tab.is-active .sc-tab-num{ color: var(--zop-orange); }
+
+    /* ── Carousel · slide stage with prev/next ───────────────────── */
+    .sc-stage{
+      position: relative; max-width: 1100px; margin: 24px auto 0;
+      padding: 0 24px 32px;
+    }
+    .sc-stage-inner{
+      position: relative; min-height: 720px;
+      display: flex; justify-content: center; align-items: flex-start;
+      padding: 36px 0 24px;
+      background: #15151B; border: 1px solid #2A2A30;
+    }
+    .sc-slide{ display: none; width: 100%; max-width: 640px; }
+    .sc-slide.is-active{ display: block; }
+
+    .sc-nav{
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 40px; height: 40px;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: transparent; border: 1px solid #3A3A42; color: var(--paper);
+      cursor: pointer; z-index: 2;
+      transition: border-color .14s, background .14s;
+    }
+    .sc-nav:hover{ border-color: var(--zop-orange); background: rgba(245,133,73,.08); }
+    .sc-nav--prev{ left: -8px; } .sc-nav--next{ right: -8px; }
+    .sc-nav svg{ width: 16px; height: 16px; }
+
+    /* Caption row beneath the slide */
+    .sc-caption{
+      max-width: 1100px; margin: 0 auto;
+      padding: 0 24px 32px;
+      display: grid; grid-template-columns: 1fr auto;
+      gap: 24px; align-items: end;
+    }
+    .sc-caption-meta{
+      font-family: var(--mono); font-size: 10.5px; font-weight: 600;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--ink-4); margin: 0 0 8px;
+    }
+    .sc-caption h2{
+      margin: 0 0 8px; font-size: 22px; font-weight: 700;
+      letter-spacing: -0.3px; color: var(--paper);
+    }
+    .sc-caption p{
+      margin: 0; font-size: 13.5px; line-height: 1.55;
+      color: var(--ink-4); max-width: 660px;
+    }
+    .sc-caption-spec{
+      font-family: var(--mono); font-size: 10px; color: var(--ink-4);
+      letter-spacing: .04em; line-height: 1.7;
+      text-align: right; min-width: 220px;
+    }
+    .sc-caption-spec b{ color: var(--paper); font-weight: 600; }
+    .sc-caption-spec span.s{ display: block; color: #6A6A72; margin-top: 6px; }
+
+    /* ── Email card · matches email-template.html visual exactly ── */
+    .em{
+      width: 600px; max-width: 100%; margin: 0 auto;
+      background: var(--paper); border: 1px solid var(--line);
+      color: var(--ink); font-family: var(--font); line-height: 1.55;
+    }
+    .em-header{
+      padding: 32px 40px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 24px;
+    }
+    .em-logo{ width: 140px; height: auto; max-height: 55px; display: block; }
+    .em-context{
+      font-family: var(--mono); font-size: 11px; font-weight: 600;
+      letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink-2);
+    }
+    .em-rule{ margin: 0 40px; height: 1px; background: var(--line); }
+    .em-hero{ padding: 36px 40px 0; }
+    .em-eyebrow{
+      display: inline-flex; align-items: center; gap: 10px;
+      font-family: var(--mono); font-size: 11px; font-weight: 600;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--zop-orange); margin: 0 0 14px;
+    }
+    .em-eyebrow::before{
+      content: ''; width: 10px; height: 10px; background: var(--zop-orange);
+    }
+    .em-h1{
+      margin: 0; font-size: 30px; font-weight: 700;
+      letter-spacing: -0.75px; line-height: 1.15; color: var(--ink);
+    }
+    .em-meta{
+      margin: 12px 0 0; font-family: var(--mono); font-size: 11.5px;
+      letter-spacing: .04em; color: var(--ink-3);
+    }
+    .em-body{
+      padding: 18px 40px 0;
+      font-size: 15px; line-height: 1.6; color: var(--ink-2);
+    }
+    .em-body p{ margin: 0 0 14px; }
+    .em-body p:last-child{ margin-bottom: 0; }
+    .em-body strong{ color: var(--ink); }
+    .em-body code{
+      font-family: var(--mono); font-size: 0.9em;
+      background: var(--paper-2); padding: 1px 6px; border: 1px solid var(--line);
+    }
+
+    /* CTA · default ink button (square corners, ink-on-paper) */
+    .em-cta{ padding: 28px 40px 0; }
+    .em-cta-btn{
+      display: inline-block; padding: 14px 28px;
+      background: var(--ink); color: var(--paper);
+      font-family: var(--font); font-size: 14px; font-weight: 700;
+      letter-spacing: 0.3px; text-decoration: none;
+    }
+    .em-cta-btn::after{ content: '  →'; }
+    .em-cta-btn--ghost{
+      background: transparent; color: var(--ink);
+      border: 1.5px solid var(--ink); margin-left: 8px;
+    }
+    .em-cta-row{ display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+    /* Fallback URL / aside */
+    .em-fallback{
+      padding: 18px 40px 0;
+      font-family: var(--mono); font-size: 12px; line-height: 1.55;
+      color: var(--ink-4); word-break: break-all;
+    }
+    .em-fallback a{ color: var(--zop-orange); }
+
+    /* Detail callout (default paragraph variant) */
+    .em-callout-wrap{ padding: 32px 40px 0; }
+    .em-callout{
+      background: var(--paper-2); border-left: 3px solid var(--zop-orange);
+      padding: 16px 20px;
+    }
+    .em-callout-title{
+      font-family: var(--mono); font-size: 10.5px; font-weight: 600;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--ink-2); margin: 0 0 6px;
+    }
+    .em-callout p{ margin: 0 0 6px; font-size: 13.5px; line-height: 1.55; color: var(--ink-2); }
+    .em-callout p:last-child{ margin-bottom: 0; }
+    .em-callout p strong{ color: var(--ink); }
+    .em-callout pre{
+      margin: 6px 0 0; padding: 10px 12px;
+      background: var(--paper); border: 1px solid var(--line);
+      font-family: var(--mono); font-size: 12px; line-height: 1.55;
+      color: var(--ink); white-space: pre-wrap;
+    }
+
+    /* Callout · key-value table */
+    .em-callout-kv{ width: 100%; border-collapse: collapse; font-size: 13px; line-height: 1.7; }
+    .em-callout-kv td{ padding: 3px 0; vertical-align: top; }
+    .em-callout-kv td.k{
+      width: 130px; color: var(--ink-3);
+      font-family: var(--mono); font-size: 10.5px;
+      text-transform: uppercase; letter-spacing: .08em;
+      padding-right: 14px;
+    }
+    .em-callout-kv td.v{ color: var(--ink); font-weight: 600; }
+    .em-callout-kv td.v code{
+      font-family: var(--mono); font-weight: 600; font-size: 12.5px;
+      background: transparent; border: 0; padding: 0;
+    }
+
+    /* Digest-row item list */
+    .em-list{ margin: 18px 40px 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+    .em-list-item{
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+      display: grid; grid-template-columns: 60px 1fr auto;
+      gap: 14px; align-items: start;
+    }
+    .em-list-tag{
+      font-family: var(--mono); font-size: 9.5px; font-weight: 700;
+      letter-spacing: 1.4px; text-transform: uppercase;
+      color: var(--zop-orange); padding-top: 3px;
+    }
+    .em-list-body h4{
+      margin: 0 0 3px; font-size: 14px; font-weight: 600;
+      color: var(--ink); letter-spacing: -.005em; line-height: 1.3;
+    }
+    .em-list-body p{
+      margin: 0; font-size: 13px; line-height: 1.5;
+      color: var(--ink-3);
+    }
+    .em-list-cta{
+      font-family: var(--font); font-size: 12.5px; font-weight: 600;
+      color: var(--ink); white-space: nowrap;
+      padding-top: 2px;
+    }
+    .em-list-cta::after{ content: '  →'; color: var(--zop-orange); }
+
+    /* "What lands in your inbox" arrowed list */
+    .em-inbox-list{
+      padding: 18px 40px 0;
+      margin: 0; list-style: none;
+    }
+    .em-inbox-list li{
+      font-size: 14.5px; line-height: 1.6;
+      color: var(--ink-2); padding-left: 22px; position: relative;
+      margin-bottom: 6px;
+    }
+    .em-inbox-list li::before{
+      content: '→'; position: absolute; left: 0;
+      color: var(--zop-orange); font-weight: 700;
+    }
+    .em-inbox-list li strong{ color: var(--ink); }
+
+    /* 3-stat row (forecast email) */
+    .em-stats{
+      padding: 24px 40px 0;
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      border-top: 1px solid var(--line);
+      margin: 24px 40px 0;
+      padding: 24px 0 0;
+    }
+    .em-stat{ display: flex; flex-direction: column; gap: 6px; padding-right: 12px; }
+    .em-stat-label{
+      font-family: var(--mono); font-size: 10px; font-weight: 600;
+      letter-spacing: 1.4px; text-transform: uppercase;
+      color: var(--ink-3);
+    }
+    .em-stat-value{
+      font-family: var(--font); font-size: 26px; font-weight: 700;
+      color: var(--ink); line-height: 1; letter-spacing: -.02em;
+    }
+    .em-stat-value--accent{ color: var(--zop-orange); }
+
+    /* Ebook reader card */
+    .em-ebook-card{
+      margin: 24px 40px 0; padding: 18px 20px;
+      border: 1px solid var(--line); background: var(--paper-2);
+      display: flex; align-items: center; gap: 14px;
+    }
+    .em-ebook-cover{
+      width: 48px; height: 64px; background: var(--ink); flex: none;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .em-ebook-cover svg{ width: 22px; height: 22px; color: var(--paper); }
+    .em-ebook-meta{ display: flex; flex-direction: column; gap: 2px; }
+    .em-ebook-tag{
+      font-family: var(--mono); font-size: 10px; font-weight: 700;
+      letter-spacing: 1.4px; text-transform: uppercase; color: var(--zop-orange);
+    }
+    .em-ebook-title{
+      margin: 0; font-size: 15px; font-weight: 600; color: var(--ink);
+      letter-spacing: -.005em;
+    }
+
+    /* Aside / didn't-request */
+    .em-aside{
+      padding: 24px 40px 0;
+      font-size: 13.5px; line-height: 1.6; color: var(--ink-3);
+    }
+    .em-aside a{ color: var(--zop-orange); }
+    .em-aside p{ margin: 0; }
+
+    /* Footnote (small, italic-ish) */
+    .em-foot-note{
+      padding: 12px 40px 0;
+      font-size: 12px; line-height: 1.55; color: var(--ink-4);
+      font-style: italic;
+    }
+
+    /* Foot rule + footer */
+    .em-foot-rule{ margin: 32px 40px 0; height: 1px; background: var(--line); }
+    .em-foot{
+      padding: 24px 40px 36px;
+      display: grid; grid-template-columns: 1fr auto;
+      gap: 16px; align-items: start;
+    }
+    .em-foot-brand{ margin: 0 0 4px; font-size: 13px; font-weight: 600; color: var(--ink); }
+    .em-foot-meta{
+      margin: 0; font-family: var(--mono); font-size: 11px;
+      line-height: 1.6; color: var(--ink-3);
+    }
+    .em-foot-meta a{ color: var(--ink-3); text-decoration: underline; }
+    .em-foot-chip{
+      font-family: var(--mono); font-size: 10px; font-weight: 600;
+      letter-spacing: 0.8px; text-transform: uppercase;
+      color: var(--ink-3); text-align: right; line-height: 1.4;
+    }
+
+    .sc-foot{
+      max-width: 1100px; margin: 0 auto;
+      padding: 16px 24px 40px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; flex-wrap: wrap;
+      font-family: var(--mono); font-size: 11px;
+      color: var(--ink-4); letter-spacing: .04em;
+    }
+    .sc-foot a{ color: var(--ink-4); text-decoration: underline; }
+    .sc-foot a:hover{ color: var(--zop-orange); }
+
+    @media (max-width: 720px){
+      .sc-nav--prev{ left: 4px; } .sc-nav--next{ right: 4px; }
+      .sc-stage-inner{ min-height: 0; padding: 16px 8px 16px; }
+      .em-header, .em-hero, .em-body, .em-cta, .em-fallback,
+      .em-callout-wrap, .em-aside, .em-foot, .em-inbox-list, .em-foot-note{
+        padding-left: 22px !important; padding-right: 22px !important;
+      }
+      .em-rule, .em-foot-rule, .em-list, .em-ebook-card{
+        margin-left: 22px; margin-right: 22px;
+      }
+      .em-stats{ margin-left: 22px; margin-right: 22px; grid-template-columns: 1fr; gap: 12px; }
+      .em-h1{ font-size: 24px; }
+      .em-foot{ grid-template-columns: 1fr; }
+      .em-foot-chip{ text-align: left; }
+      .em-list-item{ grid-template-columns: 50px 1fr; }
+      .em-list-cta{ grid-column: 1 / -1; padding-top: 8px; }
+      .sc-caption{ grid-template-columns: 1fr; }
+      .sc-caption-spec{ text-align: left; min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ──────────────── SHOWCASE HEADER ──────────────── -->
+<div class="sc-head">
+  <div class="sc-brand">
+    <span class="sc-brand-tag">Email</span>
+    <span>ZopDev</span>
+  </div>
+  <div class="sc-counter">
+    <b id="sc-current">01</b> <span style="opacity:.5">/</span> <span id="sc-total">09</span>
+  </div>
+</div>
+
+<div class="sc-title">
+  <h1>Transactional emails · revamped copy</h1>
+  <p>Nine transactional emails from the PM-approved "Revamped Copy" doc, rendered inside the canonical ZopDev email chrome. One template, nine variations — the header logo strip, footer, dark-mode rules, and Outlook fallbacks are reused unchanged; only the middle blocks (eyebrow, headline, body, CTA, detail callout) change per email.</p>
+</div>
+
+<!-- ──────────────── TAB NAV ──────────────── -->
+<nav class="sc-tabs" aria-label="Pick an email use case">
+  <button class="sc-tab is-active" data-target="0" type="button"><span class="sc-tab-num">01</span> New blog post</button>
+  <button class="sc-tab" data-target="1" type="button"><span class="sc-tab-num">02</span> Weekly digest</button>
+  <button class="sc-tab" data-target="2" type="button"><span class="sc-tab-num">03</span> Contact received</button>
+  <button class="sc-tab" data-target="3" type="button"><span class="sc-tab-num">04</span> Welcome</button>
+  <button class="sc-tab" data-target="4" type="button"><span class="sc-tab-num">05</span> Demo booked</button>
+  <button class="sc-tab" data-target="5" type="button"><span class="sc-tab-num">06</span> ZopCloud waitlist</button>
+  <button class="sc-tab" data-target="6" type="button"><span class="sc-tab-num">07</span> Changelog</button>
+  <button class="sc-tab" data-target="7" type="button"><span class="sc-tab-num">08</span> Ebook ready</button>
+  <button class="sc-tab" data-target="8" type="button"><span class="sc-tab-num">09</span> Reclaim forecast</button>
+</nav>
+
+<!-- ──────────────── CAROUSEL STAGE ──────────────── -->
+<div class="sc-stage">
+  <button class="sc-nav sc-nav--prev" id="sc-prev" aria-label="Previous use case" type="button">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"><path d="M10 3 L4 8 L10 13"/></svg>
+  </button>
+  <button class="sc-nav sc-nav--next" id="sc-next" aria-label="Next use case" type="button">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"><path d="M6 3 L12 8 L6 13"/></svg>
+  </button>
+
+  <div class="sc-stage-inner">
+
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <!--   1 · NEW ON THE ZOPDEV BLOG (single-post drop)              -->
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <article class="sc-slide is-active" data-slide="0">
+      <div class="em">
+        <div class="em-header">
+          <img class="em-logo" src="logo-png-export/zopdev-logo-black.png" alt="ZopDev">
+          <span class="em-context">New post</span>
+        </div>
+        <div class="em-rule"></div>
+        <div class="em-hero">
+          <span class="em-eyebrow">ZopDev &middot; New post</span>
+          <h1 class="em-h1">{{post_title}}</h1>
+          <p class="em-meta">{{category}} &middot; {{read_time}} min read &middot; {{publish_date}}</p>
+        </div>
+        <div class="em-body">
+          <p>{{post_excerpt}}</p>
+        </div>
+        <div class="em-cta"><a class="em-cta-btn" href="#">Read on zop.dev</a></div>
+        <div class="em-fallback">
+          Or open this in your browser:<br>
+          <a href="#">{{post_url}}</a>
+        </div>
+        <div class="em-foot-rule"></div>
+        <div class="em-foot">
+          <div>
+            <p class="em-foot-brand">&rarr; zop.dev</p>
+            <p class="em-foot-meta">HSR Layout, Bengaluru 560102<br>One post a week. Sundays. <a href="#">Unsubscribe</a>.</p>
+          </div>
+          <p class="em-foot-chip">Single-post<br>drop</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <!--   2 · THIS WEEK ON ZOPDEV (weekly digest)                    -->
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <article class="sc-slide" data-slide="1">
+      <div class="em">
+        <div class="em-header">
+          <img class="em-logo" src="logo-png-export/zopdev-logo-black.png" alt="ZopDev">
+          <span class="em-context">This week</span>
+        </div>
+        <div class="em-rule"></div>
+        <div class="em-hero">
+          <span class="em-eyebrow">ZopDev &middot; This week</span>
+          <h1 class="em-h1">Hi {{first_name}}, here&rsquo;s what shipped.</h1>
+        </div>
+        <div class="em-body">
+          <p>Every post and every ebook we published since last Sunday. No preamble, no bundled marketing &mdash; open what&rsquo;s relevant, skip what isn&rsquo;t.</p>
+        </div>
+        <ul class="em-list">
+          <li class="em-list-item">
+            <span class="em-list-tag">Blog</span>
+            <div class="em-list-body">
+              <h4>The IDP Adoption Problem</h4>
+              <p>Why most internal developer platforms stall &mdash; and what to standardize instead.</p>
+            </div>
+            <a class="em-list-cta" href="#">Read</a>
+          </li>
+          <li class="em-list-item">
+            <span class="em-list-tag">Blog</span>
+            <div class="em-list-body">
+              <h4>The Real Cost of Building an IDP</h4>
+              <p>The $400K bill that doesn&rsquo;t make the slide deck.</p>
+            </div>
+            <a class="em-list-cta" href="#">Read</a>
+          </li>
+          <li class="em-list-item">
+            <span class="em-list-tag">Ebook</span>
+            <div class="em-list-body">
+              <h4>The Complete FinOps Maturity Model</h4>
+              <p>From cost visibility to autonomous financial control &mdash; the operating model in one PDF.</p>
+            </div>
+            <a class="em-list-cta" href="#">Read</a>
+          </li>
+        </ul>
+        <div class="em-cta"><a class="em-cta-btn" href="#">All posts &amp; ebooks</a></div>
+        <div class="em-foot-rule"></div>
+        <div class="em-foot">
+          <div>
+            <p class="em-foot-brand">ZopDev</p>
+            <p class="em-foot-meta">HSR Layout, Bengaluru 560102<br>Sent every Sunday. <a href="#">Unsubscribe</a>.</p>
+          </div>
+          <p class="em-foot-chip">Weekly<br>digest</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <!--   3 · WE'VE RECEIVED YOUR MESSAGE                            -->
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <article class="sc-slide" data-slide="2">
+      <div class="em">
+        <div class="em-header">
+          <img class="em-logo" src="logo-png-export/zopdev-logo-black.png" alt="ZopDev">
+          <span class="em-context">Contact received</span>
+        </div>
+        <div class="em-rule"></div>
+        <div class="em-hero">
+          <span class="em-eyebrow">ZopDev &middot; Contact received</span>
+          <h1 class="em-h1">Received, {{first_name}}.</h1>
+        </div>
+        <div class="em-body">
+          <p>Your message is in front of the right team. Expect a response within one business day &mdash; usually sooner.</p>
+        </div>
+        <div class="em-callout-wrap">
+          <div class="em-callout">
+            <p class="em-callout-title">For your records</p>
+            <p><strong>Topic</strong> &middot; {{topic}}</p>
+            <pre>{{message_text}}</pre>
+          </div>
+        </div>
+        <div class="em-aside">
+          <p>Need to reach us sooner? Reply to this email directly &mdash; it routes to the same queue.</p>
+        </div>
+        <div class="em-cta"><a class="em-cta-btn" href="#">Book a call directly</a></div>
+        <div class="em-foot-rule"></div>
+        <div class="em-foot">
+          <div>
+            <p class="em-foot-brand">ZopDev</p>
+            <p class="em-foot-meta">HSR Layout, Bengaluru 560102<br><a href="#">trust &amp; security</a> &middot; <a href="#">privacy</a></p>
+          </div>
+          <p class="em-foot-chip">Contact<br>confirmation</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <!--   4 · WELCOME TO ZOPDEV                                      -->
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <article class="sc-slide" data-slide="3">
+      <div class="em">
+        <div class="em-header">
+          <img class="em-logo" src="logo-png-export/zopdev-logo-black.png" alt="ZopDev">
+          <span class="em-context">Welcome</span>
+        </div>
+        <div class="em-rule"></div>
+        <div class="em-hero">
+          <span class="em-eyebrow">ZopDev &middot; Welcome</span>
+          <h1 class="em-h1">Welcome, {{first_name}}.</h1>
+        </div>
+        <div class="em-body">
+          <p>You subscribed via <strong>{{source}}</strong>. We&rsquo;ll respect the inbox.</p>
+          <p>One email a week. Sundays. No drip campaigns. No &ldquo;X ways to think about cloud&rdquo; listicles. Engineering and FinOps writing we would read ourselves.</p>
+        </div>
+        <ul class="em-inbox-list">
+          <li><strong>Weekly digest</strong> of new posts and ebooks (Sundays)</li>
+          <li><strong>One transactional email</strong> when you download an ebook</li>
+          <li><strong>Nothing else.</strong> No promotional blasts. No drip sequences.</li>
+        </ul>
+        <div class="em-cta"><a class="em-cta-btn" href="#">Read the latest</a></div>
+        <div class="em-foot-rule"></div>
+        <div class="em-foot">
+          <div>
+            <p class="em-foot-brand">ZopDev</p>
+            <p class="em-foot-meta">HSR Layout, Bengaluru 560102<br>Sent every Sunday. <a href="#">Unsubscribe</a>.</p>
+          </div>
+          <p class="em-foot-chip">Subscriber<br>welcome</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <!--   5 · YOU'RE ON THE CALENDAR (demo confirmation)             -->
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <article class="sc-slide" data-slide="4">
+      <div class="em">
+        <div class="em-header">
+          <img class="em-logo" src="logo-png-export/zopdev-logo-black.png" alt="ZopDev">
+          <span class="em-context">Demo booking</span>
+        </div>
+        <div class="em-rule"></div>
+        <div class="em-hero">
+          <span class="em-eyebrow">ZopDev &middot; Demo booking</span>
+          <h1 class="em-h1">You&rsquo;re on the calendar, {{first_name}}.</h1>
+        </div>
+        <div class="em-body">
+          <p>A solutions engineer will reach out within 24 hours with a couple of slots that fit your timezone. No slide decks, no sales pressure &mdash; we&rsquo;ll spend the call on what your stack actually looks like and where ZopNight fits inside it.</p>
+        </div>
+        <div class="em-callout-wrap">
+          <div class="em-callout">
+            <p class="em-callout-title">Context we have on file</p>
+            <table class="em-callout-kv">
+              <tr><td class="k">Company</td><td class="v">{{company}}</td></tr>
+              <tr><td class="k">Role</td><td class="v">{{role}}</td></tr>
+              <tr><td class="k">Primary cloud</td><td class="v">{{cloud}}</td></tr>
+              <tr><td class="k">Monthly spend</td><td class="v">{{spend}}</td></tr>
+              <tr><td class="k">Team size</td><td class="v">{{team_size}}</td></tr>
+              <tr><td class="k">Focus</td><td class="v">{{focus}}</td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="em-aside">
+          <p>Ahead of the call, here&rsquo;s the operating model we&rsquo;ll reference &mdash; how we separate policy-driven cost discipline from cost reporting.</p>
+        </div>
+        <div class="em-cta"><a class="em-cta-btn" href="#">Read the operating model</a></div>
+        <div class="em-foot-rule"></div>
+        <div class="em-foot">
+          <div>
+            <p class="em-foot-brand">ZopDev</p>
+            <p class="em-foot-meta">HSR Layout, Bengaluru 560102<br><a href="#">trust &amp; security</a> &middot; <a href="#">privacy</a></p>
+          </div>
+          <p class="em-foot-chip">Demo<br>confirmation</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <!--   6 · ZOPCLOUD WAITLIST                                      -->
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <article class="sc-slide" data-slide="5">
+      <div class="em">
+        <div class="em-header">
+          <img class="em-logo" src="logo-png-export/zopdev-logo-black.png" alt="ZopDev">
+          <span class="em-context">Waitlist</span>
+        </div>
+        <div class="em-rule"></div>
+        <div class="em-hero">
+          <span class="em-eyebrow">ZopCloud &middot; Waitlist</span>
+          <h1 class="em-h1">You&rsquo;re on the list.</h1>
+        </div>
+        <div class="em-body">
+          <p>Thank you for the early interest in ZopCloud. The mandate is straightforward: connect a repository, get a working URL in 60 seconds &mdash; frontend, API, Postgres, Redis, queues, brought up together as one topology.</p>
+          <p>We will email you once &mdash; when it ships. No drip, no &ldquo;still building&rdquo; updates, no behind-the-scenes. One message when there&rsquo;s a URL you can actually use.</p>
+        </div>
+        <div class="em-callout-wrap">
+          <div class="em-callout">
+            <p class="em-callout-title">In the meantime</p>
+            <ul class="em-inbox-list" style="padding:0; margin:0;">
+              <li><strong>Try ZopNight</strong> &mdash; our autonomous governance platform that enforces scheduling policy on non-production environments</li>
+              <li><strong>Read the changelog</strong> for shipping cadence</li>
+              <li><strong>Follow @zopdev</strong> for the launch announcement</li>
+            </ul>
+          </div>
+        </div>
+        <div class="em-foot-rule"></div>
+        <div class="em-foot">
+          <div>
+            <p class="em-foot-brand">ZopDev</p>
+            <p class="em-foot-meta">HSR Layout, Bengaluru 560102<br>You&rsquo;ll hear from us once. <a href="#">Unsubscribe</a>.</p>
+          </div>
+          <p class="em-foot-chip">Waitlist<br>confirmation</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <!--   7 · CHANGELOG SUBSCRIPTION                                 -->
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <article class="sc-slide" data-slide="6">
+      <div class="em">
+        <div class="em-header">
+          <img class="em-logo" src="logo-png-export/zopdev-logo-black.png" alt="ZopDev">
+          <span class="em-context">Changelog</span>
+        </div>
+        <div class="em-rule"></div>
+        <div class="em-hero">
+          <span class="em-eyebrow">ZopDev &middot; Changelog</span>
+          <h1 class="em-h1">You&rsquo;re on the changelog.</h1>
+        </div>
+        <div class="em-body">
+          <p>We ship every two weeks. You will get one email per release with the diff that matters &mdash; features, fixes, integrations, deprecations.</p>
+          <p>No bundled marketing. No &ldquo;10 changes since last quarter.&rdquo; Release notes written by the engineers who shipped them.</p>
+        </div>
+        <ul class="em-inbox-list">
+          <li><strong>One email per release</strong> (~every 14 days)</li>
+          <li><strong>Direct links</strong> to the relevant PRs and documentation</li>
+          <li><strong>Breaking-change call-outs</strong> at the top, never buried</li>
+        </ul>
+        <div class="em-cta"><a class="em-cta-btn" href="#">Browse past releases</a></div>
+        <div class="em-foot-rule"></div>
+        <div class="em-foot">
+          <div>
+            <p class="em-foot-brand">ZopDev</p>
+            <p class="em-foot-meta">HSR Layout, Bengaluru 560102<br>One email per release. <a href="#">Unsubscribe</a>.</p>
+          </div>
+          <p class="em-foot-chip">Changelog<br>subscription</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <!--   8 · YOUR EBOOK IS READY                                    -->
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <article class="sc-slide" data-slide="7">
+      <div class="em">
+        <div class="em-header">
+          <img class="em-logo" src="logo-png-export/zopdev-logo-black.png" alt="ZopDev">
+          <span class="em-context">Ebook ready</span>
+        </div>
+        <div class="em-rule"></div>
+        <div class="em-hero">
+          <span class="em-eyebrow">ZopDev &middot; Your ebook is ready</span>
+          <h1 class="em-h1">Your copy is ready, {{first_name}}.</h1>
+        </div>
+        <div class="em-body">
+          <p>Thank you for downloading <strong>{{ebook_title}}</strong>. The link stays valid as long as the ebook is published &mdash; open it on any device.</p>
+        </div>
+        <div class="em-ebook-card">
+          <div class="em-ebook-cover" aria-hidden="true">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6">
+              <path d="M3 4h7v13H3zM10 4h7v13h-7z"/>
+              <path d="M10 4v13"/>
+            </svg>
+          </div>
+          <div class="em-ebook-meta">
+            <span class="em-ebook-tag">eBook &middot; Web reader</span>
+            <p class="em-ebook-title">{{ebook_title}}</p>
+          </div>
+        </div>
+        <div class="em-cta"><a class="em-cta-btn" href="#">Continue reading</a></div>
+        <div class="em-fallback">
+          Or paste this in your browser:<br>
+          <a href="#">{{ebook_url}}</a>
+        </div>
+        <div class="em-aside">
+          <p>We publish a new ebook every few weeks. One email per release &mdash; no drip campaigns.</p>
+        </div>
+        <div class="em-foot-rule"></div>
+        <div class="em-foot">
+          <div>
+            <p class="em-foot-brand">ZopDev</p>
+            <p class="em-foot-meta">HSR Layout, Bengaluru 560102<br><a href="#">trust &amp; security</a> &middot; <a href="#">privacy</a></p>
+          </div>
+          <p class="em-foot-chip">Ebook<br>delivery</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <!--   9 · ZOPNIGHT RECLAIM FORECAST                              -->
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <article class="sc-slide" data-slide="8">
+      <div class="em">
+        <div class="em-header">
+          <img class="em-logo" src="logo-png-export/zopdev-logo-black.png" alt="ZopDev">
+          <span class="em-context">Reclaim forecast</span>
+        </div>
+        <div class="em-rule"></div>
+        <div class="em-hero">
+          <span class="em-eyebrow">ZopNight &middot; Reclaim forecast</span>
+          <h1 class="em-h1">Your ZopNight Reclaim Forecast</h1>
+        </div>
+        <div class="em-body">
+          <p>Hi {{first_name}},</p>
+          <p>Thank you for running the ZopNight Live Cost Calculator.</p>
+          <p>Based on the workload profile you submitted, here is the forecastable monthly reclaim from enforcing scheduling policy on idle non-production resources.</p>
+          <p style="font-family:var(--mono); font-size:12.5px; letter-spacing:.04em; color:var(--ink-3);">Provider &middot; <strong style="color:var(--ink);">{{provider}}</strong></p>
+        </div>
+        <div class="em-stats">
+          <div class="em-stat">
+            <span class="em-stat-label">Monthly*</span>
+            <span class="em-stat-value em-stat-value--accent">$4.8k</span>
+          </div>
+          <div class="em-stat">
+            <span class="em-stat-label">Quarterly*</span>
+            <span class="em-stat-value">$14.5k</span>
+          </div>
+          <div class="em-stat">
+            <span class="em-stat-label">Annual*</span>
+            <span class="em-stat-value">$57.8k</span>
+          </div>
+        </div>
+        <div class="em-foot-note">
+          *Forecast based on the workload assumptions you submitted. Verified reclaim is reconciled against your actual billing once ZopNight is connected.
+        </div>
+        <div class="em-body" style="padding-top:24px;">
+          <p><strong>Turn this forecast into verified reclaim.</strong></p>
+          <p>Connect a read-only IAM role. ZopNight reconciles the forecast against your real cost data &mdash; AWS Cost Explorer, Azure Cost Management, GCP BigQuery &mdash; and applies dependency-aware scheduling policies to non-production resources, with production-safe overrides on anything that must stay on.</p>
+        </div>
+        <div class="em-cta">
+          <div class="em-cta-row">
+            <a class="em-cta-btn" href="#">Connect read-only</a>
+            <a class="em-cta-btn em-cta-btn--ghost" href="#">Talk to a solutions engineer</a>
+          </div>
+        </div>
+        <div class="em-foot-rule"></div>
+        <div class="em-foot">
+          <div>
+            <p class="em-foot-brand">ZopNight by ZopDev</p>
+            <p class="em-foot-meta">HSR Layout, Bengaluru 560102<br><a href="#">trust &amp; security</a> &middot; <a href="#">privacy</a></p>
+          </div>
+          <p class="em-foot-chip">Calculator<br>output</p>
+        </div>
+      </div>
+    </article>
+
+  </div>
+</div>
+
+<!-- ──────────────── CAPTION ──────────────── -->
+<div class="sc-caption">
+  <div>
+    <p class="sc-caption-meta" id="cap-meta">01 · New blog post · publication</p>
+    <h2 id="cap-title">Single-post drop · one new post on the blog.</h2>
+    <p id="cap-desc">Sent when a new blog post goes live. The email is a single post drop — title, category, read time, excerpt, and a "Read on zop.dev" CTA. Fallback URL line for clients that strip buttons.</p>
+  </div>
+  <div class="sc-caption-spec" id="cap-spec">
+    Subject <b>· New on the ZopDev blog: {{post_title}}</b><br>
+    Preheader <b>· {{post_excerpt_short}} — {{read_time}} min read.</b><br>
+    Merge fields <b>· 6</b><span class="s">post_title · category · read_time · publish_date · post_excerpt · post_url</span>
+  </div>
+</div>
+
+<!-- ──────────────── SHOWCASE FOOT ──────────────── -->
+<div class="sc-foot">
+  <span>ZopDev · transactional emails · 9 use cases · self-contained</span>
+  <span>← / → · use arrow keys to navigate</span>
+</div>
+
+<script>
+  (function(){
+    var tabs    = document.querySelectorAll('.sc-tab');
+    var slides  = document.querySelectorAll('.sc-slide');
+    var prev    = document.getElementById('sc-prev');
+    var next    = document.getElementById('sc-next');
+    var current = document.getElementById('sc-current');
+    var total   = document.getElementById('sc-total');
+    var capMeta  = document.getElementById('cap-meta');
+    var capTitle = document.getElementById('cap-title');
+    var capDesc  = document.getElementById('cap-desc');
+    var capSpec  = document.getElementById('cap-spec');
+
+    total.textContent = String(slides.length).padStart(2, '0');
+
+    var CAPTIONS = [
+      {
+        meta:  '01 · New blog post · publication',
+        title: 'Single-post drop · one new post on the blog.',
+        desc:  'Sent when a new blog post goes live. Title, category, read time, excerpt, and a "Read on zop.dev" CTA. Fallback URL line for clients that strip buttons.',
+        spec:  'Subject <b>· New on the ZopDev blog: {{post_title}}</b><br>Preheader <b>· {{post_excerpt_short}} — {{read_time}} min read.</b><br>Merge fields <b>· 6</b><span class="s">post_title · category · read_time · publish_date · post_excerpt · post_url</span>'
+      },
+      {
+        meta:  '02 · Weekly digest · scheduled',
+        title: 'Every post and every ebook since last Sunday.',
+        desc:  'The Sunday roundup. Multi-item list (BLOG / EBOOK tagged) with title, one-line description, per-item Read link. "All posts & ebooks" CTA at the bottom.',
+        spec:  'Subject <b>· This week on ZopDev — {{week_label}}</b><br>Preheader <b>· Engineering and FinOps notes shipped this week. Skim it; skip what isn\'t relevant.</b><br>Merge fields <b>· dynamic</b><span class="s">first_name · week_label · items[]: type/title/desc/url</span>'
+      },
+      {
+        meta:  '03 · Contact received · acknowledgement',
+        title: 'Form submission confirmation with the message echoed back.',
+        desc:  'Confirms a contact-form submission. Echoes the topic + message back for the sender\'s records. Reply-to is the support queue, so direct replies route correctly.',
+        spec:  'Subject <b>· We\'ve received your message — ZopDev</b><br>Preheader <b>· Confirmed. A specialist will respond within one business day.</b><br>Merge fields <b>· 3</b><span class="s">first_name · topic · message_text</span>'
+      },
+      {
+        meta:  '04 · Welcome · subscriber onboarding',
+        title: 'New subscriber welcome with expectations set up front.',
+        desc:  'First email after someone subscribes (blog, ebook, footer form). Sets the cadence promise (Sundays only), lists what they\'ll actually get, and what they won\'t (no drip, no listicles).',
+        spec:  'Subject <b>· Welcome to ZopDev</b><br>Preheader <b>· One technical email a week, Sundays. Engineering and FinOps writing worth your inbox.</b><br>Merge fields <b>· 2</b><span class="s">first_name · source</span>'
+      },
+      {
+        meta:  '05 · Demo booked · sales confirmation',
+        title: 'Demo confirmation with submitted context echoed back.',
+        desc:  'Confirms a Book-a-Demo request. KV table echoes the company / role / cloud / spend / team-size / focus the prospect entered, so the SE prepping the call has the same context. CTA opens the operating-model whitepaper.',
+        spec:  'Subject <b>· You\'re on the calendar — ZopDev</b><br>Preheader <b>· A solutions engineer will reach out within 24 hours with timezone-matched slots.</b><br>Merge fields <b>· 7</b><span class="s">first_name · company · role · cloud · spend · team_size · focus</span>'
+      },
+      {
+        meta:  '06 · ZopCloud waitlist · pre-launch',
+        title: 'Waitlist confirmation with no-drip promise.',
+        desc:  'Confirms a ZopCloud waitlist signup. Explicitly sets expectations: ONE email, when it ships, no behind-the-scenes nudges. Includes 3 "in the meantime" alternatives (ZopNight, changelog, social).',
+        spec:  'Subject <b>· You\'re on the ZopCloud waitlist</b><br>Preheader <b>· One email when ZopCloud ships. No drip. No "behind the scenes."</b><br>Merge fields <b>· 0</b><span class="s">no personalisation — same body for every recipient</span>'
+      },
+      {
+        meta:  '07 · Changelog · subscription confirm',
+        title: 'Changelog-feed subscriber welcome.',
+        desc:  'Confirms a changelog subscription. Frames the cadence (every two weeks), and 3-bullet "what lands in your inbox" list with PR-link guarantee and breaking-change-at-the-top promise.',
+        spec:  'Subject <b>· You\'re subscribed to the ZopDev changelog</b><br>Preheader <b>· Every release, every two weeks, written by the engineers who shipped it.</b><br>Merge fields <b>· 0</b><span class="s">no personalisation</span>'
+      },
+      {
+        meta:  '08 · Ebook ready · download delivery',
+        title: 'Ebook download link with a web-reader card.',
+        desc:  'Delivers an ebook download. The card mocks the web-reader UI (cover thumbnail + title chip). "Continue reading" CTA + fallback URL. Tells the recipient the link doesn\'t expire.',
+        spec:  'Subject <b>· Your copy of {{ebook_title}}</b><br>Preheader <b>· Open it whenever you\'re ready. The link doesn\'t expire.</b><br>Merge fields <b>· 3</b><span class="s">first_name · ebook_title · ebook_url</span>'
+      },
+      {
+        meta:  '09 · Reclaim forecast · calculator output',
+        title: 'ZopNight Live Cost Calculator output email.',
+        desc:  'Sent after a prospect runs the public ZopNight cost calculator. Shows the monthly / quarterly / annual reclaim forecast as a 3-stat strip with the lead number in orange. Footnote disclaims it\'s a forecast vs verified. Dual CTA: read-only connect + talk to SE.',
+        spec:  'Subject <b>· Your ZopNight Reclaim Forecast</b><br>Preheader <b>· Forecastable reclaim from enforcing scheduling policy on non-production resources — based on your workload profile.</b><br>Merge fields <b>· 5</b><span class="s">first_name · provider · monthly · quarterly · annual</span>'
+      }
+    ];
+
+    function show(i){
+      i = (i + slides.length) % slides.length;
+      slides.forEach(function(s, idx){ s.classList.toggle('is-active', idx === i); });
+      tabs.forEach(function(t, idx){ t.classList.toggle('is-active', idx === i); });
+      current.textContent = String(i + 1).padStart(2, '0');
+      var c = CAPTIONS[i];
+      capMeta.textContent  = c.meta;
+      capTitle.textContent = c.title;
+      capDesc.textContent  = c.desc;
+      capSpec.innerHTML    = c.spec;
+      try { localStorage.setItem('zop-email-showcase-slide', String(i)); } catch(e){}
+    }
+
+    tabs.forEach(function(t){
+      t.addEventListener('click', function(){ show(parseInt(t.dataset.target, 10)); });
+    });
+    prev.addEventListener('click', function(){
+      var cur = parseInt(document.querySelector('.sc-tab.is-active').dataset.target, 10);
+      show(cur - 1);
+    });
+    next.addEventListener('click', function(){
+      var cur = parseInt(document.querySelector('.sc-tab.is-active').dataset.target, 10);
+      show(cur + 1);
+    });
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'ArrowLeft')  prev.click();
+      if(e.key === 'ArrowRight') next.click();
+    });
+
+    try {
+      var saved = parseInt(localStorage.getItem('zop-email-showcase-slide'), 10);
+      if(!isNaN(saved) && saved >= 0 && saved < slides.length) show(saved);
+    } catch(e){}
+  })();
+</script>
+
+</body>
+</html>

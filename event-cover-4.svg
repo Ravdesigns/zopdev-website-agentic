@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" preserveAspectRatio="xMidYMid slice">
+  <rect width="600" height="600" fill="#0F0F12"/>
+  <!-- subtle grid -->
+  <g stroke="#1F1F26" stroke-width="1">
+    <line x1="0" y1="200" x2="600" y2="200"/>
+    <line x1="0" y1="400" x2="600" y2="400"/>
+    <line x1="200" y1="0" x2="200" y2="600"/>
+    <line x1="400" y1="0" x2="400" y2="600"/>
+  </g>
+  <!-- ZopCloud topology · resource graph nodes + edges -->
+  <g stroke="#3A3A46" stroke-width="1.5">
+    <line x1="200" y1="180" x2="300" y2="300"/>
+    <line x1="400" y1="180" x2="300" y2="300"/>
+    <line x1="200" y1="180" x2="400" y2="180"/>
+    <line x1="300" y1="300" x2="200" y2="430"/>
+    <line x1="300" y1="300" x2="400" y2="430"/>
+    <line x1="200" y1="430" x2="400" y2="430"/>
+    <line x1="120" y1="120" x2="200" y2="180"/>
+    <line x1="480" y1="120" x2="400" y2="180"/>
+    <line x1="300" y1="300" x2="500" y2="280"/>
+    <line x1="300" y1="300" x2="100" y2="320"/>
+  </g>
+  <!-- nodes · varied sizes + brand-color tinted -->
+  <circle cx="300" cy="300" r="32" fill="#2A4494"/>
+  <circle cx="300" cy="300" r="14" fill="#F0EBDB"/>
+  <circle cx="200" cy="180" r="20" fill="#7FB236"/>
+  <circle cx="400" cy="180" r="22" fill="#F58549"/>
+  <circle cx="200" cy="430" r="18" fill="#7FB236"/>
+  <circle cx="400" cy="430" r="20" fill="#2A4494"/>
+  <circle cx="120" cy="120" r="14" fill="#F58549"/>
+  <circle cx="480" cy="120" r="14" fill="#7FB236"/>
+  <circle cx="500" cy="280" r="12" fill="#F58549"/>
+  <circle cx="100" cy="320" r="12" fill="#2A4494"/>
+  <!-- dotted edge highlights -->
+  <g stroke="#F58549" stroke-width="1.5" stroke-dasharray="3 5" fill="none">
+    <line x1="300" y1="300" x2="200" y2="180"/>
+    <line x1="300" y1="300" x2="400" y2="180"/>
+  </g>
+  <!-- corner brand mark -->
+  <rect x="540" y="540" width="20" height="20" fill="#2A4494"/>
+  <rect x="544" y="546" width="5" height="3" fill="#FFFFFF"/>
+  <rect x="541" y="550" width="12" height="6" fill="#FFFFFF"/>
+  <!-- live indicator -->
+  <circle cx="60" cy="60" r="6" fill="#7FB236"/>
+</svg>

@@ -1,0 +1,1422 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ZopNight · The Cloud Cleanup Game</title>
+<link rel="icon" href="favicon.svg">
+<link rel="stylesheet" href="tokens.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     ZopNight · The Cloud Cleanup Game
+     A playable Tetris where falling pieces are real cloud-env
+     problems (cost piling up, idle resources, untagged assets,
+     authority bottlenecks, etc.). Every line cleared = a
+     ZopNight Fix that pays back into your wallet.
+     ============================================================ */
+  :root{
+    --paper:#0F0F12;
+    --ink:#F0EBDB;
+    --ink-2:#D4CDB5;
+    --ink-3:#9C9588;
+    --line:#3a3a42;
+    --line-2:#2e2e33;
+    --surface:#18181c;
+    --surface-2:#1e1e22;
+    --blue:#4A66D4;          /* lifted blue on dark */
+    --orange:#F58549;
+    --green:#7FB236;
+    --font:'Space Grotesk','Inter',system-ui,sans-serif;
+    --body:'Inter',system-ui,sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,monospace;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html,body{ height:100%; }
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--body);
+    font-size:14px; line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,h4{ font-family:var(--font); font-weight:500; letter-spacing:-0.02em; }
+
+  /* Background grid wash (matches site convention) */
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+
+  /* ============================================================ TOP BAR */
+  .topbar{
+    position:relative; z-index:5;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 32px; border-bottom:1px solid var(--line);
+    background:var(--paper);
+  }
+  .brand{ display:flex; align-items:center; gap:12px; font-family:var(--mono); font-size:13px; letter-spacing:.04em; }
+  .brand-dot{ width:10px; height:10px; background:var(--orange); display:inline-block; }
+  .brand strong{ font-weight:600; letter-spacing:.02em; }
+  .topbar nav{ display:flex; gap:18px; font-family:var(--mono); font-size:12px; color:var(--ink-3); letter-spacing:.04em; }
+  .topbar nav a{ color:var(--ink-3); text-decoration:none; }
+  .topbar nav a:hover{ color:var(--ink); }
+
+  /* ============================================================ STAGE */
+  .stage{
+    position:relative; z-index:2;
+    max-width:1480px; margin:0 auto;
+    padding:36px 32px 64px;
+    display:grid; grid-template-columns: 320px 1fr 340px;
+    gap:24px; align-items:start;
+  }
+  @media (max-width:1180px){
+    .stage{ grid-template-columns: 1fr; gap:16px; padding:24px 16px 48px; }
+  }
+
+  /* ============================================================ HERO HEADER (spans top) */
+  .hero{
+    grid-column:1 / -1;
+    display:grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 380px);
+    align-items:end; gap:48px;
+    padding-bottom:28px; border-bottom:1px solid var(--line);
+    margin-bottom:4px;
+  }
+  .hero-eyebrow{ font-family:var(--mono); font-size:11px; color:var(--ink-3); letter-spacing:.14em; text-transform:uppercase; margin-bottom:18px; display:flex; align-items:center; gap:10px; }
+  .hero-eyebrow::before{ content:""; width:8px; height:8px; background:var(--orange); display:inline-block; }
+  .hero h1{
+    font-size: clamp(42px, 5.4vw, 78px);
+    line-height:.98; letter-spacing:-0.035em;
+    font-weight:500;
+  }
+  .hero h1 .line{ display:block; }
+  .hero h1 .line + .line{ margin-top:.05em; }
+  .hero h1 .accent{ color:var(--orange); font-style:italic; font-weight:500; }
+  .hero h1 .strike{ color:var(--ink-3); text-decoration:line-through; text-decoration-thickness:2px; text-decoration-color:var(--orange); }
+  .hero-meta{
+    display:flex; flex-direction:column; gap:14px;
+    border-left:1px solid var(--line); padding-left:24px;
+    padding-bottom:6px;
+  }
+  .hero-meta p{ color:var(--ink-2); font-size:14px; line-height:1.55; max-width:340px; }
+  .hero-meta .ref{
+    font-family:var(--mono); font-size:11px; color:var(--ink-3);
+    letter-spacing:.06em;
+    display:grid; grid-template-columns: auto 1fr; gap:6px 14px;
+    margin-top:4px;
+  }
+  .hero-meta .ref dt{ color:var(--ink-3); }
+  .hero-meta .ref dd{ color:var(--ink-2); }
+  @media (max-width:1180px){
+    .hero{ grid-template-columns: 1fr; gap:22px; }
+    .hero-meta{ border-left:0; padding-left:0; }
+  }
+
+  /* ============================================================ PANELS */
+  .panel{
+    border:1px solid var(--line);
+    background:var(--surface);
+    padding:20px;
+  }
+  .panel-title{
+    font-family:var(--mono);
+    font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--ink-3);
+    padding-bottom:12px; margin-bottom:16px;
+    border-bottom:1px solid var(--line-2);
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .panel + .panel{ margin-top:16px; }
+
+  /* Left column · ledger (banked + live waste) + system stats + legend */
+  .ledger-panel{
+    border:1px solid var(--line);
+    background:var(--surface);
+  }
+  .ledger-head{
+    padding:14px 18px;
+    border-bottom:1px solid var(--line-2);
+    display:flex; align-items:center; justify-content:space-between;
+    font-family:var(--mono); font-size:10px; letter-spacing:.18em;
+    text-transform:uppercase; color:var(--ink-3);
+  }
+  .ledger-head .doc-id{ color:var(--ink-2); }
+  .ledger-body{ padding:6px 18px 18px; }
+  .ledger-row{
+    display:grid; grid-template-columns: 14px 1fr auto;
+    align-items:baseline; gap:0 12px;
+    padding:14px 0;
+    border-bottom:1px dashed var(--line-2);
+  }
+  .ledger-row:last-child{ border-bottom:0; }
+  .ledger-row .lr-tick{
+    width:8px; height:8px; align-self:center; display:inline-block;
+  }
+  .ledger-row .lr-label{
+    font-family:var(--mono); font-size:11px;
+    color:var(--ink-3); letter-spacing:.06em; text-transform:uppercase;
+    line-height:1.2;
+  }
+  .ledger-row .lr-sub{
+    font-family:var(--mono); font-size:10px;
+    color:var(--ink-3); opacity:.7;
+    margin-top:2px;
+  }
+  .ledger-row .lr-amt{
+    font-family:var(--font); font-weight:500;
+    letter-spacing:-0.02em;
+    font-variant-numeric:tabular-nums;
+    text-align:right;
+  }
+  .ledger-row.lr-banked .lr-tick{ background:var(--green); }
+  .ledger-row.lr-banked .lr-amt{ font-size:42px; line-height:1; color:var(--green); }
+  .ledger-row.lr-waste  .lr-tick{ background:var(--orange); }
+  .ledger-row.lr-waste  .lr-amt{ font-size:24px; line-height:1; color:var(--orange); }
+  .ledger-row .lr-amt small{
+    display:inline-block; font-family:var(--mono); font-size:10px; font-weight:400;
+    letter-spacing:.04em; color:var(--ink-3); margin-left:4px; text-transform:lowercase;
+  }
+  .ledger-row .lr-delta{
+    display:inline-block; margin-left:8px;
+    font-family:var(--mono); font-size:11px; color:var(--green);
+    opacity:0; transition:opacity .35s ease;
+  }
+  .ledger-row .lr-delta.show{ opacity:1; }
+
+  /* System stats strip (asymmetric, ticker-style) */
+  .sysline{
+    display:grid; grid-template-columns: 1.4fr 1fr 1fr;
+    border-top:1px solid var(--line-2);
+    margin-top:4px;
+  }
+  .sysline > div{
+    padding:14px 16px;
+    display:flex; flex-direction:column; gap:2px;
+    border-right:1px solid var(--line-2);
+  }
+  .sysline > div:last-child{ border-right:0; }
+  .sysline strong{
+    font-family:var(--mono); font-weight:500;
+    font-size:18px; color:var(--ink);
+    font-variant-numeric:tabular-nums;
+    letter-spacing:-0.01em;
+  }
+  .sysline strong.streak{ color:var(--orange); }
+  .sysline span{ font-size:10px; color:var(--ink-3); font-family:var(--mono); letter-spacing:.1em; text-transform:uppercase; }
+
+  /* Legend (problems list, as printed ticket index) */
+  .legend{ display:flex; flex-direction:column; }
+  .legend-row{
+    display:grid; grid-template-columns: 14px 38px 1fr auto;
+    align-items:center; gap:0 10px;
+    padding:9px 0;
+    border-bottom:1px dashed var(--line-2);
+    font-family:var(--mono); font-size:11px; color:var(--ink-2);
+  }
+  .legend-row:last-child{ border-bottom:0; }
+  .legend-swatch{ width:14px; height:14px; flex:0 0 14px; display:inline-block; }
+  .legend-row .legend-code{ color:var(--ink-3); font-size:10px; letter-spacing:.1em; }
+  .legend-row .legend-name{ color:var(--ink-2); }
+  .legend-row .legend-cost{ color:var(--ink-3); font-variant-numeric:tabular-nums; font-size:10px; }
+
+  /* ============================================================ CENTER BOARD */
+  .board-wrap{
+    position:relative;
+    display:flex; flex-direction:column; align-items:center; gap:14px;
+  }
+  .board-frame{
+    position:relative;
+    border:1px solid var(--line);
+    background:#0a0a0c;
+    padding:0;
+    display:inline-block;
+    /* fixed game size */
+    --cell: clamp(22px, 3.6vw, 32px);
+  }
+  .board-canvas{
+    display:block;
+    width: calc(var(--cell) * 10);
+    height: calc(var(--cell) * 20);
+    image-rendering:pixelated;
+  }
+  /* Subtle inner grid */
+  .board-frame::before{
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background-image:
+      linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+    background-size: var(--cell) var(--cell);
+    z-index:1;
+  }
+  /* Corner ticks */
+  .board-frame::after{
+    content:""; position:absolute; inset:0; pointer-events:none;
+    box-shadow:
+      inset  10px  0 0 -9px var(--orange),
+      inset -10px  0 0 -9px var(--orange),
+      inset  0  10px 0 -9px var(--orange),
+      inset  0 -10px 0 -9px var(--orange);
+    z-index:2;
+  }
+  /* Scanner sweep · "ZopNight is watching" */
+  .scanner{
+    position:absolute; left:0; right:0; top:0;
+    height:1px; background:var(--orange);
+    opacity:0; pointer-events:none; z-index:3;
+    will-change: transform, opacity;
+    animation: scan 6.5s ease-in-out infinite;
+    animation-delay: 1.8s;
+  }
+  .scanner::after{
+    content:""; position:absolute; left:0; right:0; top:-30px;
+    height:60px;
+    background: linear-gradient(180deg, rgba(245,133,73,0) 0%, rgba(245,133,73,.06) 48%, rgba(245,133,73,0) 100%);
+    pointer-events:none;
+  }
+  @keyframes scan {
+    0%   { transform: translate3d(0, 0, 0); opacity:0; }
+    4%   { opacity:.95; }
+    96%  { opacity:.95; }
+    100% { transform: translate3d(0, calc(var(--cell, 30px) * 20), 0); opacity:0; }
+  }
+  .stage.paused .scanner, .stage.over .scanner{ animation-play-state:paused; }
+
+  /* Flash overlay on line clear */
+  .board-flash{
+    position:absolute; inset:0; pointer-events:none;
+    background:rgba(127,178,54,0); transition:background .25s ease;
+    z-index:4;
+  }
+  .board-flash.fix{ background:rgba(127,178,54,.18); }
+  .board-flash.tetris-fix{ background:rgba(245,133,73,.22); }
+
+  /* Toast feed (centered above board) */
+  .toast-rail{
+    position:relative;
+    min-height:32px; width:calc(var(--cell, 28px) * 10);
+    display:flex; flex-direction:column; align-items:stretch;
+  }
+  .toast{
+    font-family:var(--mono); font-size:11px;
+    padding:7px 0 7px 16px;
+    border:0; background:transparent;
+    color:var(--green);
+    letter-spacing:.04em;
+    opacity:0; transform:translateY(-4px);
+    animation: toastIn .25s cubic-bezier(.16,1,.3,1) forwards, toastOut .4s cubic-bezier(.55,0,.55,.2) 2.4s forwards;
+    display:flex; justify-content:space-between; align-items:baseline;
+    position:relative;
+  }
+  .toast::before{
+    content:""; position:absolute; left:0; top:8px; bottom:8px;
+    width:3px; background:var(--green);
+  }
+  .toast .t-text{ text-transform:uppercase; }
+  .toast .t-text strong{ font-weight:600; color:var(--ink); margin-right:6px; }
+  .toast .t-amt{ font-weight:500; font-variant-numeric:tabular-nums; font-size:13px; }
+  .toast.big{ color:var(--orange); }
+  .toast.big::before{ background:var(--orange); }
+  .toast.big .t-amt{ font-size:14px; }
+  @keyframes toastIn { to{ opacity:1; transform:translateY(0); } }
+  @keyframes toastOut { to{ opacity:0; transform:translateY(-4px); } }
+
+  /* Status bar under the board */
+  .status{
+    width:calc(var(--cell, 28px) * 10);
+    display:flex; align-items:center; justify-content:space-between;
+    gap:12px;
+    font-family:var(--mono); font-size:11px;
+    color:var(--ink-3); letter-spacing:.05em; text-transform:uppercase;
+  }
+  .status .scan-dot{ width:8px; height:8px; background:var(--green); display:inline-block; animation:pulse 1.4s ease-in-out infinite; vertical-align:middle; margin-right:8px; }
+  .status.paused .scan-dot{ background:var(--orange); animation:none; }
+  .status.gameover .scan-dot{ background:#9C9588; animation:none; }
+  @keyframes pulse{ 0%,100%{opacity:.4} 50%{opacity:1} }
+  .status .controls-mini{ color:var(--ink-3); }
+  .status kbd{
+    font-family:var(--mono); font-size:10px;
+    border:1px solid var(--line); padding:1px 5px;
+    color:var(--ink-2); background:var(--surface);
+    margin:0 2px;
+  }
+
+  /* ============================================================ RIGHT COLUMN */
+  /* Next / Hold preview canvases */
+  .preview-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+  .preview-cell{ border:1px solid var(--line-2); background:#0a0a0c; aspect-ratio:1/1; position:relative; }
+  .preview-cell canvas{ position:absolute; inset:0; width:100%; height:100%; image-rendering:pixelated; }
+  .preview-cell .pl{
+    position:absolute; bottom:6px; left:6px;
+    font-family:var(--mono); font-size:9px; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--ink-3);
+  }
+
+  /* Falling problem ticket · printed work order */
+  .ticket{
+    border:1px solid var(--line);
+    padding:18px 16px 16px;
+    margin-top:16px;
+    background:var(--paper);
+    position:relative;
+    overflow:hidden;
+  }
+  .ticket::before{
+    content:""; position:absolute; left:0; top:0; bottom:0; width:3px;
+    background:var(--orange);
+  }
+  .ticket .t-eyebrow{
+    display:flex; justify-content:space-between; align-items:center;
+    font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3);
+    margin-bottom:14px;
+  }
+  .ticket .t-code{ color:var(--ink); letter-spacing:.18em; }
+  .ticket .t-title{ font-family:var(--font); font-size:20px; color:var(--ink); margin-bottom:6px; letter-spacing:-0.02em; line-height:1.15; }
+  .ticket .t-desc{ font-size:12px; color:var(--ink-2); line-height:1.55; }
+  .ticket .t-meta{
+    display:grid; grid-template-columns: auto 1fr; gap:8px 14px;
+    margin-top:14px; padding-top:12px;
+    border-top:1px dashed var(--line-2);
+    font-family:var(--mono); font-size:10px; color:var(--ink-3);
+    letter-spacing:.04em;
+  }
+  .ticket .t-meta dt{ text-transform:uppercase; letter-spacing:.14em; }
+  .ticket .t-meta dd{ color:var(--ink-2); font-variant-numeric:tabular-nums; text-align:right; }
+  .ticket .t-meta dd.sev{ color:var(--orange); text-transform:uppercase; letter-spacing:.14em; text-align:right; }
+
+  /* Recent fixes feed · printed receipt */
+  .feed{ display:flex; flex-direction:column; }
+  .feed-item{
+    display:grid; grid-template-columns: 28px 1fr auto;
+    gap:0 12px; align-items:baseline;
+    padding:10px 0;
+    border-bottom:1px dashed var(--line-2);
+    font-family:var(--mono); font-size:11px; color:var(--ink-2);
+  }
+  .feed-item:last-child{ border-bottom:0; }
+  .feed-item .fi-num{ color:var(--ink-3); font-size:10px; letter-spacing:.06em; }
+  .feed-item .fi-label{
+    color:var(--ink-2);
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .feed-item .fi-label small{ color:var(--ink-3); margin-right:6px; letter-spacing:.1em; text-transform:uppercase; }
+  .feed-item .fi-amt{ color:var(--green); font-variant-numeric:tabular-nums; font-weight:500; }
+  .feed-item.big .fi-amt{ color:var(--orange); }
+  .feed-empty{ color:var(--ink-3); font-family:var(--mono); font-size:11px; padding:10px 0; text-align:center; letter-spacing:.04em; }
+
+  .feed-total{
+    display:flex; justify-content:space-between; align-items:baseline;
+    margin-top:10px; padding-top:12px;
+    border-top:1px solid var(--line-2);
+    font-family:var(--mono); font-size:11px; color:var(--ink-3);
+    letter-spacing:.1em; text-transform:uppercase;
+  }
+  .feed-total strong{
+    font-family:var(--font); font-weight:500; font-size:18px;
+    color:var(--ink); letter-spacing:-0.02em;
+    font-variant-numeric:tabular-nums;
+    text-transform:none;
+  }
+
+  /* ============================================================ OVERLAY (start/pause/gameover) */
+  .overlay{
+    position:absolute; inset:0; z-index:9;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(15,15,18,.92);
+    backdrop-filter:none;
+  }
+  .overlay.hidden{ display:none; }
+  .overlay-card{
+    width:min(420px, 90%);
+    background:#0a0a0c; border:1px solid var(--line);
+    padding:28px;
+  }
+  .overlay h2{
+    font-size:24px; margin-bottom:6px;
+  }
+  .overlay h2 .accent{ color:var(--orange); }
+  .overlay .ov-eyebrow{ font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3); margin-bottom:14px; }
+  .overlay p{ font-size:13px; color:var(--ink-2); margin-bottom:16px; line-height:1.5; }
+  .overlay .keys{
+    display:grid; grid-template-columns: 1fr; gap:6px; margin:14px 0 18px;
+    font-family:var(--mono); font-size:11px; color:var(--ink-2);
+  }
+  .overlay .keys > div{ display:flex; justify-content:space-between; gap:14px; }
+  .overlay .keys kbd{
+    font-family:var(--mono); font-size:10px;
+    border:1px solid var(--line); padding:1px 6px;
+    color:var(--ink-2); background:var(--surface);
+  }
+  .overlay button{
+    font-family:var(--mono); font-size:12px; letter-spacing:.04em;
+    background:var(--orange); color:#0a0a0c; border:0;
+    padding:12px 18px; cursor:pointer;
+    text-transform:uppercase;
+  }
+  .overlay button.secondary{
+    background:transparent; color:var(--ink); border:1px solid var(--line);
+    margin-left:8px;
+  }
+  .overlay button:hover{ filter:brightness(1.1); }
+
+  /* Final score display */
+  .final-tally{
+    display:flex; justify-content:space-between; align-items:baseline; gap:16px;
+    padding:14px 0; border-top:1px solid var(--line-2); border-bottom:1px solid var(--line-2); margin:14px 0 18px;
+  }
+  .final-tally > div{ display:flex; flex-direction:column; gap:2px; }
+  .final-tally .ft-amt{ font-family:var(--font); font-weight:600; font-size:28px; color:var(--green); letter-spacing:-0.02em; font-variant-numeric:tabular-nums; }
+  .final-tally .ft-label{ font-family:var(--mono); font-size:10px; color:var(--ink-3); letter-spacing:.08em; text-transform:uppercase; }
+
+  /* Mobile controls */
+  .touch-bar{
+    display:none;
+    grid-column:1/-1;
+    margin-top:6px;
+    grid-template-columns:repeat(5,1fr); gap:8px;
+  }
+  .touch-bar button{
+    font-family:var(--mono); font-size:11px;
+    background:var(--surface); color:var(--ink); border:1px solid var(--line);
+    padding:14px 0; cursor:pointer;
+  }
+  @media (max-width:780px){
+    .touch-bar{ display:grid; }
+  }
+
+  /* Disable text-selection on the game stage */
+  .stage, .topbar{ user-select:none; }
+
+  /* Footer */
+  .footer{
+    text-align:center; font-family:var(--mono); font-size:11px;
+    color:var(--ink-3); padding:18px; border-top:1px solid var(--line);
+    letter-spacing:.04em;
+  }
+  .footer a{ color:var(--ink-2); text-decoration:none; border-bottom:1px solid var(--line); }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR ============================================ -->
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-dot"></span>
+    <strong>ZopNight</strong>
+    <span style="color:var(--ink-3)">/ the cloud cleanup game</span>
+  </div>
+  <nav>
+    <a href="zopnight.html">← back to ZopNight</a>
+    <a href="index.html">zop.dev</a>
+  </nav>
+</header>
+
+<main class="stage">
+
+  <!-- HERO HEADER (full-width) -->
+  <section class="hero">
+    <div>
+      <div class="hero-eyebrow">build · 26.5.15 · cloud waste, the game</div>
+      <h1>
+        <span class="line">Pieces drop.</span>
+        <span class="line">Bills <span class="strike">climb.</span></span>
+        <span class="line"><span class="accent">Clear lines.</span></span>
+      </h1>
+    </div>
+    <div class="hero-meta">
+      <p>Each falling tile is a real cloud-environment problem. Cost spikes. Idle boxes. Untagged sprawl. Authority bottlenecks. Slot them, clear a line, ZopNight applies the fix, and the savings drop into the ledger.</p>
+      <dl class="ref">
+        <dt>scope</dt><dd>10 × 20 board · 7 problems</dd>
+        <dt>payout</dt><dd>$1.2k → $12.5k per fix</dd>
+        <dt>stake</dt><dd>stack to ceiling = outage</dd>
+      </dl>
+    </div>
+  </section>
+
+  <!-- LEFT COLUMN · ledger + system stats + legend -->
+  <aside>
+    <div class="ledger-panel">
+      <div class="ledger-head">
+        <span>ZopNight ledger</span>
+        <span class="doc-id" id="docId">LDG-0001</span>
+      </div>
+      <div class="ledger-body">
+        <div class="ledger-row lr-banked">
+          <span class="lr-tick"></span>
+          <div>
+            <div class="lr-label">Banked from fixes</div>
+            <div class="lr-sub">cumulative savings, cleared lines</div>
+          </div>
+          <div class="lr-amt"><span id="wallet">$0</span><span class="lr-delta" id="walletDelta">+$0</span></div>
+        </div>
+        <div class="ledger-row lr-waste">
+          <span class="lr-tick"></span>
+          <div>
+            <div class="lr-label">Waste on board</div>
+            <div class="lr-sub">monthly bleed from current stack</div>
+          </div>
+          <div class="lr-amt"><span id="waste">$0</span><small>/mo</small></div>
+        </div>
+      </div>
+      <div class="sysline">
+        <div><strong id="fixes">0</strong><span>fixes</span></div>
+        <div><strong class="streak" id="combo">0×</strong><span>streak</span></div>
+        <div><strong id="level">1</strong><span>tier</span></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title"><span>Problem index</span><span style="color:var(--ink-3)">7 types</span></div>
+      <div class="legend" id="legend"></div>
+    </div>
+  </aside>
+
+  <!-- CENTER · the board -->
+  <section class="board-wrap">
+    <div class="toast-rail" id="toastRail"></div>
+
+    <div class="board-frame" id="boardFrame">
+      <canvas class="board-canvas" id="board" width="300" height="600"></canvas>
+      <div class="scanner" aria-hidden="true"></div>
+      <div class="board-flash" id="flash"></div>
+
+      <!-- Start / pause / game over overlay -->
+      <div class="overlay" id="overlay">
+        <div class="overlay-card">
+          <div class="ov-eyebrow" id="ovEyebrow">/ start</div>
+          <h2 id="ovTitle">Bring your cloud. <span class="accent">Clear the board.</span></h2>
+          <p id="ovDesc">Each piece is a real cloud problem stacking up in your environment. Slot them, clear a line, and ZopNight cashes the fix into your wallet. Don't let the stack reach the top — that's an outage.</p>
+
+          <div class="final-tally" id="finalTally" style="display:none">
+            <div>
+              <span class="ft-amt" id="ftAmt">$0</span>
+              <span class="ft-label">banked</span>
+            </div>
+            <div>
+              <span class="ft-amt" id="ftFixes" style="color:var(--ink)">0</span>
+              <span class="ft-label">fixes applied</span>
+            </div>
+            <div>
+              <span class="ft-amt" id="ftStreak" style="color:var(--orange)">0×</span>
+              <span class="ft-label">best streak</span>
+            </div>
+          </div>
+
+          <div class="keys">
+            <div><span>Move</span><span><kbd>←</kbd><kbd>→</kbd></span></div>
+            <div><span>Soft drop</span><span><kbd>↓</kbd></span></div>
+            <div><span>Rotate</span><span><kbd>↑</kbd> / <kbd>X</kbd></span></div>
+            <div><span>Hard drop · ZopNight slam</span><span><kbd>Space</kbd></span></div>
+            <div><span>Hold</span><span><kbd>C</kbd> / <kbd>Shift</kbd></span></div>
+            <div><span>Pause</span><span><kbd>P</kbd> / <kbd>Esc</kbd></span></div>
+          </div>
+
+          <button id="ovStart">Start the cleanup</button>
+          <button id="ovHow" class="secondary">How it scores</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="status" id="status">
+      <span><span class="scan-dot"></span><span id="statusText">scanning · waiting for first piece</span></span>
+      <span class="controls-mini"><kbd>←</kbd><kbd>→</kbd><kbd>↓</kbd><kbd>↑</kbd><kbd>Space</kbd><kbd>C</kbd><kbd>P</kbd></span>
+    </div>
+  </section>
+
+  <!-- RIGHT COLUMN · next, hold, current ticket, feed -->
+  <aside>
+    <div class="panel">
+      <div class="panel-title"><span>Queue</span><span style="color:var(--ink-3)">next · hold</span></div>
+      <div class="preview-grid">
+        <div class="preview-cell"><canvas id="next" width="120" height="120"></canvas><div class="pl">next</div></div>
+        <div class="preview-cell"><canvas id="hold" width="120" height="120"></canvas><div class="pl">hold</div></div>
+      </div>
+
+      <div class="ticket" id="ticket">
+        <div class="t-eyebrow"><span>falling · work order</span><span class="t-code" id="ticketCode">—</span></div>
+        <div class="t-title" id="ticketTitle">Waiting for first piece</div>
+        <div class="t-desc" id="ticketDesc">Press start to begin draining the queue. Each piece is a real cloud problem stacking up in your environment.</div>
+        <dl class="t-meta">
+          <dt>severity</dt><dd class="sev" id="ticketSev">—</dd>
+          <dt>monthly cost</dt><dd id="ticketCost">—</dd>
+          <dt>est. fix payout</dt><dd id="ticketPayout">—</dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title"><span>Fix log</span><span style="color:var(--ink-3)" id="feedCount">0 entries</span></div>
+      <div class="feed" id="feed">
+        <div class="feed-empty">No fixes logged yet. Clear a line to file the first.</div>
+      </div>
+      <div class="feed-total"><span>Total banked</span><strong id="feedTotal">$0</strong></div>
+    </div>
+  </aside>
+
+  <!-- Mobile touch controls -->
+  <div class="touch-bar" id="touchBar">
+    <button data-act="left">◀</button>
+    <button data-act="rot">⟳</button>
+    <button data-act="down">▼</button>
+    <button data-act="drop">▼▼</button>
+    <button data-act="right">▶</button>
+  </div>
+</main>
+
+<footer class="footer">
+  ZopNight · clean your cloud the way you clean a board. · <a href="zopnight.html">see the real product →</a>
+</footer>
+
+<script>
+/* =============================================================
+   ZopNight Tetris · game engine
+   ============================================================= */
+(function(){
+  'use strict';
+
+  /* ----- problem catalog. one entry per tetromino type ----- */
+  const PROBLEMS = {
+    I: { key:'I', code:'CST',  label:'Cost spike',          desc:'Bill is climbing. A long-running, undersized cluster keeps autoscaling and no one notices.',           sev:'HIGH',   cost:1850, color:'#F58549' },
+    O: { key:'O', code:'IDL',  label:'Idle resource',       desc:'A 2×2 EC2 box has had <2% CPU for 30 days. Still billed hourly.',                                       sev:'MEDIUM', cost:740,  color:'#4A66D4' },
+    T: { key:'T', code:'TAG',  label:'Untagged sprawl',     desc:'Three resources spun up without owner, env, or cost-center tags. Nobody owns them.',                    sev:'MEDIUM', cost:560,  color:'#7FB236' },
+    L: { key:'L', code:'AUTH', label:'Authority bottleneck',desc:'Only one IAM admin can sign the cleanup. They are on leave.',                                            sev:'HIGH',   cost:1240, color:'#4A66D4' },
+    J: { key:'J', code:'DEPT', label:'Interdept conflict',  desc:'Platform wants to delete it. Finance says wait. Product says it might be revenue.',                      sev:'HIGH',   cost:1100, color:'#F58549' },
+    S: { key:'S', code:'STL',  label:'Stale snapshot',      desc:'EBS snapshots older than 90 days. Quietly compounding storage cost.',                                    sev:'LOW',    cost:420,  color:'#7FB236' },
+    Z: { key:'Z', code:'ORP',  label:'Orphan volume',       desc:'Detached EBS volume left over from a terminated instance. Pure waste.',                                  sev:'LOW',    cost:380,  color:'#F58549' }
+  };
+
+  /* ----- shapes (SRS-ish, 4×4 matrices, 1=filled) ----- */
+  const SHAPES = {
+    I: [
+      [[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]],
+      [[0,0,1,0],[0,0,1,0],[0,0,1,0],[0,0,1,0]],
+      [[0,0,0,0],[0,0,0,0],[1,1,1,1],[0,0,0,0]],
+      [[0,1,0,0],[0,1,0,0],[0,1,0,0],[0,1,0,0]]
+    ],
+    O: [
+      [[0,1,1,0],[0,1,1,0],[0,0,0,0],[0,0,0,0]]
+    ],
+    T: [
+      [[0,1,0,0],[1,1,1,0],[0,0,0,0],[0,0,0,0]],
+      [[0,1,0,0],[0,1,1,0],[0,1,0,0],[0,0,0,0]],
+      [[0,0,0,0],[1,1,1,0],[0,1,0,0],[0,0,0,0]],
+      [[0,1,0,0],[1,1,0,0],[0,1,0,0],[0,0,0,0]]
+    ],
+    L: [
+      [[0,0,1,0],[1,1,1,0],[0,0,0,0],[0,0,0,0]],
+      [[0,1,0,0],[0,1,0,0],[0,1,1,0],[0,0,0,0]],
+      [[0,0,0,0],[1,1,1,0],[1,0,0,0],[0,0,0,0]],
+      [[1,1,0,0],[0,1,0,0],[0,1,0,0],[0,0,0,0]]
+    ],
+    J: [
+      [[1,0,0,0],[1,1,1,0],[0,0,0,0],[0,0,0,0]],
+      [[0,1,1,0],[0,1,0,0],[0,1,0,0],[0,0,0,0]],
+      [[0,0,0,0],[1,1,1,0],[0,0,1,0],[0,0,0,0]],
+      [[0,1,0,0],[0,1,0,0],[1,1,0,0],[0,0,0,0]]
+    ],
+    S: [
+      [[0,1,1,0],[1,1,0,0],[0,0,0,0],[0,0,0,0]],
+      [[0,1,0,0],[0,1,1,0],[0,0,1,0],[0,0,0,0]],
+      [[0,0,0,0],[0,1,1,0],[1,1,0,0],[0,0,0,0]],
+      [[1,0,0,0],[1,1,0,0],[0,1,0,0],[0,0,0,0]]
+    ],
+    Z: [
+      [[1,1,0,0],[0,1,1,0],[0,0,0,0],[0,0,0,0]],
+      [[0,0,1,0],[0,1,1,0],[0,1,0,0],[0,0,0,0]],
+      [[0,0,0,0],[1,1,0,0],[0,1,1,0],[0,0,0,0]],
+      [[0,1,0,0],[1,1,0,0],[1,0,0,0],[0,0,0,0]]
+    ]
+  };
+
+  const KEYS = ['I','O','T','L','J','S','Z'];
+
+  /* ----- board geometry ----- */
+  const COLS = 10, ROWS = 20;
+  const board = document.getElementById('board');
+  const ctx = board.getContext('2d');
+  const flash = document.getElementById('flash');
+  const overlay = document.getElementById('overlay');
+  const statusEl = document.getElementById('status');
+  const statusTextEl = document.getElementById('statusText');
+
+  let CELL = 30;                 // recalculated to match CSS
+  let DPR = 1;
+
+  function resizeBoardCanvas(){
+    const styles = getComputedStyle(document.getElementById('boardFrame'));
+    const cssCell = parseFloat(getComputedStyle(document.getElementById('boardFrame')).getPropertyValue('--cell'));
+    CELL = isFinite(cssCell) && cssCell > 0 ? cssCell : 30;
+    DPR = Math.max(1, window.devicePixelRatio || 1);
+    board.width  = COLS * CELL * DPR;
+    board.height = ROWS * CELL * DPR;
+    board.style.width  = (COLS * CELL) + 'px';
+    board.style.height = (ROWS * CELL) + 'px';
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+    draw();
+  }
+
+  /* ----- grid (stored as null or {color,label,key}) ----- */
+  let grid;
+  function newGrid(){ grid = Array.from({length:ROWS}, () => Array(COLS).fill(null)); }
+
+  /* ----- 7-bag randomizer ----- */
+  let bag = [];
+  function refillBag(){
+    const arr = KEYS.slice();
+    for (let i=arr.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [arr[i],arr[j]] = [arr[j],arr[i]];
+    }
+    bag = arr.concat(bag);
+  }
+  function nextKey(){ if (bag.length<=2) refillBag(); return bag.pop(); }
+
+  /* ----- piece factory ----- */
+  function makePiece(key){
+    return {
+      key,
+      rot:0,
+      shape: SHAPES[key][0],
+      x: 3,
+      y: -2,
+      problem: PROBLEMS[key]
+    };
+  }
+  function rotated(piece, dir){
+    const arr = SHAPES[piece.key];
+    const next = (piece.rot + (dir>0?1:-1) + arr.length) % arr.length;
+    return { rot: next, shape: arr[next] };
+  }
+
+  /* ----- collision ----- */
+  function collides(shape, x, y){
+    for (let r=0;r<4;r++) for (let c=0;c<4;c++){
+      if (!shape[r][c]) continue;
+      const gx = x+c, gy = y+r;
+      if (gx<0 || gx>=COLS || gy>=ROWS) return true;
+      if (gy>=0 && grid[gy][gx]) return true;
+    }
+    return false;
+  }
+
+  /* ----- merge to grid ----- */
+  function merge(piece){
+    const p = piece.problem;
+    for (let r=0;r<4;r++) for (let c=0;c<4;c++){
+      if (!piece.shape[r][c]) continue;
+      const gx = piece.x + c, gy = piece.y + r;
+      if (gy<0){ /* spawned partially above board: it's game over if locked here */ continue; }
+      grid[gy][gx] = { color:p.color, label:p.label, key:p.key, code:p.code };
+    }
+  }
+
+  /* ----- line clears ----- */
+  function clearLines(){
+    const cleared = [];
+    for (let r=ROWS-1; r>=0; r--){
+      if (grid[r].every(v => v)){
+        cleared.push({ row:r, cells: grid[r].slice() });
+        grid.splice(r,1);
+        grid.unshift(Array(COLS).fill(null));
+        r++;
+      }
+    }
+    return cleared;
+  }
+
+  /* =============================================================
+     STATE
+     ============================================================= */
+  let state = {
+    running:false,
+    paused:false,
+    over:false,
+    piece:null,
+    nextKey:null,
+    holdKey:null,
+    canHold:true,
+    wallet:0,
+    fixes:0,
+    combo:0,
+    bestCombo:0,
+    dropped:0,
+    level:1,
+    fixHistory:[],
+    fixSeq:0,
+    lastTick:0,
+    dropMs:850,            // current gravity
+    softDrop:false
+  };
+
+  function setStatus(text, mode){
+    statusTextEl.textContent = text;
+    statusEl.classList.remove('paused','gameover');
+    if (mode) statusEl.classList.add(mode);
+  }
+
+  function wasteOnBoard(){
+    // each cell of a problem contributes 1/4 of its monthly cost
+    let total = 0;
+    for (let r=0;r<ROWS;r++){
+      const row = grid[r]; if (!row) continue;
+      for (let c=0;c<COLS;c++){
+        const cell = row[c]; if (!cell) continue;
+        total += (PROBLEMS[cell.key].cost / 4);
+      }
+    }
+    return Math.round(total);
+  }
+
+  function updateHud(){
+    document.getElementById('wallet').textContent = '$' + state.wallet.toLocaleString();
+    document.getElementById('waste').textContent = '$' + wasteOnBoard().toLocaleString();
+    document.getElementById('fixes').textContent = state.fixes;
+    document.getElementById('combo').textContent = state.combo + '×';
+    document.getElementById('level').textContent = state.level;
+    const ft = document.getElementById('feedTotal'); if (ft) ft.textContent = '$' + state.wallet.toLocaleString();
+  }
+
+  /* =============================================================
+     DRAWING
+     ============================================================= */
+  function fillCell(targetCtx, cell, x, y, size, opts){
+    const o = opts || {};
+    targetCtx.save();
+    targetCtx.fillStyle = cell.color;
+    if (o.ghost){
+      targetCtx.globalAlpha = 0.16;
+      targetCtx.fillRect(x+1, y+1, size-2, size-2);
+      targetCtx.globalAlpha = 1;
+      targetCtx.strokeStyle = cell.color;
+      targetCtx.setLineDash([3,3]);
+      targetCtx.lineWidth = 1;
+      targetCtx.strokeRect(x+1.5, y+1.5, size-3, size-3);
+      targetCtx.setLineDash([]);
+      targetCtx.restore();
+      return;
+    }
+    // body
+    targetCtx.fillRect(x, y, size, size);
+    // inner highlight bar (top) — color band like a printed ticket header
+    targetCtx.fillStyle = 'rgba(255,255,255,.22)';
+    targetCtx.fillRect(x, y, size, Math.max(2, size*0.16));
+    // inner shadow (bottom)
+    targetCtx.fillStyle = 'rgba(0,0,0,.24)';
+    targetCtx.fillRect(x, y+size-Math.max(2,size*0.08), size, Math.max(2,size*0.08));
+    // hairline border
+    targetCtx.strokeStyle = 'rgba(0,0,0,.45)';
+    targetCtx.lineWidth = 1;
+    targetCtx.strokeRect(x+0.5, y+0.5, size-1, size-1);
+    // stamped code (only at sufficient cell size)
+    if (cell.code && size >= 18){
+      const fz = Math.max(8, Math.min(11, Math.round(size * 0.32)));
+      targetCtx.fillStyle = 'rgba(255,255,255,.55)';
+      targetCtx.font = `500 ${fz}px "JetBrains Mono", ui-monospace, monospace`;
+      targetCtx.textBaseline = 'middle';
+      targetCtx.textAlign = 'center';
+      targetCtx.fillText(cell.code, x + size/2, y + size/2 + 1);
+    }
+    targetCtx.restore();
+  }
+
+  function ghostY(piece){
+    let y = piece.y;
+    while (!collides(piece.shape, piece.x, y+1)) y++;
+    return y;
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,board.width,board.height);
+    // placed cells
+    for (let r=0;r<ROWS;r++){
+      for (let c=0;c<COLS;c++){
+        const cell = grid && grid[r] && grid[r][c];
+        if (cell) fillCell(ctx, cell, c*CELL, r*CELL, CELL);
+      }
+    }
+    // ghost piece
+    if (state.piece && state.running && !state.paused && !state.over){
+      const gy = ghostY(state.piece);
+      for (let r=0;r<4;r++) for (let c=0;c<4;c++){
+        if (!state.piece.shape[r][c]) continue;
+        const x = (state.piece.x+c)*CELL;
+        const y = (gy+r)*CELL;
+        if (gy+r >= 0) fillCell(ctx, { color: state.piece.problem.color }, x, y, CELL, { ghost:true });
+      }
+      // active piece
+      const pp = state.piece.problem;
+      for (let r=0;r<4;r++) for (let c=0;c<4;c++){
+        if (!state.piece.shape[r][c]) continue;
+        const gx = state.piece.x+c, gyy = state.piece.y+r;
+        if (gyy >= 0) fillCell(ctx, { color: pp.color, code: pp.code }, gx*CELL, gyy*CELL, CELL);
+      }
+    }
+  }
+
+  /* Preview canvas (used for next + hold) */
+  function drawPreview(canvas, key){
+    const c = canvas.getContext('2d');
+    const dpr = Math.max(1, window.devicePixelRatio || 1);
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    canvas.width  = w * dpr;
+    canvas.height = h * dpr;
+    c.setTransform(dpr,0,0,dpr,0,0);
+    c.clearRect(0,0,w,h);
+    if (!key) return;
+    const shape = SHAPES[key][0];
+    const p = PROBLEMS[key];
+    // find bounding box
+    let minR=4,maxR=-1,minC=4,maxC=-1;
+    for (let r=0;r<4;r++) for (let cc=0;cc<4;cc++){
+      if (shape[r][cc]){
+        if (r<minR) minR=r; if (r>maxR) maxR=r;
+        if (cc<minC) minC=cc; if (cc>maxC) maxC=cc;
+      }
+    }
+    const bw = (maxC-minC+1), bh = (maxR-minR+1);
+    const size = Math.min((w-20)/bw, (h-20)/bh);
+    const offX = (w - bw*size)/2 - minC*size;
+    const offY = (h - bh*size)/2 - minR*size;
+    for (let r=0;r<4;r++) for (let cc=0;cc<4;cc++){
+      if (shape[r][cc]) fillCell(c, { color: p.color, code: p.code }, offX + cc*size, offY + r*size, size);
+    }
+  }
+
+  /* =============================================================
+     RIGHT COLUMN UI
+     ============================================================= */
+  function updateTicket(){
+    const $code = document.getElementById('ticketCode');
+    if (!state.piece){
+      $code.textContent = '—';
+      document.getElementById('ticketTitle').textContent = 'Waiting for first piece';
+      document.getElementById('ticketDesc').textContent = 'Press start to begin draining the queue. Each piece is a real cloud problem stacking up in your environment.';
+      document.getElementById('ticketSev').textContent = '—';
+      document.getElementById('ticketCost').textContent = '—';
+      document.getElementById('ticketPayout').textContent = '—';
+      return;
+    }
+    const p = state.piece.problem;
+    $code.textContent = p.code + '-' + String(state.dropped).padStart(3,'0');
+    document.getElementById('ticketTitle').textContent = p.label;
+    document.getElementById('ticketDesc').textContent = p.desc;
+    document.getElementById('ticketSev').textContent = p.sev;
+    document.getElementById('ticketCost').textContent = '$' + p.cost.toLocaleString() + '/mo';
+    const payout = Math.round(PAYOUTS[1] * state.level / 4);
+    document.getElementById('ticketPayout').textContent = '$' + payout.toLocaleString() + ' per cell cleared';
+  }
+  function updatePreviews(){
+    drawPreview(document.getElementById('next'), state.nextKey);
+    drawPreview(document.getElementById('hold'), state.holdKey);
+  }
+
+  function pushFix(amount, lines, labels, codes){
+    state.fixHistory.unshift({ amount, lines, labels, codes, seq: ++state.fixSeq });
+    state.fixHistory = state.fixHistory.slice(0,8);
+    renderFeed();
+  }
+  function renderFeed(){
+    const feed = document.getElementById('feed');
+    const count = state.fixHistory.length;
+    document.getElementById('feedCount').textContent = count + (count === 1 ? ' entry' : ' entries');
+    if (!count){
+      feed.innerHTML = '<div class="feed-empty">No fixes logged yet. Clear a line to file the first.</div>';
+      return;
+    }
+    feed.innerHTML = state.fixHistory.map(f => {
+      const codeText = (f.codes && f.codes.length)
+        ? (f.codes.length > 2 ? f.codes.slice(0,2).join('·') + ` +${f.codes.length-2}` : f.codes.join('·'))
+        : '';
+      const labelText = f.labels.length > 1
+        ? f.labels[0] + ` +${f.labels.length-1}`
+        : (f.labels[0] || 'cleanup');
+      const tag = f.lines === 4 ? 'QUAD' : (f.lines === 3 ? 'TRIPLE' : (f.lines === 2 ? 'DOUBLE' : 'SINGLE'));
+      const big = f.lines >= 3 ? ' big' : '';
+      const num = '#' + String(f.seq).padStart(3,'0');
+      return `<div class="feed-item${big}">
+        <span class="fi-num">${num}</span>
+        <span class="fi-label"><small>${tag}</small>${labelText}${codeText ? ' · ' + codeText : ''}</span>
+        <span class="fi-amt">+$${f.amount.toLocaleString()}</span>
+      </div>`;
+    }).join('');
+  }
+
+  /* Toast (above board) · printed paper strip */
+  function toast(prefix, body, amount, big){
+    const rail = document.getElementById('toastRail');
+    const t = document.createElement('div');
+    t.className = 'toast' + (big?' big':'');
+    t.innerHTML = `<span class="t-text"><strong>${prefix}</strong>${body}</span><span class="t-amt">+$${amount.toLocaleString()}</span>`;
+    rail.appendChild(t);
+    setTimeout(() => t.remove(), 2900);
+  }
+
+  /* Wallet delta pulse */
+  function pulseWallet(amount){
+    const el = document.getElementById('walletDelta');
+    el.textContent = ' +$' + amount.toLocaleString();
+    el.classList.add('show');
+    clearTimeout(window.__wdT);
+    window.__wdT = setTimeout(() => el.classList.remove('show'), 1700);
+  }
+
+  /* =============================================================
+     SCORING
+     ============================================================= */
+  // payout per cleared rows · scaled by tier (level)
+  const PAYOUTS = { 1:1200, 2:3400, 3:6800, 4:12500 };
+  function scoreClear(cleared){
+    const lines = cleared.length;
+    if (!lines) { state.combo = 0; updateHud(); return; }
+    state.combo++;
+    state.bestCombo = Math.max(state.bestCombo, state.combo);
+    let amount = (PAYOUTS[lines] || 0) * state.level;
+    if (state.combo >= 2) amount = Math.round(amount * (1 + (state.combo-1)*0.25));
+    state.wallet += amount;
+    state.fixes += lines;
+    pulseWallet(amount);
+
+    // collect problem labels + codes cleared this round
+    const labelSet = {}, codeSet = {};
+    cleared.forEach(cl => cl.cells.forEach(cell => {
+      if (!cell) return;
+      labelSet[cell.label] = true;
+      if (cell.code) codeSet[cell.code] = true;
+    }));
+    const labels = Object.keys(labelSet);
+    const codes = Object.keys(codeSet);
+    const tetris = lines === 4;
+    const prefix = tetris ? 'QUAD FIX · ' : (lines>=2 ? `${lines}× FIX · ` : 'FIX · ');
+    const body = labels.length > 1
+      ? labels[0] + ` +${labels.length-1}`
+      : (labels[0] || 'cleanup');
+    toast(prefix, body, amount, tetris || lines>=3);
+    pushFix(amount, lines, labels, codes);
+
+    flash.classList.remove('fix','tetris-fix');
+    void flash.offsetWidth;
+    flash.classList.add(tetris ? 'tetris-fix' : 'fix');
+    setTimeout(() => flash.classList.remove('fix','tetris-fix'), 260);
+
+    const tier = Math.floor(state.fixes/10) + 1;
+    if (tier > state.level){
+      state.level = tier;
+      state.dropMs = Math.max(120, 850 - (state.level-1)*70);
+    }
+    updateHud();
+  }
+
+  /* =============================================================
+     GAME LOOP
+     ============================================================= */
+  function spawn(){
+    const key = state.nextKey || nextKey();
+    state.piece = makePiece(key);
+    state.nextKey = nextKey();
+    state.canHold = true;
+    state.dropped++;
+    updateHud();
+    updateTicket();
+    updatePreviews();
+    setStatus('falling · ' + state.piece.problem.label.toLowerCase());
+    // immediate game-over check: if spawn collides, end the game
+    if (collides(state.piece.shape, state.piece.x, state.piece.y+1) &&
+        collides(state.piece.shape, state.piece.x, state.piece.y)){
+      endGame();
+    }
+  }
+
+  function lockPiece(){
+    let above = false;
+    for (let r=0;r<4;r++) for (let c=0;c<4;c++){
+      if (state.piece.shape[r][c] && state.piece.y + r < 0) above = true;
+    }
+    merge(state.piece);
+    const cleared = clearLines();
+    scoreClear(cleared);
+    updateHud();
+    state.piece = null;
+    if (above) { endGame(); return; }
+    spawn();
+  }
+
+  function step(now){
+    if (!state.running || state.paused || state.over) return;
+    if (!state.lastTick) state.lastTick = now;
+    const speed = state.softDrop ? Math.min(60, state.dropMs/8) : state.dropMs;
+    if (now - state.lastTick >= speed){
+      state.lastTick = now;
+      tickGravity();
+    }
+    draw();
+    requestAnimationFrame(step);
+  }
+
+  function tickGravity(){
+    if (!state.piece) { spawn(); return; }
+    if (!collides(state.piece.shape, state.piece.x, state.piece.y+1)){
+      state.piece.y++;
+    } else {
+      lockPiece();
+    }
+  }
+
+  /* ----- actions ----- */
+  function move(dx){
+    if (!state.piece) return;
+    if (!collides(state.piece.shape, state.piece.x + dx, state.piece.y)){
+      state.piece.x += dx;
+      draw();
+    }
+  }
+  function rotate(dir){
+    if (!state.piece) return;
+    const r = rotated(state.piece, dir);
+    // basic wall kicks
+    const kicks = [0, -1, 1, -2, 2];
+    for (const k of kicks){
+      if (!collides(r.shape, state.piece.x + k, state.piece.y)){
+        state.piece.shape = r.shape;
+        state.piece.rot = r.rot;
+        state.piece.x += k;
+        draw();
+        return;
+      }
+    }
+  }
+  function hardDrop(){
+    if (!state.piece) return;
+    while (!collides(state.piece.shape, state.piece.x, state.piece.y+1)){
+      state.piece.y++;
+    }
+    lockPiece();
+    draw();
+  }
+  function hold(){
+    if (!state.piece || !state.canHold) return;
+    const cur = state.piece.key;
+    if (state.holdKey){
+      const swap = state.holdKey;
+      state.holdKey = cur;
+      state.piece = makePiece(swap);
+    } else {
+      state.holdKey = cur;
+      state.piece = makePiece(state.nextKey || nextKey());
+      state.nextKey = nextKey();
+    }
+    state.canHold = false;
+    updateTicket();
+    updatePreviews();
+    draw();
+  }
+
+  /* =============================================================
+     GAME CONTROL
+     ============================================================= */
+  function startGame(){
+    newGrid();
+    bag = [];
+    state.piece = null;
+    state.nextKey = nextKey();
+    state.holdKey = null;
+    state.wallet = 0;
+    state.fixes = 0;
+    state.combo = 0;
+    state.bestCombo = 0;
+    state.dropped = 0;
+    state.level = 1;
+    state.dropMs = 850;
+    state.fixHistory = [];
+    state.fixSeq = 0;
+    state.over = false;
+    state.paused = false;
+    state.running = true;
+    state.lastTick = 0;
+    const stage = document.querySelector('.stage'); if (stage) stage.classList.remove('paused','over');
+    renderFeed();
+    updateHud();
+    updateTicket();
+    updatePreviews();
+    overlay.classList.add('hidden');
+    setStatus('scanning · spawning first piece');
+    spawn();
+    draw();
+    requestAnimationFrame(step);
+  }
+  function pauseGame(){
+    if (state.over || !state.running) return;
+    state.paused = !state.paused;
+    const stage = document.querySelector('.stage');
+    if (state.paused){
+      if (stage) stage.classList.add('paused');
+      setStatus('paused', 'paused');
+      showOverlay({
+        eyebrow:'/ paused',
+        title:'Paused. <span class="accent">Cloud is still spending.</span>',
+        desc:'Resume when ready. Your wallet, streak, and queue are intact.',
+        primary:'Resume',
+        action:'resume',
+        showTally:false
+      });
+    } else {
+      if (stage) stage.classList.remove('paused');
+      overlay.classList.add('hidden');
+      setStatus('falling · ' + (state.piece ? state.piece.problem.label.toLowerCase() : 'queued'));
+      state.lastTick = 0;
+      requestAnimationFrame(step);
+    }
+  }
+  function endGame(){
+    state.over = true;
+    state.running = false;
+    const stage = document.querySelector('.stage'); if (stage) stage.classList.add('over');
+    setStatus('stack hit ceiling · outage', 'gameover');
+    showOverlay({
+      eyebrow:'/ outage',
+      title:'Stack hit ceiling. <span class="accent">That\'s an outage.</span>',
+      desc:'Your cloud went out before you could clean it. Banked savings are yours to keep. Run it back.',
+      primary:'Run it back',
+      action:'restart',
+      showTally:true
+    });
+  }
+
+  function showOverlay(opts){
+    document.getElementById('ovEyebrow').textContent = opts.eyebrow;
+    document.getElementById('ovTitle').innerHTML = opts.title;
+    document.getElementById('ovDesc').textContent = opts.desc;
+    document.getElementById('ovStart').textContent = opts.primary;
+    document.getElementById('ovStart').dataset.action = opts.action;
+    document.getElementById('finalTally').style.display = opts.showTally ? 'flex' : 'none';
+    if (opts.showTally){
+      document.getElementById('ftAmt').textContent = '$' + state.wallet.toLocaleString();
+      document.getElementById('ftFixes').textContent = state.fixes;
+      document.getElementById('ftStreak').textContent = state.bestCombo + '×';
+    }
+    overlay.classList.remove('hidden');
+  }
+
+  /* =============================================================
+     INPUT
+     ============================================================= */
+  const REPEAT_DAS = 160;    // initial delay
+  const REPEAT_ARR = 50;     // repeat interval
+  const heldKeys = {};
+  let dasTimers = {};
+
+  function startRepeat(code, fn){
+    fn();
+    clearTimeout(dasTimers[code]);
+    dasTimers[code] = setTimeout(function tick(){
+      fn();
+      dasTimers[code] = setTimeout(tick, REPEAT_ARR);
+    }, REPEAT_DAS);
+  }
+  function stopRepeat(code){
+    clearTimeout(dasTimers[code]);
+    delete dasTimers[code];
+  }
+
+  document.addEventListener('keydown', (e) => {
+    const k = e.code;
+    if (k === 'KeyP' || k === 'Escape'){
+      if (state.over) return;
+      pauseGame();
+      e.preventDefault();
+      return;
+    }
+    if (state.paused || state.over || !state.running) return;
+    if (heldKeys[k]) return;
+    heldKeys[k] = true;
+    switch(k){
+      case 'ArrowLeft':  startRepeat(k, () => move(-1)); e.preventDefault(); break;
+      case 'ArrowRight': startRepeat(k, () => move(1));  e.preventDefault(); break;
+      case 'ArrowDown':  state.softDrop = true;          e.preventDefault(); break;
+      case 'ArrowUp':
+      case 'KeyX':       rotate(1);                      e.preventDefault(); break;
+      case 'KeyZ':       rotate(-1);                     e.preventDefault(); break;
+      case 'Space':      hardDrop();                     e.preventDefault(); break;
+      case 'KeyC':
+      case 'ShiftLeft':
+      case 'ShiftRight': hold();                          e.preventDefault(); break;
+    }
+  });
+  document.addEventListener('keyup', (e) => {
+    const k = e.code;
+    heldKeys[k] = false;
+    stopRepeat(k);
+    if (k === 'ArrowDown') state.softDrop = false;
+  });
+
+  /* Touch buttons */
+  document.getElementById('touchBar').addEventListener('click', (e) => {
+    const b = e.target.closest('button'); if (!b || !state.running || state.paused || state.over) return;
+    const act = b.dataset.act;
+    if (act === 'left') move(-1);
+    if (act === 'right') move(1);
+    if (act === 'rot') rotate(1);
+    if (act === 'down') tickGravity();
+    if (act === 'drop') hardDrop();
+  });
+
+  /* Overlay buttons */
+  document.getElementById('ovStart').addEventListener('click', () => {
+    const a = document.getElementById('ovStart').dataset.action || 'start';
+    if (a === 'resume') { pauseGame(); return; }
+    startGame();
+  });
+  document.getElementById('ovHow').addEventListener('click', () => {
+    showOverlay({
+      eyebrow:'/ how it scores',
+      title:'Every line is a ZopNight fix.',
+      desc:'Single line $1,200 · double $3,400 · triple $6,800 · tetris $12,500. Streak adds 25% per back-to-back. Tier multiplier scales with fixes applied.',
+      primary:'Start the cleanup',
+      action:'start',
+      showTally:false
+    });
+  });
+
+  /* =============================================================
+     LEGEND (right column · problem list)
+     ============================================================= */
+  function renderLegend(){
+    const el = document.getElementById('legend');
+    el.innerHTML = KEYS.map(k => {
+      const p = PROBLEMS[k];
+      return `<div class="legend-row">
+        <span class="legend-swatch" style="background:${p.color}"></span>
+        <span class="legend-code">${p.code}</span>
+        <span class="legend-name">${p.label}</span>
+        <span class="legend-cost">$${p.cost.toLocaleString()}/mo</span>
+      </div>`;
+    }).join('');
+  }
+
+  /* =============================================================
+     BOOT
+     ============================================================= */
+  function boot(){
+    renderLegend();
+    resizeBoardCanvas();
+    newGrid();
+    state.nextKey = nextKey();
+    updatePreviews();
+    draw();
+  }
+
+  window.addEventListener('resize', () => {
+    clearTimeout(window.__rt);
+    window.__rt = setTimeout(() => { resizeBoardCanvas(); updatePreviews(); }, 120);
+  });
+
+  boot();
+})();
+</script>
+</body>
+</html>

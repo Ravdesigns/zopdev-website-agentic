@@ -1,0 +1,2649 @@
+<!DOCTYPE html>
+<!--
+  ========================================================================
+  ZopDev · _shell.html
+  ------------------------------------------------------------------------
+  PAGE TEMPLATE, not a real page. The underscore prefix signals that.
+
+  Copy this file when starting any new page. The canonical nav, footer,
+  live-ops strip, and SVG symbols are already wired. Only edit the three
+  clearly-marked TEMPLATE blocks:
+
+     1 · <title> + meta-description in <head>
+     2 · .nav-links, mark the active tab
+     3 · <main class="page" id="main-content"> content between nav and footer
+
+  Everything else, tokens, chrome styles, logo symbols, reduced-motion
+  gate, comes from tokens.css + chrome.css. Do not redefine locally.
+  ========================================================================
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<script>(function(){try{var t=localStorage.getItem('zop-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<link rel="icon" type="image/svg+xml" href="favicon.svg"/>
+
+<title>Product documentation · ZopNight · ZopDev</title>
+<meta name="description" content="ZopNight product documentation, autonomous cloud governance and FinOps automation across AWS, GCP, Azure, and Kubernetes. Cut cloud spend up to 60%."/>
+<link rel="canonical" href="https://zopdev.com/product-documentation.html"/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://zopdev.com/product-documentation.html"/>
+<meta property="og:title" content="Product documentation · ZopNight · ZopDev"/>
+<meta property="og:description" content="ZopNight product documentation, autonomous cloud governance and FinOps automation across AWS, GCP, Azure, and Kubernetes. Cut cloud spend up to 60%."/>
+<meta property="og:image" content="https://zopdev.com/og-default.png"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="Product documentation · ZopNight · ZopDev"/>
+<meta name="twitter:description" content="ZopNight product documentation, autonomous cloud governance and FinOps automation across AWS, GCP, Azure, and Kubernetes. Cut cloud spend up to 60%."/>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="stylesheet" href="chrome.css"/>
+<link rel="stylesheet" href="chrome-footer.css">
+
+<style>
+/* no-italic-site-wide */ em,i,cite,dfn,var,address,blockquote{font-style:normal}
+/* ======================================================================
+   Page-specific CSS goes here.
+   Rules of engagement:
+     · tokens only (no hex literals except brand exceptions)
+     · no gradients · no blurs · no backdrop-filter
+     · sharp corners (border-radius: 0), pills (9999px) for status only
+     · hard offset shadows: 0 8px 0 -4px <color>
+   ====================================================================== */
+
+/* section rhythm */
+.page{ padding:0; }
+.page > section{ padding:var(--sec-pad) 0; border-bottom:0; }
+.page > section:last-child{ border-bottom:0; }
+
+/* breadcrumb, used at the top of every subpage */
+.crumb{
+  padding:var(--sp-7) 0 var(--sp-4);
+  max-width:var(--max); margin:0 auto;
+  padding-left:var(--gutter); padding-right:var(--gutter);
+  font-family:var(--mono); font-size:var(--t-11); color:var(--ink-4);
+  letter-spacing:var(--ls-meta-tight); text-transform:uppercase;
+}
+.crumb a{ color:var(--ink-3); }
+.crumb a:hover{ color:var(--ink); }
+.crumb .sep{ color:var(--ink-5); margin:0 var(--sp-2); }
+
+/* page heading, shared across subpages */
+.page-head{
+  padding:var(--sp-10) 0 var(--sp-12);
+  max-width:var(--max); margin:0 auto;
+  padding-left:var(--gutter); padding-right:var(--gutter);
+  border-bottom:1px solid var(--line);
+}
+.page-head .meta{
+  font-family:var(--mono); font-size:var(--t-11);
+  color:var(--zop-orange); letter-spacing:var(--ls-meta);
+  text-transform:uppercase; margin-bottom:var(--sp-4);
+  display:inline-flex; align-items:center; gap:var(--sp-2);
+}
+.page-head .meta::before{ content:''; width:10px; height:10px; background:var(--zop-orange); }
+.page-head h1{
+  font-size:clamp(48px, 6vw, 88px);
+  font-weight:var(--fw-bold); letter-spacing:var(--ls-display);
+  line-height:var(--lh-display);
+  max-width:1000px; margin:0 0 var(--sp-5);
+}
+.page-head h1 em{ font-style:normal; color:var(--zop-orange); }
+.page-head p.lede{
+  font-size:var(--t-20); color:var(--ink-3);
+  max-width:720px; line-height:1.45; margin:0;
+}
+.page-head p.lede strong{ color:var(--ink); font-weight:var(--fw-medium); }
+
+@media (max-width:768px){
+  .page > section{ padding:var(--sec-pad-sm) 0; }
+}
+
+/* ======================================================================
+   PRODUCT DOCUMENTATION · two-column layout
+   --------------------------------------------------------------------
+   Left: sticky table of contents (sections + sub-sections).
+   Right: long-form content blocks, each anchored for deep-linking.
+   Drops to single-column below 960px (TOC moves above content).
+   ====================================================================== */
+/* ── Docs page · 3-column Mintlify-style shell ─────────────────────
+   Topbar (search + brand + sign in) sits above the shell, sticky.
+   Shell columns:
+     · LEFT  · 280px · product switcher + grouped nav tree
+     · MID   · 1fr   · the docs content
+     · RIGHT · 220px · "On this page" anchor list (sticky, scroll-spy)
+   Visual style is unchanged: paper bg, 1px line borders, mono labels,
+   square corners, --zop-orange accent. Same tokens as the rest of
+   the site. */
+
+.docs-page{ padding:0; }
+
+/* Docs topbar · sticky below the main site nav.
+   Brand on the left, search in the middle, sign-in on the right. */
+
+/* 3-column shell · wider envelope, slimmer sidebars
+   Total: 240 + content + 200 = sidebars 440px, leaves 960px+ for content
+   inside a 1400px max envelope. Was 280 + 220 = 500px, leaving ~780px. */
+
+/* Sidebar head · single minimal search input, matches the form-input
+   pattern used elsewhere on the site (signin, contact). No icon, no
+   kbd chip — just a clean bordered text field. ⌘K still focuses it. */
+.docs-sidebar-head{
+  margin-bottom:var(--sp-5);
+}
+.docs-sidebar-search-input{
+  width:100%; height:38px;
+  padding:0 14px;
+  background:var(--paper);
+  border:1px solid var(--line);
+  color:var(--ink);
+  font-family:var(--font); font-size:13.5px;
+  letter-spacing:-.005em;
+  outline:none;
+  transition:border-color .14s, box-shadow .14s;
+  -webkit-appearance:none; appearance:none;
+}
+.docs-sidebar-search-input::placeholder{ color:var(--ink-4); }
+.docs-sidebar-search-input::-webkit-search-cancel-button{ -webkit-appearance:none; }
+.docs-sidebar-search-input:hover{ border-color:var(--ink-4); }
+.docs-sidebar-search-input:focus,
+.docs-sidebar-search-input:focus-visible{
+  border-color:var(--ink);
+  box-shadow:0 0 0 3px rgba(245,133,73,.15);
+}
+html[data-theme="dark"] .docs-sidebar-search-input{ background:#15151B; border-color:#2a2a30; }
+html[data-theme="dark"] .docs-sidebar-search-input:focus{ border-color:var(--ink); }
+
+/* Sidebar foot · 2 quick links + 1 sign-in CTA, anchored at the
+   bottom of the sticky column */
+.docs-sidebar-foot{
+  display:flex; flex-direction:column; gap:8px;
+  padding:var(--sp-5) 0 var(--sp-3);
+  margin-top:var(--sp-6);
+  border-top:1px solid var(--line);
+}
+.docs-sidebar-foot a{
+  font-family:var(--font); font-size:13px; font-weight:500;
+  letter-spacing:-.005em;
+  color:var(--ink-3); text-decoration:none;
+  padding:4px 0;
+  transition:color .14s;
+}
+.docs-sidebar-foot a:hover{ color:var(--ink); }
+.docs-sidebar-foot-cta{
+  display:inline-flex; align-items:center; justify-content:space-between;
+  padding:8px 12px !important;
+  margin-top:8px;
+  background:var(--ink); color:var(--paper) !important;
+  border:1px solid var(--ink);
+  font-weight:600 !important;
+  transition:transform .14s, box-shadow .14s;
+}
+.docs-sidebar-foot-cta:hover{
+  color:var(--paper) !important;
+  transform:translateY(-2px);
+  box-shadow:0 4px 0 -2px var(--zop-orange);
+}
+
+.docs-shell{
+  display:grid;
+  grid-template-columns:240px minmax(0,1fr) 200px;
+  gap:48px;
+  max-width:1400px; margin:0 auto;
+  padding:0 var(--gutter);
+  align-items:flex-start;
+}
+
+/* LEFT · sidebar with product switcher + nav tree.
+   Top offset = site nav (64px) + docs topbar (52px) + 8px breathing.
+   Sticky max-height matches: viewport - 124px so the sidebar can scroll
+   independently when nav grows. */
+.docs-sidebar{
+  position:sticky; top:80px;
+  align-self:start;
+  max-height:calc(100vh - 100px);
+  overflow-y:auto;
+  padding:var(--sp-7) var(--sp-4) var(--sp-10) 0;
+  font-family:var(--font);
+}
+
+/* Product switcher · top of sidebar · dropdown style */
+.docs-product-switch{
+  position:relative;
+  margin-bottom:var(--sp-5);
+  padding-bottom:var(--sp-5);
+  border-bottom:1px solid var(--line);
+}
+.docs-product-switch-label{
+  display:block;
+  font-family:var(--mono); font-size:10px; font-weight:600;
+  letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink-4);
+  margin-bottom:8px;
+}
+.docs-product-switch-btn{
+  display:flex; align-items:center; gap:10px;
+  width:100%; padding:10px 12px;
+  background:var(--paper); border:1px solid var(--line);
+  color:var(--ink); cursor:pointer;
+  font-family:var(--font); font-size:14px; font-weight:600;
+  letter-spacing:-.005em; text-align:left;
+  transition:border-color .14s, background .14s;
+}
+.docs-product-switch-btn:hover{ border-color:var(--ink); }
+.docs-product-switch-btn[aria-expanded="true"]{ border-color:var(--ink); }
+html[data-theme="dark"] .docs-product-switch-btn{ background:#15151B; border-color:#2a2a30; }
+.docs-product-switch-mark{
+  width:18px; height:18px; flex:none;
+  display:inline-flex; align-items:center; justify-content:center;
+}
+.docs-product-switch-mark svg{ width:100%; height:100%; display:block; }
+.docs-product-switch-name{ flex:1; }
+.docs-product-switch-caret{
+  width:10px; height:10px; flex:none;
+  border-right:1.4px solid var(--ink-3);
+  border-bottom:1.4px solid var(--ink-3);
+  transform:rotate(45deg) translate(-1px,-1px);
+  transition:transform .18s;
+}
+.docs-product-switch-btn[aria-expanded="true"] .docs-product-switch-caret{
+  transform:rotate(225deg) translate(0,2px);
+}
+
+.docs-product-switch-menu{
+  position:absolute; left:0; right:0; top:calc(100% + 6px);
+  background:var(--paper); border:1px solid var(--line);
+  box-shadow:
+    0 14px 40px -8px rgba(0,0,0,.12),
+    0 3px 10px rgba(0,0,0,.05);
+  z-index:80;
+  padding:4px;
+}
+html[data-theme="dark"] .docs-product-switch-menu{
+  background:#15151B; border-color:#2a2a30;
+  box-shadow:0 14px 40px -8px rgba(0,0,0,.55), 0 3px 10px rgba(0,0,0,.3);
+}
+.docs-product-switch-menu[hidden]{ display:none; }
+.docs-product-switch-opt{
+  display:flex; align-items:center; gap:10px;
+  width:100%; padding:9px 10px;
+  background:none; border:0; color:var(--ink); cursor:pointer;
+  font-family:var(--font); font-size:13.5px; font-weight:500;
+  text-align:left; letter-spacing:-.005em;
+  transition:background .14s;
+}
+.docs-product-switch-opt:hover{ background:var(--bg-2); }
+html[data-theme="dark"] .docs-product-switch-opt:hover{ background:#1B1B22; }
+.docs-product-switch-opt[aria-current="true"]{
+  background:rgba(245,133,73,.08);
+}
+.docs-product-switch-opt-mark{
+  width:18px; height:18px; flex:none;
+  display:inline-flex; align-items:center; justify-content:center;
+}
+.docs-product-switch-opt-mark svg{ width:100%; height:100%; display:block; }
+.docs-product-switch-opt-body{
+  display:flex; flex-direction:column; gap:1px; flex:1;
+}
+.docs-product-switch-opt-name{
+  font-weight:600; color:var(--ink);
+}
+.docs-product-switch-opt-meta{
+  font-family:var(--mono); font-size:10px; font-weight:500;
+  letter-spacing:.04em; color:var(--ink-4);
+}
+.docs-product-switch-opt-check{
+  width:14px; height:14px; flex:none;
+  color:var(--zop-orange); opacity:0;
+}
+.docs-product-switch-opt[aria-current="true"] .docs-product-switch-opt-check{ opacity:1; }
+
+/* Grouped navigation tree */
+.docs-nav{
+  display:flex; flex-direction:column; gap:var(--sp-4);
+}
+.docs-nav[hidden]{ display:none; }
+.docs-nav-group{
+  display:flex; flex-direction:column; gap:4px;
+}
+.docs-nav-group-head{
+  font-family:var(--mono); font-size:10px; font-weight:700;
+  letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink-4);
+  padding:8px 0 6px;
+}
+.docs-nav-group ul{
+  list-style:none; padding:0; margin:0;
+  display:flex; flex-direction:column;
+}
+.docs-nav-group li{ margin:0; }
+.docs-nav-group a{
+  display:block; padding:6px 12px 6px 14px;
+  font-family:var(--font); font-size:13.5px; font-weight:500;
+  letter-spacing:-.005em;
+  color:var(--ink-3); text-decoration:none;
+  border-left:2px solid transparent;
+  margin-left:-2px;
+  transition:color .14s, border-color .14s, background .14s;
+}
+.docs-nav-group a:hover{ color:var(--ink); border-left-color:var(--ink-4); }
+.docs-nav-group a.is-active{
+  color:var(--zop-orange);
+  border-left-color:var(--zop-orange);
+  font-weight:600;
+}
+
+/* MIDDLE · content area · no horizontal padding (the .docs-shell
+   gutter + gap handles spacing). Top padding pushes content below the
+   sticky topbar visually. */
+.docs-body{ min-width:0; padding:var(--sp-7) 0 var(--sp-12); }
+.docs-body > [data-doc-content][hidden]{ display:none; }
+.docs-page-head{
+  margin-bottom:var(--sp-8);
+}
+.docs-page-head .crumb{
+  margin-bottom:var(--sp-3);
+  font-family:var(--mono); font-size:11.5px;
+  color:var(--ink-4); letter-spacing:.04em;
+}
+.docs-page-head .crumb a{ color:var(--ink-3); text-decoration:none; }
+.docs-page-head .crumb a:hover{ color:var(--zop-orange); }
+.docs-page-head .crumb .sep{ margin:0 6px; color:var(--ink-5); }
+.docs-page-head h1{
+  font-size:clamp(32px, 4vw, 48px); font-weight:700;
+  letter-spacing:-.025em; line-height:1.1;
+  margin:0 0 var(--sp-4); color:var(--ink);
+}
+.docs-page-head h1 em{ color:var(--zop-orange); font-style:normal; }
+.docs-page-head .lede{
+  font-size:17px; line-height:1.55;
+  color:var(--ink-2); margin:0;
+  max-width:680px;
+}
+
+/* RIGHT · "On this page" anchor list · clean alignment, no border,
+   just text in a sticky column. Active item gets an orange dot + bold. */
+.docs-onthispage{
+  position:sticky; top:80px;
+  align-self:start;
+  max-height:calc(100vh - 100px);
+  overflow-y:auto;
+  padding:var(--sp-7) 0 var(--sp-10);
+}
+.docs-onthispage-head{
+  display:block;
+  font-family:var(--mono); font-size:10px; font-weight:700;
+  letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink-4);
+  margin:0 0 14px;
+  padding:0 12px;
+}
+.docs-onthispage-list{
+  list-style:none; padding:0; margin:0;
+  display:flex; flex-direction:column; gap:2px;
+}
+.docs-onthispage-list li{ margin:0; }
+.docs-onthispage-list a{
+  display:block;
+  padding:5px 12px;
+  font-family:var(--font); font-size:13px; font-weight:500;
+  letter-spacing:-.005em; line-height:1.5;
+  color:var(--ink-3); text-decoration:none;
+  border-left:1.5px solid transparent;
+  transition:color .14s, border-color .14s;
+}
+.docs-onthispage-list a:hover{ color:var(--ink); }
+.docs-onthispage-list a.is-active{
+  color:var(--zop-orange);
+  border-left-color:var(--zop-orange);
+  font-weight:600;
+}
+.docs-onthispage-list .is-h3{ margin-left:0; }
+.docs-onthispage-list .is-h3 a{
+  padding-left:24px; font-size:12px; color:var(--ink-4);
+}
+.docs-onthispage-list .is-h3 a:hover{ color:var(--ink-2); }
+
+/* Stub content card · for ZopDay/ZopCloud sections with placeholder copy */
+.docs-stub{
+  border:1px solid var(--line);
+  padding:var(--sp-6) var(--sp-6);
+  background:var(--bg-2);
+  margin:var(--sp-4) 0 var(--sp-6);
+  max-width:760px;
+}
+html[data-theme="dark"] .docs-stub{ background:#15151B; border-color:#2a2a30; }
+.docs-stub-tag{
+  display:inline-flex; align-items:center; gap:6px;
+  font-family:var(--mono); font-size:9.5px; font-weight:700;
+  letter-spacing:.14em; text-transform:uppercase;
+  color:var(--zop-orange);
+  border:1px solid var(--zop-orange);
+  padding:3px 8px;
+  margin-bottom:var(--sp-3);
+}
+.docs-stub h3{
+  font-size:18px; font-weight:600;
+  letter-spacing:-.01em; margin:0 0 var(--sp-2);
+  color:var(--ink);
+}
+.docs-stub p{
+  font-size:14px; line-height:1.6;
+  color:var(--ink-3); margin:0 0 var(--sp-3);
+}
+.docs-stub p:last-child{ margin-bottom:0; }
+.docs-stub .docs-stub-list{
+  list-style:none; padding:0; margin:var(--sp-3) 0 0;
+  display:flex; flex-direction:column; gap:6px;
+}
+.docs-stub-list li{
+  font-family:var(--mono); font-size:12px;
+  color:var(--ink-3);
+  padding-left:14px; position:relative;
+}
+.docs-stub-list li::before{
+  content:'›'; position:absolute; left:2px;
+  color:var(--zop-orange);
+}
+
+.docs-section h2 em{ color:var(--zop-orange); font-style:normal; }
+.docs-section{
+  padding:var(--sp-10) 0;
+  border-bottom:1px solid var(--line);
+  scroll-margin-top:80px;
+}
+.docs-section:first-child{ padding-top:0; }
+.docs-section:last-child{ border-bottom:0; padding-bottom:0; }
+.docs-section .num{
+  font-family:var(--mono); font-size:var(--t-11);
+  color:var(--zop-orange); letter-spacing:var(--ls-meta);
+  text-transform:uppercase; margin:0 0 var(--sp-3);
+  display:inline-flex; align-items:center; gap:var(--sp-2);
+}
+.docs-section .num::before{ content:''; width:8px; height:8px; background:var(--zop-orange); }
+.docs-section h2{
+  font-size:clamp(28px, 3.6vw, 44px);
+  letter-spacing:var(--ls-heading); line-height:1.1;
+  margin:0 0 var(--sp-5); max-width:780px;
+}
+.docs-section h2 em{ color:var(--zop-orange); font-style:normal; }
+.docs-section h3{
+  font-size:var(--t-22); margin:var(--sp-8) 0 var(--sp-3);
+  letter-spacing:var(--ls-heading); line-height:1.25;
+  scroll-margin-top:80px;
+}
+.docs-section h4{
+  font-size:var(--t-15); margin:var(--sp-6) 0 var(--sp-2);
+  font-weight:var(--fw-semi); letter-spacing:var(--ls-heading);
+}
+.docs-section p{
+  font-size:var(--t-15); color:var(--ink-2);
+  line-height:1.7; margin:0 0 var(--sp-4); max-width:760px;
+}
+.docs-section p strong{ color:var(--ink); font-weight:var(--fw-medium); }
+.docs-section ul, .docs-section ol{
+  font-size:var(--t-15); color:var(--ink-2);
+  line-height:1.7; margin:0 0 var(--sp-4); padding-left:var(--sp-5);
+  max-width:760px;
+}
+.docs-section li{ margin:var(--sp-2) 0; }
+.docs-section li strong{ color:var(--ink); font-weight:var(--fw-medium); }
+.docs-section code{
+  font-family:var(--mono); font-size:0.9em;
+  background:var(--bg-2); padding:2px 6px;
+  border:1px solid var(--line);
+}
+
+/* Reference table · clean borders, monospace data */
+.docs-table{
+  width:100%; max-width:none;
+  border-collapse:collapse; border:1px solid var(--line);
+  margin:var(--sp-4) 0 var(--sp-6); font-size:var(--t-13);
+}
+.docs-table th, .docs-table td{
+  text-align:left; padding:var(--sp-3) var(--sp-4);
+  border-bottom:1px solid var(--line); vertical-align:top;
+  line-height:1.5; color:var(--ink-2);
+}
+.docs-table th{
+  background:var(--bg-2); color:var(--ink-4);
+  font-family:var(--mono); font-size:var(--t-10);
+  letter-spacing:var(--ls-meta); text-transform:uppercase;
+  font-weight:var(--fw-medium);
+}
+.docs-table tr:last-child td{ border-bottom:0; }
+.docs-table td:first-child{ font-family:var(--mono); font-size:var(--t-12); color:var(--ink); white-space:nowrap; }
+.docs-table code{ background:transparent; border:0; padding:0; }
+
+/* Callout · highlighted advisory boxes */
+.docs-callout{
+  border-left:3px solid var(--zop-orange);
+  padding:var(--sp-4) var(--sp-5);
+  background:var(--bg-2);
+  margin:var(--sp-5) 0;
+  max-width:760px;
+}
+.docs-callout strong{ color:var(--ink); display:block; margin-bottom:var(--sp-1); font-weight:var(--fw-medium); }
+.docs-callout p{ margin:0; font-size:var(--t-14); }
+
+/* Responsive · drop the right TOC at <1180px, then collapse the
+   sidebar at <960px. Mobile (<700px): sidebar becomes a slide-in
+   drawer triggered by a button in the topbar. */
+@media (max-width:1180px){
+  .docs-shell{ grid-template-columns:280px minmax(0,1fr); }
+  .docs-onthispage{ display:none; }
+}
+@media (max-width:960px){
+  .docs-shell{ grid-template-columns:1fr; gap:24px; }
+  .docs-sidebar{
+    position:static; max-height:none;
+    border-bottom:1px solid var(--line);
+    padding:var(--sp-5) 0;
+  }
+  .docs-sidebar-head{ flex-direction:row; align-items:center;
+    border-bottom:0; padding-bottom:0; margin-bottom:var(--sp-4); }
+  .docs-sidebar-search{ flex:1; max-width:360px; }
+  .docs-body{ padding:var(--sp-5) 0; }
+}
+</style>
+<script src="chrome-navmenu.js" defer></script>
+<script src="chrome-pagetransition.js" defer></script>
+<script src="chrome-mobilenav.js" defer></script>
+<script src="chrome-footer.js" defer></script>
+  <link rel="stylesheet" href="cta-tetris.css">
+</head>
+<body>
+<a class="skip-to-main" href="#main-content">Skip to main content</a>
+<style id="skip-to-main-css">.skip-to-main{position:absolute;left:-9999px;top:0;z-index:9999;padding:10px 16px;background:var(--ink,#0F0F12);color:var(--paper,#F0EBDB);font-family:var(--mono,monospace);font-size:13px;letter-spacing:.04em;text-decoration:none}.skip-to-main:focus{left:8px;top:8px;outline:2px solid var(--zop-orange,#F58549);outline-offset:2px}</style>
+
+<!-- ========================================================================
+     SVG defs, the canonical logo + marks. Identical on every page.
+     ======================================================================== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="mark-zopdev" viewBox="0 0 32 32">
+      <rect x="0" y="0" width="16" height="16" fill="var(--logo-blue, #2A4494)"/>
+      <rect x="16" y="0" width="16" height="16" fill="#F58549"/>
+      <rect x="16" y="16" width="16" height="16" fill="#7FB236"/>
+    </symbol>
+    <symbol id="mark-zopnight" viewBox="0 0 32 32">
+      <rect x="0" y="0" width="32" height="32" fill="var(--logo-blue, #2A4494)"/>
+      <circle cx="16" cy="16" r="8" fill="#FFFFFF"/>
+    </symbol>
+    <symbol id="mark-zopday" viewBox="0 0 32 32">
+      <rect x="0" y="0" width="32" height="32" fill="#F58549"/>
+      <circle cx="16" cy="16" r="8" fill="#FFFFFF"/>
+    </symbol>
+    <symbol id="mark-zopcloud" viewBox="0 0 32 32">
+      <!-- Brand playbook: pixel-cloud silhouette on family-blue container -->
+      <rect x="0" y="0" width="32" height="32" fill="#2A4494"/>
+      <rect x="12" y="8" width="8" height="6" fill="#FFFFFF"/>
+      <rect x="6" y="14" width="20" height="10" fill="#FFFFFF"/>
+    </symbol>
+    <symbol id="logo-zopdev" viewBox="0 0 715 276">
+      <path d="M7.452 229V201.784L63.504 137.308V134.716H9.072V115.6H85.86V142.816L29.808 207.292V209.884H86.184V229H7.452ZM136.786 231.268C128.794 231.268 121.612 229.648 115.24 226.408C108.868 223.168 103.846 218.47 100.174 212.314C96.5022 206.158 94.6662 198.76 94.6662 190.12V187.528C94.6662 178.888 96.5022 171.49 100.174 165.334C103.846 159.178 108.868 154.48 115.24 151.24C121.612 148 128.794 146.38 136.786 146.38C144.778 146.38 151.96 148 158.332 151.24C164.704 154.48 169.726 159.178 173.398 165.334C177.07 171.49 178.906 178.888 178.906 187.528V190.12C178.906 198.76 177.07 206.158 173.398 212.314C169.726 218.47 164.704 223.168 158.332 226.408C151.96 229.648 144.778 231.268 136.786 231.268ZM136.786 213.124C143.05 213.124 148.234 211.126 152.338 207.13C156.442 203.026 158.494 197.194 158.494 189.634V188.014C158.494 180.454 156.442 174.676 152.338 170.68C148.342 166.576 143.158 164.524 136.786 164.524C130.522 164.524 125.338 166.576 121.234 170.68C117.13 174.676 115.078 180.454 115.078 188.014V189.634C115.078 197.194 117.13 203.026 121.234 207.13C125.338 211.126 130.522 213.124 136.786 213.124ZM192.888 261.4V148.648H212.976V158.368H215.892C217.728 155.236 220.59 152.482 224.478 150.106C228.366 147.622 233.928 146.38 241.164 146.38C247.644 146.38 253.638 148 259.146 151.24C264.654 154.372 269.082 159.016 272.43 165.172C275.778 171.328 277.452 178.78 277.452 187.528V190.12C277.452 198.868 275.778 206.32 272.43 212.476C269.082 218.632 264.654 223.33 259.146 226.57C253.638 229.702 247.644 231.268 241.164 231.268C236.304 231.268 232.2 230.674 228.852 229.486C225.612 228.406 222.966 227.002 220.914 225.274C218.97 223.438 217.404 221.602 216.216 219.766H213.3V261.4H192.888ZM235.008 213.448C241.38 213.448 246.618 211.45 250.722 207.454C254.934 203.35 257.04 197.41 257.04 189.634V188.014C257.04 180.238 254.934 174.352 250.722 170.356C246.51 166.252 241.272 164.2 235.008 164.2C228.744 164.2 223.506 166.252 219.294 170.356C215.082 174.352 212.976 180.238 212.976 188.014V189.634C212.976 197.41 215.082 203.35 219.294 207.454C223.506 211.45 228.744 213.448 235.008 213.448ZM287.446 229V210.208H302.35V134.392H287.446V115.6H334.102C349.33 115.6 360.886 119.488 368.77 127.264C376.762 134.932 380.758 146.38 380.758 161.608V182.992C380.758 198.22 376.762 209.722 368.77 217.498C360.886 225.166 349.33 229 334.102 229H287.446ZM323.734 209.56H334.426C343.066 209.56 349.384 207.292 353.38 202.756C357.376 198.22 359.374 191.848 359.374 183.64V160.96C359.374 152.644 357.376 146.272 353.38 141.844C349.384 137.308 343.066 135.04 334.426 135.04H323.734V209.56ZM430.981 231.268C422.989 231.268 415.915 229.594 409.759 226.246C403.711 222.79 398.959 217.984 395.503 211.828C392.155 205.564 390.481 198.22 390.481 189.796V187.852C390.481 179.428 392.155 172.138 395.503 165.982C398.851 159.718 403.549 154.912 409.597 151.564C415.645 148.108 422.665 146.38 430.657 146.38C438.541 146.38 445.399 148.162 451.231 151.726C457.063 155.182 461.599 160.042 464.839 166.306C468.079 172.462 469.699 179.644 469.699 187.852V194.818H411.217C411.433 200.326 413.485 204.808 417.373 208.264C421.261 211.72 426.013 213.448 431.629 213.448C437.353 213.448 441.565 212.206 444.265 209.722C446.965 207.238 449.017 204.484 450.421 201.46L467.107 210.208C465.595 213.016 463.381 216.094 460.465 219.442C457.657 222.682 453.877 225.49 449.125 227.866C444.373 230.134 438.325 231.268 430.981 231.268ZM411.379 179.59H448.963C448.531 174.946 446.641 171.22 443.293 168.412C440.053 165.604 435.787 164.2 430.495 164.2C424.987 164.2 420.613 165.604 417.373 168.412C414.133 171.22 412.135 174.946 411.379 179.59ZM497.482 229L471.886 148.648H493.594L512.224 214.096H515.14L533.77 148.648H555.478L529.882 229H497.482Z" fill="currentColor"/>
+      <rect x="537" width="89" height="89" fill="var(--logo-blue, #2A4494)"/>
+      <rect x="626" width="89" height="89" fill="#F58549"/>
+      <rect x="626" y="89" width="89" height="89" fill="#7FB236"/>
+    </symbol>
+  </defs>
+</svg>
+
+
+<!-- ========================================================================
+     LIVE-OPS STRIP, identical on every page
+     ======================================================================== -->
+<!-- ========================================================================
+     NAV, identical on every page · CANONICAL.
+     If you change this block, run the chrome sweep so every subpage
+     stays in sync. Driven by data-menu/data-pane attributes, chrome.css
+     and chrome-mobilenav.js wire the dropdown overlay.
+     ======================================================================== -->
+<link rel="stylesheet" href="homepage-chrome.css"/>
+<div class="topbar-split" role="region" aria-label="Top announcements">
+  <a class="live-strip live-strip-cta topbar-calc" href="cur-calculator.html" aria-label="Open the savings calculator">
+    <span class="ls-cta-anchor">
+      <span class="ls-live"><span class="ls-livedot"></span>Calculator</span>
+    </span>
+    <span class="ls-cta-msg">See how much your cloud is wasting right now.</span>
+    <span class="ls-cta-arrow">Try it <span class="ls-arrow">→</span></span>
+  </a>
+  <div class="topbar-news" aria-label="Live announcements">
+    <div class="topbar-news-track">
+      <span class="tn-item"><span class="tn-tag tn-up">ZN</span><span class="tn-text">ZopNight v1.5 &middot; Live Kubernetes cluster state</span><span class="tn-delta tn-up">NEW</span></span>
+      <span class="tn-item"><span class="tn-tag tn-up">FIN</span><span class="tn-text">$57K/mo recovered on Azure &middot; Fortune 1000 estate</span><span class="tn-delta tn-up">&#9650; 31.4%</span></span>
+      <span class="tn-item"><span class="tn-tag">ZD</span><span class="tn-text">ZopDay &middot; Push-to-deploy across AWS, GCP, Azure</span><span class="tn-delta">LIVE</span></span>
+      <span class="tn-item"><span class="tn-tag tn-up">SCH</span><span class="tn-text">Smart Scheduling captures 73% of non-prod cycle</span><span class="tn-delta tn-up">&#9650; 73%</span></span>
+      <span class="tn-item"><span class="tn-tag">EVT</span><span class="tn-text">Event Readiness ships per-scope verdicts</span><span class="tn-delta">UPDATED</span></span>
+      <span class="tn-item"><span class="tn-tag tn-up">AR</span><span class="tn-text">Auto-Remediation &middot; 20 certified rules &middot; DBs untouched</span><span class="tn-delta tn-up">&#9650; 4 rules</span></span>
+      <span class="tn-item"><span class="tn-tag">CDCR</span><span class="tn-text">Continuous Detection, Continuous Remediation &middot; on every cloud</span><span class="tn-delta">SHIPPED</span></span>
+      <!-- Duplicate the sequence so the marquee loops seamlessly -->
+      <span class="tn-item" aria-hidden="true"><span class="tn-tag tn-up">ZN</span><span class="tn-text">ZopNight v1.5 &middot; Live Kubernetes cluster state</span><span class="tn-delta tn-up">NEW</span></span>
+      <span class="tn-item" aria-hidden="true"><span class="tn-tag tn-up">FIN</span><span class="tn-text">$57K/mo recovered on Azure &middot; Fortune 1000 estate</span><span class="tn-delta tn-up">&#9650; 31.4%</span></span>
+      <span class="tn-item" aria-hidden="true"><span class="tn-tag">ZD</span><span class="tn-text">ZopDay &middot; Push-to-deploy across AWS, GCP, Azure</span><span class="tn-delta">LIVE</span></span>
+      <span class="tn-item" aria-hidden="true"><span class="tn-tag tn-up">SCH</span><span class="tn-text">Smart Scheduling captures 73% of non-prod cycle</span><span class="tn-delta tn-up">&#9650; 73%</span></span>
+      <span class="tn-item" aria-hidden="true"><span class="tn-tag">EVT</span><span class="tn-text">Event Readiness ships per-scope verdicts</span><span class="tn-delta">UPDATED</span></span>
+      <span class="tn-item" aria-hidden="true"><span class="tn-tag tn-up">AR</span><span class="tn-text">Auto-Remediation &middot; 20 certified rules &middot; DBs untouched</span><span class="tn-delta tn-up">&#9650; 4 rules</span></span>
+      <span class="tn-item" aria-hidden="true"><span class="tn-tag">CDCR</span><span class="tn-text">Continuous Detection, Continuous Remediation &middot; on every cloud</span><span class="tn-delta">SHIPPED</span></span>
+    </div>
+  </div>
+</div>
+
+<style id="topbar-split-css">
+  /* Split topbar · the prior `.live-strip-cta` becomes the LEFT half;
+     the new `.topbar-news` ticker occupies the RIGHT half. Shared
+     30px bar height; both halves use the same dark base so the strip
+     reads as one continuous element. */
+  .topbar-split{
+    display: grid;
+    grid-template-columns: minmax(260px, auto) 1fr;
+    align-items: stretch;
+    background: #0a0a0d;
+    color: #F0EBDB;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+  /* Left · keep the existing calc-CTA chrome but cap its width so the
+     ticker on the right has the lion's share of the bar. The base
+     `.live-strip-cta` rules in chrome.css still apply. */
+  .topbar-split .topbar-calc{
+    background: #0a0a0d;
+    justify-content: flex-start;
+    padding: 0 14px 0 16px;
+    border-right: 1px solid rgba(255,255,255,.08);
+  }
+  /* Right · scrolling announcements track. Stock-exchange style:
+     mono tags, brand-orange "up" deltas, continuous left-drift. */
+  .topbar-news{
+    position: relative;
+    overflow: hidden;
+    height: 30px;
+    display: flex;
+    align-items: center;
+  }
+  .topbar-news::before,
+  .topbar-news::after{
+    content: '';
+    position: absolute; top: 0; bottom: 0; width: 28px;
+    pointer-events: none; z-index: 2;
+  }
+  .topbar-news::before{
+    left: 0;
+    background: linear-gradient(to right, #0a0a0d 0%, rgba(10,10,13,0) 100%);
+  }
+  .topbar-news::after{
+    right: 0;
+    background: linear-gradient(to left, #0a0a0d 0%, rgba(10,10,13,0) 100%);
+  }
+  .topbar-news-track{
+    display: inline-flex; align-items: center;
+    gap: 32px;
+    white-space: nowrap;
+    will-change: transform;
+    animation: topbar-news-roll 60s linear infinite;
+  }
+  .topbar-news:hover .topbar-news-track{ animation-play-state: paused; }
+  @keyframes topbar-news-roll{
+    from{ transform: translateX(0); }
+    to  { transform: translateX(-50%); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .topbar-news-track{ animation: none; }
+  }
+  /* Individual ticker items · ticker tag chip + headline + delta */
+  .tn-item{
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--font-body, 'Inter', system-ui, sans-serif);
+    font-size: 11.5px;
+    letter-spacing: .02em;
+    color: #C7C7CD;
+  }
+  .tn-tag{
+    font-family: var(--mono);
+    font-size: 9.5px; font-weight: 700;
+    letter-spacing: .14em;
+    padding: 2px 6px;
+    border: 1px solid rgba(255,255,255,.18);
+    color: #A8A8AF;
+  }
+  .tn-tag.tn-up{
+    color: var(--zop-orange);
+    border-color: rgba(245,133,73,.4);
+  }
+  .tn-text{ color: #E8E8EA; }
+  .tn-delta{
+    font-family: var(--mono);
+    font-size: 10px; font-weight: 700;
+    letter-spacing: .08em;
+    color: #A8A8AF;
+  }
+  .tn-delta.tn-up{ color: var(--zop-orange); }
+  @media (max-width: 760px){
+    /* Phone · drop the ticker so the calc CTA gets the full bar */
+    .topbar-split{ grid-template-columns: 1fr; }
+    .topbar-news{ display: none; }
+    .topbar-split .topbar-calc{
+      justify-content: center;
+      border-right: 0;
+    }
+  }
+</style>
+
+
+<!-- ============================================================
+     NAVBAR
+     ============================================================ -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="logo-lockup sm" aria-label="ZopDev">
+      <svg viewBox="0 0 715 276"><use href="#logo-zopdev"/></svg>
+    </a>
+    <div class="nav-links" id="nav-links">
+      <div class="nav-item" data-menu="product">
+        <a>Product <span class="nav-caret" aria-hidden="true"></span></a>
+      </div>
+      <div class="nav-item" data-menu="resources">
+        <a>Resources <span class="nav-caret" aria-hidden="true"></span></a>
+      </div>
+      <a href="pricing.html">Pricing</a>
+      <div class="nav-item" data-menu="company">
+        <a>Company <span class="nav-caret" aria-hidden="true"></span></a>
+      </div>
+      <a href="community.html">Community</a>
+    </div>
+
+    <!-- Shared dropdown overlay. Content crossfades, panel slides left/right -->
+    <div class="nav-overlay" id="nav-overlay" aria-hidden="true">
+      <div class="nav-panes" id="nav-panes">
+
+        <!-- ═══════ PRODUCT · 2 hero bentos + ZopCloud strip ═══════ -->
+        <div class="nav-pane" data-pane="product">
+          <div class="np-bento np-bento--products-v2">
+            <!-- ZopNight · large hero with sidebar/topbar/stat dashboard peek
+                 sliding up on hover. Brand-blue accents. -->
+            <a class="np-prod-card np-prod-card--night" data-product="zopnight" href="zopnight.html">
+              <span class="np-prod-badge live">live</span>
+              <div class="np-prod-head">
+                <svg class="np-prod-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><use href="#mark-zopnight"/></svg>
+                <h3 class="np-prod-title">ZopNight</h3>
+              </div>
+              <p class="np-prod-desc">Autonomous cloud governance + FinOps. AWS, Azure, GCP.</p>
+              <span class="np-prod-cta">Explore ZopNight <span class="np-prod-arrow" aria-hidden="true">→</span></span>
+              <!-- Dashboard peek · mini-mock of the ZopNight savings
+                   console (sidebar + monthly-savings hero number + stat
+                   tiles + breakdown chart). Hidden by translateY(70%);
+                   rises on hover so the user glimpses the real dashboard. -->
+              <span class="np-prod-peek np-prod-peek--night" aria-hidden="true">
+                <span class="np-peek-side">
+                  <span class="np-peek-brand">
+                    <span class="np-peek-brand-mark"></span>
+                    <span class="np-peek-brand-name">Zop<b>Night</b></span>
+                  </span>
+                  <span class="np-peek-sec">Cloud Estate</span>
+                  <span class="np-peek-nav">Dashboard</span>
+                  <span class="np-peek-nav">Inventory</span>
+                  <span class="np-peek-sec">Optimization</span>
+                  <span class="np-peek-nav np-peek-nav--on">Recommendations</span>
+                  <span class="np-peek-nav">Schedules</span>
+                  <span class="np-peek-nav">Auto-Remediate</span>
+                </span>
+                <span class="np-peek-main">
+                  <span class="np-peek-top">
+                    <span class="np-peek-top-title">Monthly Savings</span>
+                    <span class="np-peek-pill">live</span>
+                  </span>
+                  <span class="np-peek-hero">
+                    <span class="np-peek-hero-num">$42,180</span>
+                    <span class="np-peek-hero-delta">▲ 12.4%</span>
+                  </span>
+                  <span class="np-peek-stats">
+                    <span class="np-peek-stat"><span class="np-peek-stat-k">Idle</span><span class="np-peek-stat-v">218</span></span>
+                    <span class="np-peek-stat"><span class="np-peek-stat-k">Scheduled</span><span class="np-peek-stat-v">73%</span></span>
+                    <span class="np-peek-stat"><span class="np-peek-stat-k">Verified</span><span class="np-peek-stat-v">$31k</span></span>
+                  </span>
+                  <span class="np-peek-chart"></span>
+                </span>
+              </span>
+            </a>
+
+            <!-- ZopDay · large hero with the Deployment Spaces console
+                 peek (sidebar + page-head + filter row + provider table).
+                 Brand-orange accents. -->
+            <a class="np-prod-card np-prod-card--day" data-product="zopday" href="zopday.html">
+              <span class="np-prod-badge live">live</span>
+              <div class="np-prod-head">
+                <svg class="np-prod-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><use href="#mark-zopday"/></svg>
+                <h3 class="np-prod-title">ZopDay</h3>
+              </div>
+              <p class="np-prod-desc">Internal Developer Platform across AWS, GCP, Azure.</p>
+              <span class="np-prod-cta">Explore ZopDay <span class="np-prod-arrow" aria-hidden="true">→</span></span>
+              <span class="np-prod-peek np-prod-peek--day" aria-hidden="true">
+                <span class="np-peek-side">
+                  <span class="np-peek-brand">
+                    <span class="np-peek-brand-mark"></span>
+                    <span class="np-peek-brand-name">Zop<b>Day</b></span>
+                  </span>
+                  <span class="np-peek-sec">Infrastructure</span>
+                  <span class="np-peek-nav">Provision</span>
+                  <span class="np-peek-nav">Datastore</span>
+                  <span class="np-peek-nav">Cluster</span>
+                  <span class="np-peek-sec">Deployment</span>
+                  <span class="np-peek-nav np-peek-nav--on">Spaces</span>
+                  <span class="np-peek-nav">Projects</span>
+                </span>
+                <span class="np-peek-main">
+                  <span class="np-peek-top">
+                    <span class="np-peek-top-title">Deployment Spaces</span>
+                    <span class="np-peek-pill">5 healthy</span>
+                  </span>
+                  <span class="np-peek-filters">
+                    <span class="np-peek-chip np-peek-chip--on">All</span>
+                    <span class="np-peek-chip">Healthy</span>
+                    <span class="np-peek-chip">Issues</span>
+                    <span class="np-peek-chip">Pending</span>
+                  </span>
+                  <span class="np-peek-rows">
+                    <span class="np-peek-row"><span class="np-peek-prov np-peek-prov--gcp">G</span><span class="np-peek-row-name">us-prod</span><span class="np-peek-row-dot"></span><span class="np-peek-row-tag">GCP</span></span>
+                    <span class="np-peek-row"><span class="np-peek-prov np-peek-prov--aws">aws</span><span class="np-peek-row-name">eu-prod</span><span class="np-peek-row-dot"></span><span class="np-peek-row-tag">AWS</span></span>
+                    <span class="np-peek-row"><span class="np-peek-prov np-peek-prov--aws">aws</span><span class="np-peek-row-name">eu-staging</span><span class="np-peek-row-dot"></span><span class="np-peek-row-tag">AWS</span></span>
+                    <span class="np-peek-row"><span class="np-peek-prov np-peek-prov--az">A</span><span class="np-peek-row-name">apac-prod</span><span class="np-peek-row-dot"></span><span class="np-peek-row-tag">AZ</span></span>
+                  </span>
+                </span>
+              </span>
+            </a>
+
+            <!-- ZopCloud · spans full width below as the "coming soon" strip -->
+            <a class="np-prod-strip" href="zopcloud.html">
+              <svg class="np-prod-mark np-prod-mark--cloud" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><use href="#mark-zopcloud"/></svg>
+              <span class="np-prod-strip-body">
+                <h3 class="np-prod-strip-title">ZopCloud</h3>
+                <p class="np-prod-strip-desc">Multi-cloud resource graph and topology view.</p>
+              </span>
+              <span class="np-prod-badge soon">coming soon</span>
+            </a>
+          </div>
+          <div class="np-promo-row">
+            <span><strong>Live in Claude &amp; Codex</strong> · run ZopNight from your MCP client</span>
+            <a href="developers.html">Try MCP →</a>
+          </div>
+        </div>
+
+        <!-- ═══════ RESOURCES · Latest hero + compact icon list ═══════ -->
+        <div class="nav-pane" data-pane="resources">
+          <div class="np-bento np-bento--resources-v2">
+            <!-- Featured · "Latest from the blog" hero card. Text sits
+                 on the top-left (eyebrow + title + meta + CTA); the
+                 cover image is anchored at the bottom and is only
+                 partly visible at rest (translateY 55%). On card hover
+                 the image slides up so the cover reads clearly. Same
+                 peek pattern as the product dropdown ZopNight card. -->
+            <a class="np-res-hero" href="blog.html">
+              <span class="np-res-hero-body">
+                <span class="np-res-hero-eyebrow">
+                  <span class="np-res-hero-dot" aria-hidden="true"></span>
+                  Latest from the blog
+                </span>
+                <h3 class="np-res-hero-title">CDCR: making cost continuous, not quarterly.</h3>
+                <span class="np-res-hero-meta">8 min read &middot; Engineering</span>
+                <span class="np-res-hero-cta">Read post <span class="np-res-hero-arrow" aria-hidden="true">→</span></span>
+              </span>
+              <span class="np-res-hero-peek" aria-hidden="true">
+                <img src="event-cover-1.svg" alt="" loading="lazy" decoding="async">
+              </span>
+            </a>
+            <!-- Compact list · 8 links, icon + title only, no descriptions -->
+            <div class="np-res-list">
+              <a class="np-res-row" href="blog.html">
+                <span class="np-res-row-icon">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4 4h12v12H4z" stroke="currentColor" stroke-width="1.5"/><path d="M7 8h6M7 11h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>
+                </span>
+                Blog
+              </a>
+              <a class="np-res-row" href="free-ebooks.html">
+                <span class="np-res-row-icon">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M3 4h7v13H3zM10 4h7v13h-7z" stroke="currentColor" stroke-width="1.5"/><path d="M10 4v13" stroke="currentColor" stroke-width="1.5"/></svg>
+                </span>
+                Ebooks
+              </a>
+              <a class="np-res-row" href="customers.html">
+                <span class="np-res-row-icon">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M3 16c0-3 3-5 7-5s7 2 7 5" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/></svg>
+                </span>
+                Case studies
+              </a>
+              <a class="np-res-row" href="solutions.html">
+                <span class="np-res-row-icon">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="6" height="6" stroke="currentColor" stroke-width="1.5"/><rect x="11" y="3" width="6" height="6" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="11" width="6" height="6" stroke="currentColor" stroke-width="1.5"/><rect x="11" y="11" width="6" height="6" stroke="currentColor" stroke-width="1.5"/></svg>
+                </span>
+                Use cases
+              </a>
+              <a class="np-res-row" href="product-documentation.html">
+                <span class="np-res-row-icon">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4 4h12v12H4z" stroke="currentColor" stroke-width="1.5"/><path d="M8 7l4 3-4 3z" fill="currentColor"/></svg>
+                </span>
+                Product docs
+              </a>
+              <a class="np-res-row" href="kubernetes-guide.html">
+                <span class="np-res-row-icon">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 2l7 4v8l-7 4-7-4V6z" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="10" r="2" stroke="currentColor" stroke-width="1.3"/></svg>
+                </span>
+                Kubernetes guide
+              </a>
+              <a class="np-res-row" href="changelog.html">
+                <span class="np-res-row-icon">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M10 6v4l2.5 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>
+                </span>
+                Changelog
+              </a>
+              <a class="np-res-row" href="developer-documentation.html">
+                <span class="np-res-row-icon">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7 6L3 10l4 4M13 6l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="round"/></svg>
+                </span>
+                Developer docs
+              </a>
+              <a class="np-res-row" href="assets.html">
+                <span class="np-res-row-icon">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M3 4h11v12H3z" stroke="currentColor" stroke-width="1.5"/><path d="M14 7h3v9h-3" stroke="currentColor" stroke-width="1.5"/><path d="M6 8h5M6 11h5M6 14h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="square"/></svg>
+                </span>
+                Media kit
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════ COMPANY · About hero + Careers / Contact stack ═══════ -->
+        <div class="nav-pane" data-pane="company">
+          <div class="np-bento np-bento--company-v2">
+            <!-- About · larger hero card with a stylized company peek
+                 (wordmark + founder avatars + location strip) that
+                 slides up on hover, monochrome at rest. -->
+            <a class="np-comp-card" href="about.html">
+              <span class="np-comp-eyebrow">
+                <svg class="np-comp-eyebrow-mark" viewBox="0 0 715 276" aria-hidden="true" focusable="false"><use href="#logo-zopdev"/></svg>
+                <span>About ZopDev</span>
+              </span>
+              <h3 class="np-comp-title">Founded 2024.</h3>
+              <p class="np-comp-desc">The autopilot for multi-cloud cost.</p>
+              <span class="np-comp-cta">Meet the team <span class="np-comp-arrow" aria-hidden="true">→</span></span>
+              <!-- Photo stack · 3 company photos overlapping with a
+                   subtle offset + rotation. On card hover they fan out
+                   horizontally so all three are visible at once. -->
+              <span class="np-comp-stack" aria-hidden="true">
+                <img class="np-comp-stack-img np-comp-stack-img--3" src="office-2-600w.jpg" alt="" loading="lazy" decoding="async">
+                <img class="np-comp-stack-img np-comp-stack-img--2" src="founders-2-800w.jpg" alt="" loading="lazy" decoding="async">
+                <img class="np-comp-stack-img np-comp-stack-img--1" src="founders-1-800w.jpg" alt="" loading="lazy" decoding="async">
+              </span>
+            </a>
+            <!-- Media kit · compact cell, takes the row-1 slot that
+                 was previously Careers. Direct path to the press
+                 assets page. -->
+            <a class="np-comp-cell" href="assets.html">
+              <div class="np-cell-icon">
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"><path d="M3 4h11v12H3z"/><path d="M14 7h3v9h-3"/><path d="M6 8h5M6 11h5M6 14h3" stroke-width="1.3" stroke-linecap="square"/></svg>
+              </div>
+              <h3 class="np-cell-title">Media kit</h3>
+              <p class="np-cell-desc">Logos &middot; brand assets &middot; press</p>
+            </a>
+            <!-- Contact · compact cell -->
+            <a class="np-comp-cell" href="contact.html">
+              <div class="np-cell-icon">
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"><path d="M3 5h14v10H3z"/><path d="M3 5l7 5 7-5"/></svg>
+              </div>
+              <h3 class="np-cell-title">Contact</h3>
+              <p class="np-cell-desc">Talk to sales &middot; founders reply within 24h</p>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="nav-cta">
+      <div class="nav-pg-wrap">
+        <a class="chip-playground" href="playground.html" aria-haspopup="menu" aria-expanded="false">
+          <span>Playground</span>
+          <span class="nav-caret nav-pg-caret" aria-hidden="true"></span>
+        </a>
+        <div class="nav-pg-menu" role="menu" aria-label="Playground options">
+          <a class="nav-pg-card nav-pg-card--night" href="playground.html#zopnight" role="menuitem">
+            <span class="nav-pg-card-head">
+              <span class="nav-pg-mark">
+                  <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><use href="#mark-zopnight"/></svg>
+                </span>
+                <span class="nav-pg-body">
+                  <span class="nav-pg-name">ZopNight playground</span>
+                  <span class="nav-pg-desc">Cost loop &middot; idle, schedules, anomalies</span>
+                </span>
+                <span class="nav-pg-arrow" aria-hidden="true">&rarr;</span>
+            </span>
+          <span class="nav-pg-peek nav-pg-peek--night" aria-hidden="true">
+            <span class="nav-pg-peek-top"><span class="nav-pg-peek-dot"></span>ZopNight &middot; cost console</span>
+            <span class="nav-pg-peek-body">
+              <span class="nav-pg-peek-tile"><span class="nav-pg-peek-label">Idle</span><span class="nav-pg-peek-val nav-pg-peek-val--accent">$1.2k</span></span>
+              <span class="nav-pg-peek-tile"><span class="nav-pg-peek-label">Save</span><span class="nav-pg-peek-val">38%</span></span>
+              <span class="nav-pg-peek-tile"><span class="nav-pg-peek-label">Anom</span><span class="nav-pg-peek-val">4</span></span>
+            </span>
+          </span>
+          </a>
+          <a class="nav-pg-card nav-pg-card--day" href="playground.html#zopday" role="menuitem">
+            <span class="nav-pg-card-head">
+              <span class="nav-pg-mark">
+                  <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><use href="#mark-zopday"/></svg>
+                </span>
+                <span class="nav-pg-body">
+                  <span class="nav-pg-name">ZopDay playground</span>
+                  <span class="nav-pg-desc">Deploy loop &middot; clusters, datastores, push</span>
+                </span>
+                <span class="nav-pg-arrow" aria-hidden="true">&rarr;</span>
+            </span>
+          <span class="nav-pg-peek nav-pg-peek--day" aria-hidden="true">
+            <span class="nav-pg-peek-top"><span class="nav-pg-peek-dot"></span>ZopDay &middot; deploy console</span>
+            <span class="nav-pg-peek-body">
+              <span class="nav-pg-peek-tile"><span class="nav-pg-peek-label">Push</span><span class="nav-pg-peek-val nav-pg-peek-val--accent">12s</span></span>
+              <span class="nav-pg-peek-tile"><span class="nav-pg-peek-label">Env</span><span class="nav-pg-peek-val">3</span></span>
+              <span class="nav-pg-peek-tile"><span class="nav-pg-peek-label">Pass</span><span class="nav-pg-peek-val">99%</span></span>
+            </span>
+          </span>
+          </a>
+        </div>
+      </div>
+      <a class="sign" href="signin.html">Sign In</a>
+      <a class="btn btn-accent" href="demo.html"><span>Book a Demo</span> <span class="arrow">→</span></a>
+    </div>
+    <button class="mob-nav-toggle" id="mob-nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="mob-nav-drawer" type="button">
+      <span class="bars" aria-hidden="true"><span></span><span></span><span></span></span>
+    </button>
+  </div>
+</nav>
+
+
+
+<!-- ========================================================================
+     TEMPLATE BLOCK 3 · page content between nav and footer
+     ======================================================================== -->
+<main class="page docs-page" id="main-content">
+
+  <!-- ════════════════════════════════════════════════════════════════
+       3-COLUMN DOCS SHELL · sidebar + content + on-this-page
+       data-doc-product attribute drives which product's nav + content
+       is shown. JS swaps it on switcher selection.
+       ════════════════════════════════════════════════════════════════ -->
+  <div class="docs-shell" data-doc-product="zopnight">
+
+    <!-- ── LEFT · product switcher + grouped nav ─────────────────── -->
+    <aside class="docs-sidebar" aria-label="Documentation navigation">
+
+      <!-- Compact search at sidebar top -->
+      <div class="docs-sidebar-head">
+        <input id="docs-search-input" class="docs-sidebar-search-input" type="search" placeholder="Search docs&hellip;" autocomplete="off" aria-label="Search docs" />
+      </div>
+
+      <div class="docs-product-switch">
+        <span class="docs-product-switch-label">Product</span>
+        <button class="docs-product-switch-btn" type="button" data-doc-switch
+                aria-haspopup="listbox" aria-expanded="false">
+          <span class="docs-product-switch-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" focusable="false" data-doc-switch-mark><use href="#mark-zopnight"/></svg>
+          </span>
+          <span class="docs-product-switch-name" data-doc-switch-name>ZopNight</span>
+          <span class="docs-product-switch-caret" aria-hidden="true"></span>
+        </button>
+        <div class="docs-product-switch-menu" role="listbox" aria-label="Choose a product" hidden>
+          <button class="docs-product-switch-opt" type="button" role="option" data-doc-pick="zopnight" aria-current="true">
+            <span class="docs-product-switch-opt-mark" aria-hidden="true">
+              <svg viewBox="0 0 32 32" focusable="false"><use href="#mark-zopnight"/></svg>
+            </span>
+            <span class="docs-product-switch-opt-body">
+              <span class="docs-product-switch-opt-name">ZopNight</span>
+              <span class="docs-product-switch-opt-meta">Cost &middot; FinOps console</span>
+            </span>
+            <svg class="docs-product-switch-opt-check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5 L7 12 L13 5"/></svg>
+          </button>
+          <button class="docs-product-switch-opt" type="button" role="option" data-doc-pick="zopday">
+            <span class="docs-product-switch-opt-mark" aria-hidden="true">
+              <svg viewBox="0 0 32 32" focusable="false"><use href="#mark-zopday"/></svg>
+            </span>
+            <span class="docs-product-switch-opt-body">
+              <span class="docs-product-switch-opt-name">ZopDay</span>
+              <span class="docs-product-switch-opt-meta">Deploy &middot; IDP</span>
+            </span>
+            <svg class="docs-product-switch-opt-check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5 L7 12 L13 5"/></svg>
+          </button>
+          <button class="docs-product-switch-opt" type="button" role="option" data-doc-pick="zopcloud">
+            <span class="docs-product-switch-opt-mark" aria-hidden="true">
+              <svg viewBox="0 0 32 32" focusable="false"><use href="#mark-zopcloud"/></svg>
+            </span>
+            <span class="docs-product-switch-opt-body">
+              <span class="docs-product-switch-opt-name">ZopCloud</span>
+              <span class="docs-product-switch-opt-meta">Cloud platform</span>
+            </span>
+            <svg class="docs-product-switch-opt-check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5 L7 12 L13 5"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Nav tree · ZopNight (current product) -->
+      <nav class="docs-nav" data-doc-nav="zopnight">
+        <div class="docs-nav-group">
+          <span class="docs-nav-group-head">Get started</span>
+          <ul>
+            <li><a href="#introduction">Introduction</a></li>
+            <li><a href="#getting-started">Quickstart</a></li>
+            <li><a href="#discovery">Resource discovery</a></li>
+            <li><a href="#cloud-accounts">Cloud accounts</a></li>
+          </ul>
+        </div>
+        <div class="docs-nav-group">
+          <span class="docs-nav-group-head">Engines</span>
+          <ul>
+            <li><a href="#scheduling">Smart scheduling</a></li>
+            <li><a href="#intelligence">Recommendations</a></li>
+          </ul>
+        </div>
+        <div class="docs-nav-group">
+          <span class="docs-nav-group-head">Cost</span>
+          <ul>
+            <li><a href="#cost-management">Cost management</a></li>
+            <li><a href="#dashboards">Dashboards &amp; reports</a></li>
+          </ul>
+        </div>
+        <div class="docs-nav-group">
+          <span class="docs-nav-group-head">Operations</span>
+          <ul>
+            <li><a href="#notifications">Notifications</a></li>
+            <li><a href="#cloud-support">Cloud support matrix</a></li>
+            <li><a href="#security">Security &amp; access</a></li>
+          </ul>
+        </div>
+        <div class="docs-nav-group">
+          <span class="docs-nav-group-head">Integrations</span>
+          <ul>
+            <li><a href="#provisioning">Provisioning (ZopDay)</a></li>
+            <li><a href="#mcp-server">MCP server</a></li>
+            <li><a href="#api">API overview</a></li>
+          </ul>
+        </div>
+        <div class="docs-nav-group">
+          <span class="docs-nav-group-head">Reference</span>
+          <ul>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="#appendix">Appendix</a></li>
+          </ul>
+        </div>
+      </nav>
+
+      <!-- Nav tree · ZopDay (stub) -->
+      <nav class="docs-nav" data-doc-nav="zopday" hidden>
+        <div class="docs-nav-group">
+          <span class="docs-nav-group-head">Get started</span>
+          <ul>
+            <li><a href="#zd-introduction">Introduction</a></li>
+            <li><a href="#zd-quickstart">Quickstart</a></li>
+            <li><a href="#zd-connect">Connect your repo</a></li>
+          </ul>
+        </div>
+        <div class="docs-nav-group">
+          <span class="docs-nav-group-head">Stages</span>
+          <ul>
+            <li><a href="#zd-landing-zone">Landing zone</a></li>
+            <li><a href="#zd-deployment">Deployment</a></li>
+            <li><a href="#zd-live-state">Live state</a></li>
+          </ul>
+        </div>
+        <div class="docs-nav-group">
+          <span class="docs-nav-group-head">Workflows</span>
+          <ul>
+            <li><a href="#zd-zd-push">The zd push command</a></li>
+            <li><a href="#zd-templates">Templates</a></li>
+            <li><a href="#zd-environments">Environments</a></li>
+          </ul>
+        </div>
+        <div class="docs-nav-group">
+          <span class="docs-nav-group-head">Reference</span>
+          <ul>
+            <li><a href="#zd-cli">CLI reference</a></li>
+            <li><a href="#zd-api">API reference</a></li>
+          </ul>
+        </div>
+      </nav>
+
+      <!-- Nav tree · ZopCloud (stub) -->
+      <nav class="docs-nav" data-doc-nav="zopcloud" hidden>
+        <div class="docs-nav-group">
+          <span class="docs-nav-group-head">Get started</span>
+          <ul>
+            <li><a href="#zc-introduction">Introduction</a></li>
+            <li><a href="#zc-quickstart">Quickstart</a></li>
+            <li><a href="#zc-providers">Connect a provider</a></li>
+          </ul>
+        </div>
+        <div class="docs-nav-group">
+          <span class="docs-nav-group-head">Platform</span>
+          <ul>
+            <li><a href="#zc-regions">Regions</a></li>
+            <li><a href="#zc-networking">Networking</a></li>
+            <li><a href="#zc-storage">Storage</a></li>
+          </ul>
+        </div>
+        <div class="docs-nav-group">
+          <span class="docs-nav-group-head">Reference</span>
+          <ul>
+            <li><a href="#zc-cli">CLI reference</a></li>
+            <li><a href="#zc-api">API reference</a></li>
+          </ul>
+        </div>
+      </nav>
+
+      <!-- Sidebar foot · quick links + sign in -->
+      <div class="docs-sidebar-foot">
+        <a href="changelog.html">Changelog</a>
+        <a href="developer-documentation.html">API reference</a>
+        <a class="docs-sidebar-foot-cta" href="signin.html">Sign in <span aria-hidden="true">&rarr;</span></a>
+      </div>
+    </aside>
+
+    <!-- ── MIDDLE · documentation body ────────────────────────────── -->
+    <article class="docs-body">
+
+      <header class="docs-page-head">
+        <nav class="crumb" aria-label="Breadcrumb">
+          <a href="index.html">home</a>
+          <span class="sep">/</span>
+          <a href="blog.html">resources</a>
+          <span class="sep">/</span>
+          <span data-doc-crumb>ZopNight docs</span>
+        </nav>
+        <h1 data-doc-h1>Product <em>documentation.</em></h1>
+        <p class="lede" data-doc-lede>ZopNight is an autonomous cloud governance platform that enforces cost discipline through policy-driven remediation. <strong>Cron-based start/stop schedules, 337+ audit rules, dependency-aware orchestration</strong> across AWS, GCP, Azure, and Kubernetes. Cuts cloud spend up to 60%.</p>
+      </header>
+
+      <!-- ZopNight content (full · existing 16 sections) -->
+      <div data-doc-content="zopnight">
+
+      <section class="docs-section" id="introduction">
+        <div class="num">01 · introduction</div>
+        <h2>Autonomous cloud governance &amp; <em>FinOps automation.</em></h2>
+        <p>ZopNight is an autonomous cloud governance platform that enforces cost discipline through policy-driven remediation, enabling engineering teams to move fast while maintaining financial control.</p>
+        <p>Built by ZopDev, ZopNight moves beyond traditional FinOps dashboards. Where legacy tools surface insights after the damage is done, ZopNight prevents waste at its source through automated scheduling, dependency-aware resource orchestration, and 337+ audit rules across AWS, GCP, Azure, and Kubernetes.</p>
+
+        <h3>What ZopNight does</h3>
+        <ul>
+          <li><strong>Enforces cost discipline automatically</strong> through cron-based start/stop schedules that power down non-production resources during idle hours, verified to reduce cloud spend by up to 60%.</li>
+          <li><strong>Detects and remediates waste</strong> with idle resource detection, right-sizing recommendations, orphan cleanup, and discount opportunity identification across all three major cloud providers.</li>
+          <li><strong>Orchestrates infrastructure safely</strong> with dependency-aware execution ordering, production-safe overrides, and full audit trails for every state transition.</li>
+          <li><strong>Scales infrastructure proactively</strong> with VM autoscaling policies, event readiness pre-scaling, and cost anomaly detection that catches budget deviations before they compound.</li>
+          <li><strong>Provisions multi-cloud infrastructure end-to-end</strong> via ZopDay, with single-wizard deployment of Kubernetes clusters, datastores, networking, and add-ons across AWS, GCP, and Azure.</li>
+        </ul>
+
+        <h3>Architecture overview</h3>
+        <p>ZopNight follows a discover-schedule-execute pattern. All API requests pass through a gateway that handles JWT validation and org context injection, routing to five backend services:</p>
+        <ul>
+          <li><strong>Config:</strong> Schedules, resource groups, overrides, cloud accounts, autoscaler policies, event readiness definitions.</li>
+          <li><strong>Discoverer:</strong> Multi-cloud resource discovery, metrics collection, activity log sync.</li>
+          <li><strong>Executor:</strong> Start/stop execution, state history, autoscaler and event readiness action fulfillment.</li>
+          <li><strong>Aggregator:</strong> Cost reports, trends, budgets, showback, billing sync, anomaly detection.</li>
+          <li><strong>Recommender:</strong> 337+ audit rules, optimization recommendations, auto-tagging predictions.</li>
+        </ul>
+
+        <div class="docs-callout">
+          <strong>Production-safe by design</strong>
+          <p>ZopNight performs start and stop operations only. It never deletes resources. Production environments receive automatic protection flags, and every action is logged with full attribution for audit readiness.</p>
+        </div>
+
+        <h3>Who this document is for</h3>
+        <p>Engineering leaders evaluating ZopNight, platform teams onboarding their cloud accounts, and FinOps practitioners building cost governance programs. Covers every capability in depth, from five-minute quick-start to advanced autoscaling policies and API integration patterns.</p>
+      </section>
+
+      <section class="docs-section" id="getting-started">
+        <div class="num">02 · getting started</div>
+        <h2>Five minutes to <em>first value.</em></h2>
+        <p>ZopNight is designed for a five-minute path to first value. Connect a cloud account, discover resources, attach a schedule, and start enforcing cost discipline immediately.</p>
+
+        <h3>Prerequisites</h3>
+        <ul>
+          <li>A ZopNight organization (created during signup via Google, GitHub, or SAML SSO).</li>
+          <li>Cloud provider credentials with appropriate permissions (read-only for discovery, read-write for start/stop enforcement).</li>
+          <li>At least one non-production environment (dev, staging, QA) with running resources.</li>
+        </ul>
+
+        <h3>Quick-start workflow</h3>
+        <ol>
+          <li><strong>Connect a cloud account.</strong> Add AWS, GCP, or Azure credentials. ZopNight supports static keys, assume-role (AWS), service account JSON (GCP), service principal or Workload Identity Federation (Azure).</li>
+          <li><strong>Discover resources.</strong> ZopNight scans all regions and surfaces inventory by provider, account, region, and resource type. Discovery runs on a six-hour cycle and supports on-demand refresh.</li>
+          <li><strong>Create a schedule.</strong> Define a cron-based schedule with timezone support. Common patterns: weekday business hours, night shutdown, weekend shutdown.</li>
+          <li><strong>Attach resources.</strong> Assign individual resources or entire resource groups. Dependency-aware ordering ensures databases start before application servers.</li>
+          <li><strong>Verify and enforce.</strong> Monitor execution via the scheduler events log, notification channels (Slack, Teams, Google Chat, email), and the cost dashboard for real-time savings tracking.</li>
+        </ol>
+
+        <div class="docs-callout">
+          <strong>AWS one-click setup</strong>
+          <p>For AWS accounts, ZopNight provides a CloudFormation template that provisions the required IAM role with least-privilege permissions in a single click. No manual policy configuration required.</p>
+        </div>
+
+        <h3>Permission model</h3>
+        <p>Each cloud account connection specifies a permission level that governs what ZopNight can do:</p>
+        <div class="resp-table-wrap"><table class="docs-table">
+          <thead><tr><th>Level</th><th>Capabilities</th></tr></thead>
+          <tbody>
+            <tr><td>read_only</td><td>Resource discovery, cost tracking, recommendations, scheduling (without enforcement).</td></tr>
+            <tr><td>read_write</td><td>Full access: discovery, scheduling enforcement (start/stop), autoscaler policy application, provisioning.</td></tr>
+          </tbody>
+        </table></div>
+        <p>Permission visibility is built in. During discovery, ZopNight classifies and records any permission errors per provider type and region, surfacing them in a dedicated permissions drawer on each cloud account card with Granted, Denied, and Unknown status badges.</p>
+      </section>
+
+      <section class="docs-section" id="scheduling">
+        <div class="num">03 · scheduling &amp; automation</div>
+        <h2>The scheduling <em>engine.</em></h2>
+        <p>The scheduling engine is the foundation of ZopNight's cost governance. It evaluates cron expressions every minute, queuing start and stop intents against cloud provider APIs with dependency-aware execution ordering and idempotent operation guarantees.</p>
+
+        <h3>Schedule configuration</h3>
+        <p>Each schedule is defined by a name, description, IANA timezone, and one or more cron entries. Standard five-field cron expressions control when resources start and stop. A single schedule can carry multiple cron entries to handle complex patterns like weekday business hours combined with extended hours on specific days.</p>
+
+        <div class="resp-table-wrap"><table class="docs-table">
+          <thead><tr><th>Pattern</th><th>Cron expression</th><th>Use case</th></tr></thead>
+          <tbody>
+            <tr><td>Weekday business hours</td><td><code>0 9 * * 1-5</code> / <code>0 18 * * 1-5</code></td><td>Dev and staging active during work hours only</td></tr>
+            <tr><td>Night shutdown</td><td><code>0 20 * * *</code> / <code>0 7 * * 1-5</code></td><td>Power down all non-production after 8 PM</td></tr>
+            <tr><td>Weekend shutdown</td><td><code>0 18 * * 5</code> / <code>0 9 * * 1</code></td><td>Full weekend shutdown for QA and staging</td></tr>
+            <tr><td>Extended sprint hours</td><td><code>0 7 * * 1-5</code> / <code>0 22 * * 1-5</code></td><td>Longer uptime during sprint cycles</td></tr>
+          </tbody>
+        </table></div>
+
+        <h3>Resource groups and dependency ordering</h3>
+        <p>Resource groups enable coordinated lifecycle management for resources that depend on each other. Exclusive membership is enforced: one resource belongs to one group, one scheduling source per resource.</p>
+        <p>Within a group, execution ordering is defined through tiers and per-tier sequencing. ZopNight supports both automatic ordering (storage first, compute second, applications third) and custom user-defined sequences with configurable start/stop delays per resource.</p>
+        <ul>
+          <li><strong>Tiered execution:</strong> Tier 1 resources complete before Tier 2 begins. Within each tier, resources execute in defined sequence order.</li>
+          <li><strong>Dependency example:</strong> A typical web application group starts the RDS database (Tier 1), then the EC2 application servers (Tier 2), then the load balancer health checks register (Tier 3). Stop order reverses automatically.</li>
+          <li><strong>Bulk operations:</strong> Start or stop all resources in a group with a single action. A worker pool of four parallel executors handles concurrent operations while respecting tier ordering.</li>
+        </ul>
+
+        <h3>Override system</h3>
+        <p>Overrides provide temporary exceptions to active schedules for production incidents, maintenance windows, demos, or ad-hoc testing.</p>
+        <div class="resp-table-wrap"><table class="docs-table">
+          <thead><tr><th>Type</th><th>Behavior</th><th>Use case</th></tr></thead>
+          <tbody>
+            <tr><td>force_on</td><td>Keep resource running, ignore all stop schedules</td><td>Production incident requiring staging environment for debugging</td></tr>
+            <tr><td>force_off</td><td>Keep resource stopped, ignore all start schedules</td><td>Maintenance window, security patching</td></tr>
+          </tbody>
+        </table></div>
+        <p>Overrides accept ISO 8601 expiry timestamps with timezone support. A maximum override duration policy prevents indefinite overrides from accumulating. Every override is logged with creator email, timestamp, reason, and expiry for full audit trail compliance. Overrides can be applied at both individual resource and group level.</p>
+
+        <h3>Actions and execution</h3>
+        <p>Every state transition is recorded as an action with full attribution. Actions can be triggered by schedules (cron evaluation), manual operations (API or UI), overrides, or autoscaler policies.</p>
+        <ul>
+          <li><strong>Manual actions:</strong> <code>POST /actions</code> triggers immediate start or stop on individual resources.</li>
+          <li><strong>Bulk actions:</strong> <code>POST /actions/bulk</code> operates across entire resource groups with dependency-aware ordering.</li>
+          <li><strong>Idempotent operations:</strong> Starting an already-running resource or stopping an already-stopped resource succeeds without side effects.</li>
+          <li><strong>State tracking:</strong> Every transition (ON to OFF, OFF to ON) is recorded with timestamp, trigger source, and actor identity. The <code>resource_state_history</code> table provides the authoritative record for cost calculation and compliance auditing.</li>
+        </ul>
+      </section>
+
+      <section class="docs-section" id="intelligence">
+        <div class="num">04 · intelligence &amp; optimization</div>
+        <h2>337+ rules. <em>Per-resource savings.</em></h2>
+        <p>ZopNight's intelligence layer pre-computes recommendations via cron, analyzes 14 days of cloud metrics, and surfaces actionable remediation with per-resource savings estimates. The system evaluates 337 audit rules across AWS (155), GCP (75), and Azure (107).</p>
+
+        <h3>Recommendations engine</h3>
+        <p>Recommendations are organized into seven categories:</p>
+        <div class="resp-table-wrap"><table class="docs-table">
+          <thead><tr><th>Category</th><th>Description</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td>Idle</td><td>Running but not utilized</td><td>EC2 stopped for 30+ days, zero-connection database</td></tr>
+            <tr><td>Rightsizing</td><td>Over-provisioned, ready for downsize</td><td>CPU consistently below 5%, gp2 volumes eligible for gp3</td></tr>
+            <tr><td>Schedule</td><td>Would benefit from start/stop automation</td><td>Dev instances running 24/7 with no weekend activity</td></tr>
+            <tr><td>Orphan</td><td>Detached or abandoned, accruing cost</td><td>Unattached EBS volumes, orphan snapshots, unused Elastic IPs</td></tr>
+            <tr><td>Compliance</td><td>Configuration gaps vs. best practices</td><td>Missing encryption, public S3 access, absent backup policy</td></tr>
+            <tr><td>Discount</td><td>Commitment-based pricing opportunities</td><td>RI / Savings Plan coverage gaps, Spot eligibility</td></tr>
+            <tr><td>Governance</td><td>Missing tags or labels for cost attribution</td><td>Resources without environment, team, or cost-center labels</td></tr>
+          </tbody>
+        </table></div>
+
+        <h4>Severity levels</h4>
+        <div class="resp-table-wrap"><table class="docs-table">
+          <thead><tr><th>Severity</th><th>Criteria</th><th>Action timeline</th></tr></thead>
+          <tbody>
+            <tr><td>Critical</td><td>Security risk or significant cost waste</td><td>Immediate (today)</td></tr>
+            <tr><td>High</td><td>Meaningful cost or compliance gap</td><td>This week</td></tr>
+            <tr><td>Medium</td><td>Worth addressing in normal workflow</td><td>This sprint</td></tr>
+            <tr><td>Low</td><td>Minor optimization opportunity</td><td>Backlog</td></tr>
+            <tr><td>Info</td><td>Informational, no direct cost impact</td><td>No action required</td></tr>
+          </tbody>
+        </table></div>
+        <p>Each recommendation includes a title, description, current monthly cost, optimized cost, potential savings, evidence JSON (the cloud monitoring values that triggered the rule), and an action type with payload for one-click remediation where supported.</p>
+
+        <h3>Auto-tagging</h3>
+        <p>ZopNight's auto-tagger predicts environment classifications (prod, staging, dev) and operational flags (noStop) using deterministic, rule-based logic across naming patterns, existing tags, and instance configuration. No machine learning, predictions are transparent and reproducible.</p>
+        <ul>
+          <li><strong>Confidence scoring:</strong> 1&ndash;100. High (80&ndash;100) is bulk-acceptable; medium (50&ndash;79) warrants individual review; low (below 50) is hidden by default.</li>
+          <li><strong>Non-destructive workflow:</strong> All predictions require explicit accept or reject before tags are merged. Accepted tags can optionally sync back to the cloud provider.</li>
+          <li><strong>Filtering:</strong> By provider, resource type, confidence band, acceptance status.</li>
+        </ul>
+
+        <h3>VM autoscaling</h3>
+        <p>ZopNight's autoscaler manages capacity across AWS Auto Scaling Groups, AWS ECS services, GCP Managed Instance Groups, and Azure Virtual Machine Scale Sets with a progressive adoption model.</p>
+        <h4>Operating modes</h4>
+        <div class="resp-table-wrap"><table class="docs-table">
+          <thead><tr><th>Mode</th><th>Behavior</th><th>Use case</th></tr></thead>
+          <tbody>
+            <tr><td>Monitor</td><td>Collect metrics, publish what-if recommendations</td><td>Evaluate potential savings before committing</td></tr>
+            <tr><td>Recommend</td><td>Generate recommendations with one-click apply</td><td>Controlled optimization with manual approval</td></tr>
+            <tr><td>Autopilot</td><td>Apply changes automatically within configured bounds</td><td>Hands-off capacity management within min/max/cooldown guardrails</td></tr>
+          </tbody>
+        </table></div>
+        <p>Policy configuration includes minimum and maximum capacity, target CPU percentage, cooldown seconds between scaling actions, and cloud account scoping. Smart defaults are derived from 14-day historical analysis using Welford-based online statistics (P95 CPU, peak instance counts) to suggest optimal values. Schedule triggers support business-hours, peak-hours, and weekend-scale-down presets.</p>
+
+        <h4>Adopt-or-replace for existing policies</h4>
+        <p>ZopNight never silently overwrites existing cloud-side scaling configurations. When the create wizard detects pre-existing policies on a target, the user explicitly chooses between adopting the existing configuration (zero-mutation observation) or replacing it with a ZopNight-managed policy. The full pre-existing configuration is captured for byte-accurate restoration on removal.</p>
+
+        <h3>Event readiness</h3>
+        <p>Event Readiness enables proactive infrastructure pre-scaling for planned traffic spikes such as product launches, sales events, or seasonal peaks.</p>
+        <ul>
+          <li><strong>Capacity engine:</strong> Configure a traffic multiplier (e.g., 3&times; baseline) or expected request volume. ZopNight calculates per-target scaled min/max/desired capacity with admin override.</li>
+          <li><strong>Cloud-native scheduling:</strong> Pre-scale actions use native cloud scheduled actions (AWS PutScheduledUpdateGroupAction, Azure FixedDate profiles, GCP scalingSchedules) for reliable execution without polling.</li>
+          <li><strong>Lifecycle management:</strong> draft &rarr; scheduling &rarr; scheduled &rarr; scaling_up &rarr; active &rarr; scaling_down &rarr; completed. Cancellation is safe at any stage.</li>
+          <li><strong>Automatic rollback:</strong> Original min/max/desired values are snapshotted at scheduling time and restored on completion or cancellation.</li>
+          <li><strong>Supported targets:</strong> AWS ASG, AWS ECS services, GCP MIG, Azure VMSS. Databases can be attached as monitor-only targets with sizing recommendations.</li>
+        </ul>
+      </section>
+
+      <section class="docs-section" id="cost-management">
+        <div class="num">05 · cost management &amp; visibility</div>
+        <h2>Dual-source cost <em>tracking.</em></h2>
+        <p>ZopNight provides dual-source cost tracking, anomaly detection, team budgets, and cost attribution for predictable, audit-ready financial governance.</p>
+
+        <h3>Dual-source cost tracking</h3>
+        <ul>
+          <li><strong>Rack rate (calculated):</strong> Computed from cloud provider pricing APIs (AWS Pricing, Azure Retail Prices). Always available for every discovered resource, providing a baseline cost view.</li>
+          <li><strong>Billing cost (actual):</strong> Sourced from cloud billing APIs (AWS Cost Explorer, Azure Cost Management, GCP BigQuery). Available when billing sync is configured. Azure uses amortized cost to correctly distribute reservation and savings-plan purchases across the term.</li>
+        </ul>
+        <p>When all cloud accounts in an organization have successful billing sync, ZopNight automatically switches all aggregate queries to billing cost. Any account missing billing data triggers a fallback to rack rate across the entire organization for consistency. The active cost source is clearly labeled in every dashboard and report.</p>
+
+        <h3>Cost anomaly detection</h3>
+        <p>The anomaly detection engine runs daily, evaluating cost deviations across five dimensions: organization, cloud account, resource group, individual resource, and team.</p>
+        <div class="resp-table-wrap"><table class="docs-table">
+          <thead><tr><th>Severity</th><th>Deviation</th><th>Response</th></tr></thead>
+          <tbody>
+            <tr><td>Warning</td><td>30&ndash;150% above rolling average</td><td>Investigation recommended</td></tr>
+            <tr><td>Critical</td><td>150&ndash;500% above rolling average</td><td>Immediate review required</td></tr>
+            <tr><td>Emergency</td><td>&gt;500% deviation or new resource type</td><td>Escalation triggered</td></tr>
+          </tbody>
+        </table></div>
+        <p>Each anomaly includes root cause attribution, identifying instance resizes, new resource creation, reservation expirations, schedule execution failures, and unscheduled usage increases. False positive guards include a minimum four data-point requirement, a $1/day cost threshold, and standard deviation exceeding 10% of the mean. Team redistribution suppression prevents false alerts when costs shift between teams with net change below 20%. A seven-day cooldown on identical anomaly keys and a top-10 resource cap per organization limit notification noise.</p>
+
+        <h3>Team budgets</h3>
+        <p>Budgets can be set per resource, resource group, or team. Current spend is calculated from cost records using the active cost source (billing or rack rate). Budget status: green (on track), yellow (at threshold), or red (over budget) with configurable alert thresholds.</p>
+
+        <h3>Cost attribution (showback)</h3>
+        <ul>
+          <li><strong>Team attribution:</strong> Cost is split equally across owning teams for shared resources. Unattributed resources are tracked separately. Endpoints provide team list, team detail (by provider and resource type), team resources (paginated), and trends.</li>
+          <li><strong>Tag attribution:</strong> Cost is allocated by cloud resource tags (AWS tags, GCP labels, Azure tags) and accepted auto-tags. Each tag key-value pair receives the full resource cost. Tag origin is tracked as "cloud" or "auto."</li>
+        </ul>
+
+        <h3>Cost flow visualization</h3>
+        <p>The Cost Reports page includes a Sankey diagram view that renders spend as a four-column flow. Layout presets include Provider, Account, Type, and Team with configurable column ordering. Clicking any node or link filters the chart and writes a breadcrumb chip for interactive drill-down. A savings overlay highlights reclaimable spend with deep-links to the recommendations page filtered to the relevant subset.</p>
+      </section>
+
+      <section class="docs-section" id="dashboards">
+        <div class="num">06 · dashboards &amp; reports</div>
+        <h2>Four presets. <em>Twelve report types.</em></h2>
+        <p>The dashboard system provides org-shared, role-gated views composed from a curated widget library. Four system presets serve common personas; admins can create up to 50 custom dashboards with up to 50 widgets each.</p>
+
+        <h3>Preset dashboards</h3>
+        <div class="resp-table-wrap"><table class="docs-table">
+          <thead><tr><th>Dashboard</th><th>Audience</th><th>Focus</th></tr></thead>
+          <tbody>
+            <tr><td>Executive</td><td>Leadership and FinOps leads</td><td>High-level cost trends, budget health, top-line savings</td></tr>
+            <tr><td>Engineering</td><td>Platform and SRE teams</td><td>Schedule execution, upcoming actions, resource status</td></tr>
+            <tr><td>FinOps</td><td>Finance partners</td><td>Cost attribution, showback, anomaly detection</td></tr>
+            <tr><td>All Widgets</td><td>Evaluation and onboarding</td><td>Every available widget for comprehensive overview</td></tr>
+          </tbody>
+        </table></div>
+
+        <h3>Widget library</h3>
+        <div class="resp-table-wrap"><table class="docs-table">
+          <thead><tr><th>Widget</th><th>Function</th></tr></thead>
+          <tbody>
+            <tr><td>stat_cards</td><td>Compact key-metric tiles showing costs, savings, resource counts</td></tr>
+            <tr><td>cost_trend</td><td>Daily, weekly, or monthly cost trendline with period comparison</td></tr>
+            <tr><td>cloud_spend</td><td>Per-provider spend breakdown across connected accounts</td></tr>
+            <tr><td>top_costly</td><td>Top N resources by cost for rapid waste identification</td></tr>
+            <tr><td>recommendations</td><td>Open recommendation count with aggregate savings potential</td></tr>
+            <tr><td>quick_insights</td><td>Idle, orphan, and anomaly callouts requiring attention</td></tr>
+            <tr><td>budget_health</td><td>Team budget status with green/yellow/red indicators</td></tr>
+            <tr><td>showback</td><td>Cost attribution by team or tag for internal chargeback</td></tr>
+            <tr><td>schedule_execution</td><td>Recent scheduler events with success/failure status</td></tr>
+            <tr><td>upcoming_actions</td><td>Next 24 hours of scheduled start/stop actions</td></tr>
+          </tbody>
+        </table></div>
+
+        <h3>Reports</h3>
+        <p>Twelve report types covering every angle of cloud cost and operational analysis:</p>
+        <ul>
+          <li>Dashboard Summary with org-wide KPIs</li>
+          <li>Cost Flow (Sankey diagrams with interactive drill-down)</li>
+          <li>Cost Breakdown with GROUP BY queries across multiple dimensions</li>
+          <li>Cost Anomalies with root-cause attribution</li>
+          <li>Cost Trends (daily, weekly, monthly granularity)</li>
+          <li>Resource Costs with per-resource lifetime cost tracking</li>
+          <li>Provider Summary with per-account resource counts</li>
+          <li>Resource Summary with type and region breakdown</li>
+          <li>Team Cost Attribution (Showback) with team and tag dimensions</li>
+          <li>Tag-Based Attribution with key-value pair cost allocation</li>
+          <li>Monthly Snapshots for historical analysis and month-over-month comparison</li>
+          <li>Scheduler Events Log with execution success/failure tracking</li>
+        </ul>
+
+        <h4>Export options</h4>
+        <ul>
+          <li>CSV exports of cost breakdown rows and flow data</li>
+          <li>PNG exports of charts and diagrams</li>
+          <li>Shareable URLs that reproduce the exact view state (preset, drill chain, overlays)</li>
+        </ul>
+      </section>
+
+      <section class="docs-section" id="notifications">
+        <div class="num">07 · notifications</div>
+        <h2>Four channels. <em>Granular subscriptions.</em></h2>
+
+        <h3>Supported channels</h3>
+        <div class="resp-table-wrap"><table class="docs-table">
+          <thead><tr><th>Channel</th><th>Configuration</th></tr></thead>
+          <tbody>
+            <tr><td>Slack</td><td>Incoming webhook URL</td></tr>
+            <tr><td>Microsoft Teams</td><td>Incoming webhook URL</td></tr>
+            <tr><td>Google Chat</td><td>Incoming webhook URL</td></tr>
+            <tr><td>Email</td><td>Recipient email address</td></tr>
+          </tbody>
+        </table></div>
+
+        <h3>Event types</h3>
+        <div class="resp-table-wrap"><table class="docs-table">
+          <thead><tr><th>Event</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>resource.started</td><td>Resource successfully started by schedule or manual action</td></tr>
+            <tr><td>resource.stopped</td><td>Resource successfully stopped by schedule or manual action</td></tr>
+            <tr><td>resource.failed</td><td>Start or stop operation failed with error details</td></tr>
+            <tr><td>resource.override</td><td>Override applied or cleared on a resource</td></tr>
+            <tr><td>resource.retry_exhausted</td><td>All retry attempts exhausted for a failed operation</td></tr>
+            <tr><td>budget.warning</td><td>Team budget approaching configured threshold</td></tr>
+            <tr><td>budget.exceeded</td><td>Team budget exceeded configured limit</td></tr>
+            <tr><td>cost.anomaly.*</td><td>Cost anomaly detected (per dimension and severity)</td></tr>
+          </tbody>
+        </table></div>
+        <p>Subscriptions can be scoped to organization, cloud account, resource group, or individual resource level. Per-event-type opt-in and opt-out is supported for each user. Bulk subscription create and update operations handle large team configurations efficiently. Recommendations can be shared directly to notification channels for team awareness.</p>
+      </section>
+
+      <section class="docs-section" id="discovery">
+        <div class="num">08 · resource discovery</div>
+        <h2>Multi-region. <em>Real-time sync.</em></h2>
+        <p>ZopNight's discovery engine scans all regions across connected cloud accounts, building a comprehensive inventory with parent-child relationships, provider-native tags, and real-time sync status.</p>
+
+        <h3>Discovery methods by provider</h3>
+        <div class="resp-table-wrap"><table class="docs-table">
+          <thead><tr><th>Provider</th><th>Source</th><th>Resource types</th></tr></thead>
+          <tbody>
+            <tr><td>AWS</td><td>Resource Explorer 2 (RE2) + per-service providers</td><td>191 unique types (204 RE2 keys), 30 start/stop supported</td></tr>
+            <tr><td>GCP</td><td>Cloud Asset Inventory</td><td>88 types, 9 start/stop supported</td></tr>
+            <tr><td>Azure</td><td>Resource Graph</td><td>101 types, 15 start/stop supported</td></tr>
+            <tr><td>Kubernetes</td><td>EKS / GKE / AKS workload discovery</td><td>Deployments, StatefulSets, DaemonSets, Jobs, CronJobs, ReplicaSets</td></tr>
+          </tbody>
+        </table></div>
+
+        <h3>Hierarchy and navigation</h3>
+        <p>Resources are organized in up to three levels of parent-child hierarchy (cluster &rarr; nodegroup &rarr; VMs). The default view shows parent resources with child count badges. Clicking into children provides a scoped view with breadcrumb navigation and filters relevant to that level. Topology graph visualization renders resources organized by provider, account, region, and network hierarchy with 13 distinct visual shapes for different resource categories.</p>
+
+        <h3>Kubernetes discovery</h3>
+        <ul>
+          <li><strong>Workload types:</strong> Deployments, StatefulSets, DaemonSets, Jobs, CronJobs, ReplicaSets.</li>
+          <li><strong>Cluster detail pages</strong> with namespace filtering, pod and workload CPU/memory metrics.</li>
+          <li><strong>Start/stop support</strong> for Deployments (scale replicas), StatefulSets (scale replicas), and CronJobs (suspend/resume).</li>
+        </ul>
+      </section>
+
+      <section class="docs-section" id="cloud-accounts">
+        <div class="num">09 · cloud account management</div>
+        <h2>Multiple auth methods. <em>Per provider.</em></h2>
+        <p>ZopNight supports multiple authentication methods per cloud provider, each with credential rotation detection, real-time sync visibility, and billing access configuration.</p>
+
+        <h3>AWS authentication</h3>
+        <ul>
+          <li><strong>Static access keys:</strong> IAM access key and secret key pair for straightforward connectivity.</li>
+          <li><strong>Assume role:</strong> Cross-account STS role assumption for organizations managing multiple AWS accounts with a central control plane.</li>
+          <li><strong>Temporary credentials:</strong> Short-lived STS tokens for ephemeral or tightly controlled access patterns.</li>
+          <li><strong>CloudFormation template:</strong> One-click IAM role provisioning with least-privilege permissions.</li>
+        </ul>
+
+        <h3>GCP authentication</h3>
+        <ul>
+          <li><strong>Service account JSON:</strong> Standard service account key file for programmatic access.</li>
+          <li><strong>OAuth 2.0:</strong> Three-step flow with encrypted token exchange for user-delegated access.</li>
+        </ul>
+
+        <h3>Azure authentication</h3>
+        <ul>
+          <li><strong>Service principal:</strong> Application registration with client secret or certificate.</li>
+          <li><strong>Workload identity federation:</strong> Federated OIDC authentication with no stored secrets. ZopNight provides OIDC discovery endpoints for Azure WIF configuration.</li>
+        </ul>
+
+        <h3>Security posture</h3>
+        <ul>
+          <li>AES-256-GCM encryption for all stored tokens and credentials</li>
+          <li>No plaintext secret exposure in any API response or log output</li>
+          <li>Async credential verification with status polling</li>
+          <li>Credential rotation detection with proactive alerts</li>
+          <li>Billing access gap detection for cost tracking completeness</li>
+        </ul>
+      </section>
+
+      <section class="docs-section" id="cloud-support">
+        <div class="num">10 · cloud support matrix</div>
+        <h2>AWS · GCP · Azure · <em>Kubernetes.</em></h2>
+        <p>ZopNight supports resource discovery, scheduling, and cost governance across four cloud platforms with deep service-level integration.</p>
+
+        <h3>AWS services</h3>
+        <div class="resp-table-wrap"><table class="docs-table">
+          <thead><tr><th>Category</th><th>Services</th></tr></thead>
+          <tbody>
+            <tr><td>Compute</td><td>EC2, Auto Scaling Groups, EKS, ECS, Lambda, EMR, App Runner, Beanstalk, SageMaker Notebooks</td></tr>
+            <tr><td>Database</td><td>RDS, ElastiCache, Redshift</td></tr>
+            <tr><td>ML / Analytics</td><td>SageMaker Endpoints, SageMaker Notebooks, OpenSearch, EMR Serverless</td></tr>
+            <tr><td>Storage / Network</td><td>S3, EBS, Snapshots, VPC, NAT Gateways, Load Balancers</td></tr>
+            <tr><td>Kubernetes Workloads</td><td>EKS Deployments, EKS StatefulSets, EKS CronJobs</td></tr>
+          </tbody>
+        </table></div>
+
+        <h3>GCP services</h3>
+        <div class="resp-table-wrap"><table class="docs-table">
+          <thead><tr><th>Category</th><th>Services</th></tr></thead>
+          <tbody>
+            <tr><td>Compute</td><td>Compute Engine, GKE Clusters, Cloud Run</td></tr>
+            <tr><td>Database</td><td>Cloud SQL, Memorystore, BigQuery</td></tr>
+            <tr><td>Storage / Network</td><td>Cloud Storage, Persistent Disks, VPCs</td></tr>
+            <tr><td>Kubernetes Workloads</td><td>GKE Deployments, GKE StatefulSets, GKE CronJobs</td></tr>
+          </tbody>
+        </table></div>
+
+        <h3>Azure services</h3>
+        <div class="resp-table-wrap"><table class="docs-table">
+          <thead><tr><th>Category</th><th>Services</th></tr></thead>
+          <tbody>
+            <tr><td>Compute</td><td>Virtual Machines, VM Scale Sets, AKS, Container Apps, Function Apps</td></tr>
+            <tr><td>Database</td><td>SQL Database, MySQL Flexible, PostgreSQL Flexible, Data Explorer</td></tr>
+            <tr><td>ML / Analytics</td><td>ML Compute, Databricks (Workspace, Clusters, Instance Pools, SQL Warehouses), Synapse SQL Pools</td></tr>
+            <tr><td>Storage / Network</td><td>Storage Accounts, Managed Disks, VNets</td></tr>
+          </tbody>
+        </table></div>
+
+        <h3>Kubernetes resources</h3>
+        <p>Across all managed Kubernetes providers (EKS, GKE, AKS), ZopNight discovers and manages workloads including Deployments, StatefulSets, DaemonSets, Jobs, CronJobs, ReplicaSets, Namespaces, Nodes, Pods, Services, and configuration objects. Node pool scaling and StatefulSet replica management are fully supported.</p>
+      </section>
+
+      <section class="docs-section" id="security">
+        <div class="num">11 · security &amp; access control</div>
+        <h2>RBAC at the <em>gateway.</em></h2>
+        <p>ZopNight enforces role-based access control at the API gateway level, ensuring every endpoint requires appropriate authorization. The RBAC model supports three system roles and unlimited custom roles with resource-scoped permissions.</p>
+
+        <h3>System roles</h3>
+        <div class="resp-table-wrap"><table class="docs-table">
+          <thead><tr><th>Role</th><th>Permissions</th><th>Scope</th></tr></thead>
+          <tbody>
+            <tr><td>Admin</td><td>All policies, all operations</td><td>All resources (organization-wide)</td></tr>
+            <tr><td>Editor</td><td>CRUD on resources, schedules, groups; view-only on admin functions</td><td>All resources or scoped to specific resource IDs</td></tr>
+            <tr><td>Viewer</td><td>Read-only across all features</td><td>All resources or scoped to specific resource IDs</td></tr>
+          </tbody>
+        </table></div>
+
+        <h3>Custom roles and resource scoping</h3>
+        <p>Custom roles support per-policy resource scoping. Each policy (resource, schedule, resource-group, override, cloud-account, notification, team, role, user, organisation, assignment, state-history, report, audit-log, recommendation, dashboard) can be granted with either all-resources access or scoped to specific resource UIDs. Team-scoped access allows team members to inherit their role's policies scoped to the team's assigned resource UIDs, enabling multi-tenant access patterns within a single organization.</p>
+
+        <h3>Authentication</h3>
+        <ul>
+          <li><strong>SSO integration:</strong> Google OAuth, GitHub OAuth, and SAML/SSO for enterprise identity providers (Azure AD and others).</li>
+          <li><strong>Personal access tokens:</strong> API authentication via PAT tokens (prefixed <code>zn_pat_*</code>) for CI/CD integration and MCP server access.</li>
+          <li><strong>SAML configuration:</strong> Internal admin operations for managing customer SAML IdP configurations per email domain.</li>
+        </ul>
+
+        <h3>Audit trail</h3>
+        <p>Every mutating API request (POST, PUT, PATCH, DELETE) is logged to per-org Redis Streams, capturing both request and response bodies. The aggregator syncs to persistent storage every minute. The audit log is accessible via API and frontend with server-side filtering by method, resource, status, and user.</p>
+      </section>
+
+      <section class="docs-section" id="provisioning">
+        <div class="num">12 · provisioning (zopday)</div>
+        <h2>Single-wizard <em>multi-cloud.</em></h2>
+        <p>ZopDay provides end-to-end multi-cloud infrastructure deployment through a single wizard interface. It discovers existing networking resources automatically, provides estimated monthly cost previews, and integrates with cloud-native secret managers.</p>
+
+        <h3>Provisionable resources</h3>
+        <div class="resp-table-wrap"><table class="docs-table">
+          <thead><tr><th>Category</th><th>Resources</th></tr></thead>
+          <tbody>
+            <tr><td>Kubernetes</td><td>EKS, GKE, AKS clusters with full configuration</td></tr>
+            <tr><td>Datastores</td><td>RDS, Cloud SQL, Azure Database (MySQL/Postgres), Redis caches</td></tr>
+            <tr><td>Networking</td><td>VPC/VNet, Subnets, DNS zones, VPC peering</td></tr>
+            <tr><td>In-cluster add-ons</td><td>Helm-based ingress controllers, observability stacks, operational add-ons</td></tr>
+          </tbody>
+        </table></div>
+
+        <h3>Deployment spaces</h3>
+        <p>Deployment Spaces scope provisioning to a cloud account and region combination, assigned to specific teams. RBAC policies govern space, provisioning, service, and deployment operations independently with view, create, update, and delete permissions.</p>
+
+        <h3>Architecture canvas</h3>
+        <p>The architecture canvas provides VPC peering visualization across provisioned infrastructure, giving platform teams a clear view of network topology and inter-service connectivity.</p>
+      </section>
+
+      <section class="docs-section" id="mcp-server">
+        <div class="num">13 · mcp server</div>
+        <h2>43 read-only tools. <em>Five assistants.</em></h2>
+        <p>ZopNight exposes a Model Context Protocol (MCP) server that enables AI assistants to query cloud infrastructure, costs, schedules, and recommendations via natural language. Streamable HTTP transport (JSON-RPC 2.0 over HTTP POST) with 43 read-only tools.</p>
+
+        <h3>Tool coverage</h3>
+        <ul>
+          <li>Resources and cloud accounts (list, filter, status)</li>
+          <li>Costs and billing data (trends, breakdowns, anomalies)</li>
+          <li>Schedules and execution history</li>
+          <li>Recommendations with savings estimates</li>
+          <li>Budgets and team metrics</li>
+          <li>Audit logs and notification subscriptions</li>
+        </ul>
+
+        <h3>Supported AI assistants</h3>
+        <div class="resp-table-wrap"><table class="docs-table">
+          <thead><tr><th>Assistant</th><th>Integration</th></tr></thead>
+          <tbody>
+            <tr><td>Claude Code</td><td>MCP server configuration in <code>claude_desktop_config.json</code></td></tr>
+            <tr><td>Cursor</td><td>MCP server configuration in IDE settings</td></tr>
+            <tr><td>Codex</td><td>MCP server configuration via CLI</td></tr>
+            <tr><td>Windsurf</td><td>MCP server configuration in IDE settings</td></tr>
+            <tr><td>Antigravity</td><td>MCP server configuration via CLI</td></tr>
+          </tbody>
+        </table></div>
+
+        <div class="docs-callout">
+          <strong>Read-only by design</strong>
+          <p>The MCP server enforces read-only access. All write operations (schedule creation, resource modifications, override application) are restricted to the web UI and direct API. AI assistants can query and analyze without risk of unintended state changes.</p>
+        </div>
+
+        <p>Authentication requires an Admin or Editor role with a Personal Access Token. RBAC is enforced at the gateway level; the MCP server itself is a stateless proxy. In-memory TTL caching (2&ndash;30 minute windows) optimizes expensive aggregation queries.</p>
+      </section>
+
+      <section class="docs-section" id="api">
+        <div class="num">14 · api overview</div>
+        <h2>80+ endpoints. <em>13 groups.</em></h2>
+        <p>ZopNight is API-first with 80+ REST endpoints organized into 13 endpoint groups. Every feature accessible in the web UI is available programmatically for CI/CD integration, custom automation, and third-party connectivity.</p>
+
+        <h3>Endpoint groups</h3>
+        <div class="resp-table-wrap"><table class="docs-table">
+          <thead><tr><th>Group</th><th>Operations</th></tr></thead>
+          <tbody>
+            <tr><td>Authentication</td><td>Login, signup, token management, email verification, password reset, SAML SSO, org creation</td></tr>
+            <tr><td>Cloud Accounts</td><td>Connect, list, update, delete cloud accounts; GCP OAuth flow</td></tr>
+            <tr><td>Resources</td><td>Discover, list, filter, refresh resources with parent-child navigation</td></tr>
+            <tr><td>Schedules</td><td>CRUD operations plus attach/detach resources and groups</td></tr>
+            <tr><td>Resource Groups</td><td>Organize resources with execution sequencing and tiered ordering</td></tr>
+            <tr><td>Overrides</td><td>Temporary schedule exceptions with expiry and audit trail</td></tr>
+            <tr><td>Actions &amp; Execution</td><td>Manual and bulk start/stop with state history tracking</td></tr>
+            <tr><td>Reports &amp; Analytics</td><td>Cost trends, summaries, budgets, showback, anomalies, scheduler events</td></tr>
+            <tr><td>Recommendations</td><td>Suggestions, auto-tagging proposals, rule-based audit results</td></tr>
+            <tr><td>Notifications</td><td>Channel management, subscriptions, event routing</td></tr>
+            <tr><td>Users &amp; Teams</td><td>User management, team creation, resource assignments</td></tr>
+            <tr><td>Roles &amp; Permissions</td><td>Custom role and permission policy management</td></tr>
+            <tr><td>Organizations &amp; Audit</td><td>Org management, settings, audit log access</td></tr>
+          </tbody>
+        </table></div>
+
+        <h3>Authentication</h3>
+        <p>API authentication uses bearer tokens obtained via the login endpoint or Personal Access Tokens (PAT) for service-to-service and MCP integration. PAT tokens are prefixed with <code>zn_pat_</code> and validated at the gateway. All tokens use AES-256-GCM encryption at rest.</p>
+
+        <h3>Common patterns</h3>
+        <ul>
+          <li><strong>Pagination:</strong> All list endpoints support <code>limit</code>, <code>offset</code>, <code>sort_by</code>, and <code>sort_order</code> parameters.</li>
+          <li><strong>Filtering:</strong> Resource endpoints support <code>provider</code>, <code>status</code>, <code>region</code>, <code>type</code>, <code>cloud_account_id</code>, and <code>search</code> filters. Comma-separated values are supported for multi-select.</li>
+          <li><strong>Cascade filtering:</strong> Selecting a provider narrows downstream filter options dynamically via filter-fields endpoints.</li>
+          <li><strong>Idempotency:</strong> Start and stop operations are idempotent. Repeated requests succeed without side effects.</li>
+        </ul>
+      </section>
+
+      <section class="docs-section" id="faq">
+        <div class="num">15 · faq</div>
+        <h2>Frequently asked <em>questions.</em></h2>
+
+        <h3>Does ZopNight work with Auto Scaling Groups?</h3>
+        <p>Yes. ZopNight sets desired capacity to zero during off-hours and restores it when the schedule fires. Your ASG configuration, scaling policies, and launch templates remain untouched.</p>
+
+        <h3>Can I protect production environments?</h3>
+        <p>ZopNight includes production safeguards enforced via RBAC. You can restrict which environments and resources can be scheduled, and auto-tagging predicts production vs. non-production labels to prevent accidental shutdowns.</p>
+
+        <h3>What permissions does ZopNight require?</h3>
+        <p>Stop and start capabilities only. ZopNight never requires delete permissions on any resource. You can start with read-only access for discovery and cost visibility, then upgrade to read-write when ready to enforce schedules.</p>
+
+        <h3>Does it support Kubernetes workloads?</h3>
+        <p>Yes. ZopNight supports EKS, GKE, and AKS clusters. It can scale node pools, manage Deployment and StatefulSet replicas, and suspend/resume CronJobs while respecting dependency ordering.</p>
+
+        <h3>What if I need a resource running outside the schedule?</h3>
+        <p>Create a one-time override via the dashboard, API, or notification channel. Overrides carry automatic expiry timestamps and take precedence over all active schedules until they expire or are manually removed. Every override is logged with creator, reason, and timestamp.</p>
+
+        <h3>How is ZopNight different from a FinOps dashboard?</h3>
+        <p>Dashboards surface the problem after the fact. ZopNight enforces the solution through policy-driven automation. Rather than reporting on idle resources, ZopNight automatically stops them on schedule and restarts them when needed. The cost reports then track verified savings from that automation.</p>
+
+        <h3>Can I integrate ZopNight with CI/CD pipelines?</h3>
+        <p>Yes. The full REST API (80+ endpoints) supports integration with any CI/CD system. Common patterns include triggering resource starts before test suites, stopping environments after deployment validation, and managing staging infrastructure programmatically.</p>
+      </section>
+
+      <section class="docs-section" id="appendix">
+        <div class="num">16 · appendix</div>
+        <h2>Reference <em>tables.</em></h2>
+
+        <h3>Recommendation rule coverage</h3>
+        <div class="resp-table-wrap"><table class="docs-table">
+          <thead><tr><th>Provider</th><th>Rule count</th><th>Categories covered</th></tr></thead>
+          <tbody>
+            <tr><td>AWS</td><td>155 rules</td><td>Idle, Rightsizing, Schedule, Orphan, Compliance, Discount, Governance</td></tr>
+            <tr><td>GCP</td><td>75 rules</td><td>Idle, Rightsizing, Schedule, Orphan, Compliance, Discount, Governance</td></tr>
+            <tr><td>Azure</td><td>107 rules</td><td>Idle, Rightsizing, Schedule, Orphan, Compliance, Discount, Governance</td></tr>
+            <tr><td>Cross-Provider (Autoscaler)</td><td>6 rules (RC-ASC-001 to RC-ASC-006)</td><td>Rightsizing, Compliance</td></tr>
+          </tbody>
+        </table></div>
+
+        <h3>Supported resource types for start/stop</h3>
+        <div class="resp-table-wrap"><table class="docs-table">
+          <thead><tr><th>Provider</th><th>Resource types</th></tr></thead>
+          <tbody>
+            <tr><td>AWS (Original)</td><td>EC2, RDS, EKS, ECS, ASG, Lambda</td></tr>
+            <tr><td>AWS (Extended)</td><td>EKS Deployments, EKS StatefulSets, EKS CronJobs, SageMaker Notebooks, ElastiCache, Beanstalk, EMR Serverless, App Runner</td></tr>
+            <tr><td>GCP</td><td>Compute Engine, GKE, Cloud SQL, GKE Deployments, GKE StatefulSets, GKE CronJobs</td></tr>
+            <tr><td>Azure</td><td>VMs, AKS, VMSS, Databricks (Workspace, Clusters, Instance Pools, SQL Warehouses), MySQL Flexible, PostgreSQL Flexible, Data Explorer, Synapse SQL Pools, SQL VMs, SSIS Integration Runtimes, ML Compute</td></tr>
+          </tbody>
+        </table></div>
+
+        <h3>Dashboard limits</h3>
+        <div class="resp-table-wrap"><table class="docs-table">
+          <thead><tr><th>Parameter</th><th>Limit</th></tr></thead>
+          <tbody>
+            <tr><td>Dashboards per organization</td><td>50</td></tr>
+            <tr><td>Widgets per dashboard</td><td>50</td></tr>
+            <tr><td>Widget config size</td><td>4 KiB</td></tr>
+            <tr><td>Layout payload size</td><td>64 KiB</td></tr>
+          </tbody>
+        </table></div>
+
+        <h3>Glossary</h3>
+        <div class="resp-table-wrap"><table class="docs-table">
+          <thead><tr><th>Term</th><th>Definition</th></tr></thead>
+          <tbody>
+            <tr><td>RBAC</td><td>Role-Based Access Control, policy-driven authorization at the API gateway</td></tr>
+            <tr><td>Override</td><td>Temporary exception to active schedules (force_on or force_off) with ISO 8601 expiry</td></tr>
+            <tr><td>Rack rate</td><td>Calculated cost from cloud provider pricing APIs (always available)</td></tr>
+            <tr><td>Billing cost</td><td>Actual cost from cloud billing APIs (requires billing sync configuration)</td></tr>
+            <tr><td>Amortized cost</td><td>Azure billing cost type that distributes reservation purchases across the term</td></tr>
+            <tr><td>MCP</td><td>Model Context Protocol, standard for AI assistant integration</td></tr>
+            <tr><td>PAT</td><td>Personal Access Token, API authentication for service-to-service and MCP access</td></tr>
+            <tr><td>ZopDay</td><td>ZopNight's provisioning module for multi-cloud infrastructure deployment</td></tr>
+            <tr><td>Showback</td><td>Cost attribution report allocating spend to teams or tags</td></tr>
+            <tr><td>Tier</td><td>Execution priority level within a resource group for dependency ordering</td></tr>
+          </tbody>
+        </table></div>
+
+        <h3>Contact and resources</h3>
+        <ul>
+          <li><strong>Product website:</strong> zopnight.com</li>
+          <li><strong>Documentation:</strong> zopnight.com/docs</li>
+          <li><strong>Support:</strong> support@zopnight.com</li>
+          <li><strong>Built by:</strong> ZopDev</li>
+        </ul>
+      </section>
+      </div><!-- /data-doc-content=zopnight -->
+
+      <!-- ZopDay content · stub sections.
+           Sub-headings match the planned ZopDay docs IA. Each section
+           carries a "Coming soon" stub card so the layout is real even
+           though the copy isn't final yet. Same .docs-section /
+           .docs-stub primitives reused across products. -->
+      <div data-doc-content="zopday" hidden>
+        <section class="docs-section" id="zd-introduction">
+          <div class="num">01 &middot; introduction</div>
+          <h2>Internal developer platform, <em>without the platform team.</em></h2>
+          <p>ZopDay turns multi-step deploy rituals into a single <code>zd push</code>. Connect your repo once, pick a template, and the platform handles environments, ingress, observability, and rollback. Designed for engineering teams who want platform-grade workflows without staffing a platform team.</p>
+          <div class="docs-stub">
+            <span class="docs-stub-tag">Coming soon</span>
+            <h3>Full ZopDay documentation rolls out alongside GA.</h3>
+            <p>This section will cover the platform&rsquo;s design philosophy, the three stages (Landing Zone, Deployment, Live State), and the IDP primitives ZopDay ships with.</p>
+            <ul class="docs-stub-list">
+              <li>What ZopDay is, in one paragraph</li>
+              <li>How it relates to ZopNight and ZopCloud</li>
+              <li>When to use it &mdash; and when not to</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="docs-section" id="zd-quickstart">
+          <div class="num">02 &middot; quickstart</div>
+          <h2>From <code>git push</code> to live URL <em>in under five minutes.</em></h2>
+          <p>The ZopDay quickstart walks you through connecting a repository, picking a template, and shipping your first deploy. Designed to fit in a coffee break.</p>
+          <div class="docs-stub">
+            <span class="docs-stub-tag">Coming soon</span>
+            <h3>Step-by-step quickstart with the <code>zd</code> CLI.</h3>
+            <p>Install the CLI, authenticate, link your first repo, deploy to a test environment, and verify in the Live State dashboard.</p>
+            <ul class="docs-stub-list">
+              <li>Install <code>zd</code> on macOS, Linux, Windows</li>
+              <li>Authenticate &mdash; SSO or token</li>
+              <li>Run <code>zd init</code> in a project</li>
+              <li>Push, watch the deploy, open the URL</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="docs-section" id="zd-connect">
+          <div class="num">03 &middot; connect your repo</div>
+          <h2>One install, every repo. <em>GitHub, GitLab, Bitbucket.</em></h2>
+          <p>ZopDay&rsquo;s SCM integration is installed once per organisation. After that, any repo your team owns can opt into ZopDay deploys via a single line in <code>.zd/config.yml</code>.</p>
+          <div class="docs-stub">
+            <span class="docs-stub-tag">Coming soon</span>
+            <h3>Per-provider setup walkthroughs.</h3>
+            <p>GitHub App install, GitLab integration scope, Bitbucket OAuth flow &mdash; with screenshots of the consent screens devs need to approve.</p>
+          </div>
+        </section>
+
+        <section class="docs-section" id="zd-landing-zone">
+          <div class="num">04 &middot; landing zone</div>
+          <h2>The control plane your stack <em>lands in.</em></h2>
+          <p>Landing Zone is where ZopDay configures the foundational guardrails before a single workload runs &mdash; networking, IAM, observability hooks, billing tags. Set up once per account, never thought about again.</p>
+          <div class="docs-stub">
+            <span class="docs-stub-tag">Coming soon</span>
+            <h3>What Landing Zone creates &mdash; and why.</h3>
+            <p>Resource-by-resource breakdown of the VPCs, subnets, IAM roles, security groups, and audit hooks ZopDay sets up the first time you connect a cloud account.</p>
+          </div>
+        </section>
+
+        <section class="docs-section" id="zd-deployment">
+          <div class="num">05 &middot; deployment</div>
+          <h2>The deploy pipeline, <em>built in.</em></h2>
+          <p>Every push runs through the same four phases: build, validate, stage, promote. Each phase is observable, retryable, and gated by the policies you set.</p>
+          <div class="docs-stub">
+            <span class="docs-stub-tag">Coming soon</span>
+            <h3>Pipeline phases + customisation hooks.</h3>
+            <p>How to read a deploy run, where to hook in custom validation, how to gate promotion on a manual approval, how to roll back.</p>
+          </div>
+        </section>
+
+        <section class="docs-section" id="zd-live-state">
+          <div class="num">06 &middot; live state</div>
+          <h2>The console for <em>what&rsquo;s running.</em></h2>
+          <p>Live State is the single source of truth for which version of which service is in which environment. Real-time, queryable, with the deploy that put it there always one click away.</p>
+          <div class="docs-stub">
+            <span class="docs-stub-tag">Coming soon</span>
+            <h3>The Live State table + the detail drawer.</h3>
+            <p>How rows are computed, how the filters work, what the drawer shows when you click a row, how to wire the data into Slack or your incident channel.</p>
+          </div>
+        </section>
+
+        <section class="docs-section" id="zd-zd-push">
+          <div class="num">07 &middot; the zd push command</div>
+          <h2><code>zd push</code> is <em>the whole deploy.</em></h2>
+          <p>One command. It runs validations, builds, stages, gates on approval, and promotes &mdash; or fails fast and tells you exactly what to fix.</p>
+          <div class="docs-stub">
+            <span class="docs-stub-tag">Coming soon</span>
+            <h3>Every flag, every exit code, every output mode.</h3>
+            <p>Full reference for <code>zd push</code> including JSON output for CI, dry-run mode, environment-targeting flags, and the precondition checks that run before anything ships.</p>
+          </div>
+        </section>
+
+        <section class="docs-section" id="zd-templates">
+          <div class="num">08 &middot; templates</div>
+          <h2>Templates, <em>not YAML.</em></h2>
+          <p>ZopDay ships with curated templates for the common service shapes &mdash; web service, worker, scheduled job, static site. Each is a real working deploy you fork and customise.</p>
+          <div class="docs-stub">
+            <span class="docs-stub-tag">Coming soon</span>
+            <h3>The template gallery + how to author your own.</h3>
+            <p>Walkthrough of the official templates, how to fork one into your org library, what variables are available, how to publish a template back upstream.</p>
+          </div>
+        </section>
+
+        <section class="docs-section" id="zd-environments">
+          <div class="num">09 &middot; environments</div>
+          <h2>Dev, staging, prod &mdash; <em>and per-branch ephemerals.</em></h2>
+          <p>Environments in ZopDay are first-class. Long-lived envs for the named tiers, ephemeral envs that spin up per PR and tear down on merge.</p>
+          <div class="docs-stub">
+            <span class="docs-stub-tag">Coming soon</span>
+            <h3>Environment lifecycle, secrets, and overrides.</h3>
+            <p>How envs are created, how secrets and config flow into them, how to override settings per-env, and how the ephemeral lifecycle interacts with PR events.</p>
+          </div>
+        </section>
+
+        <section class="docs-section" id="zd-cli">
+          <div class="num">10 &middot; CLI reference</div>
+          <h2>Every command, every flag.</h2>
+          <p>The <code>zd</code> CLI is the canonical interface to ZopDay. Everything the dashboard does, the CLI does.</p>
+          <div class="docs-stub">
+            <span class="docs-stub-tag">Coming soon</span>
+            <h3>Generated CLI reference, kept in sync with the binary.</h3>
+            <p>Per-command pages with usage, flags, exit codes, and copy-paste examples for the most common invocations.</p>
+          </div>
+        </section>
+
+        <section class="docs-section" id="zd-api">
+          <div class="num">11 &middot; API reference</div>
+          <h2>HTTPS + bearer token. <em>OpenAPI-described.</em></h2>
+          <p>ZopDay&rsquo;s API mirrors the CLI &mdash; same nouns, same verbs, same shapes. Use it to integrate ZopDay with your own tooling or wire deploy gates into custom workflows.</p>
+          <div class="docs-stub">
+            <span class="docs-stub-tag">Coming soon</span>
+            <h3>API endpoints + SDK examples.</h3>
+            <p>OpenAPI 3 spec, endpoint-by-endpoint reference, code samples in TypeScript, Python, Go, and Rust.</p>
+          </div>
+        </section>
+      </div><!-- /data-doc-content=zopday -->
+
+      <!-- ZopCloud content · stub sections. -->
+      <div data-doc-content="zopcloud" hidden>
+        <section class="docs-section" id="zc-introduction">
+          <div class="num">01 &middot; introduction</div>
+          <h2>Cloud, <em>without the lock-in.</em></h2>
+          <p>ZopCloud is the cloud platform underneath ZopNight and ZopDay &mdash; the same primitives the products use, exposed as a standalone surface you can build on. Compute, networking, storage, and managed services with a single API across providers.</p>
+          <div class="docs-stub">
+            <span class="docs-stub-tag">Coming soon</span>
+            <h3>The ZopCloud platform overview.</h3>
+            <p>What ZopCloud is, how it&rsquo;s built, and how it differs from a hyperscaler. The trade-offs of buying ZopCloud vs running on AWS / GCP / Azure directly.</p>
+          </div>
+        </section>
+
+        <section class="docs-section" id="zc-quickstart">
+          <div class="num">02 &middot; quickstart</div>
+          <h2>Your first <em>VM in two minutes.</em></h2>
+          <p>Sign up, choose a region, run one CLI command. You have an addressable compute instance with networking, storage, and observability already wired.</p>
+          <div class="docs-stub">
+            <span class="docs-stub-tag">Coming soon</span>
+            <h3>End-to-end quickstart with screenshots.</h3>
+            <p>Install <code>zc</code>, authenticate, provision a VM, SSH in, run a workload, tear it down. The whole flow under five minutes.</p>
+          </div>
+        </section>
+
+        <section class="docs-section" id="zc-providers">
+          <div class="num">03 &middot; connect a provider</div>
+          <h2>BYOC, <em>or rent ours.</em></h2>
+          <p>ZopCloud runs either on your own AWS / GCP / Azure accounts (bring-your-own-cloud) or on ZopDev&rsquo;s managed infrastructure. The platform surface is identical either way.</p>
+          <div class="docs-stub">
+            <span class="docs-stub-tag">Coming soon</span>
+            <h3>Per-provider connection guides.</h3>
+            <p>BYOC setup for AWS, GCP, Azure including IAM scope, billing alignment, region availability, and how to migrate workloads between BYOC and managed.</p>
+          </div>
+        </section>
+
+        <section class="docs-section" id="zc-regions">
+          <div class="num">04 &middot; regions</div>
+          <h2>Where your <em>workloads run.</em></h2>
+          <p>ZopCloud is available in 14 regions across North America, EMEA, and APAC. Each region carries the same primitives, same APIs, same SLAs.</p>
+          <div class="docs-stub">
+            <span class="docs-stub-tag">Coming soon</span>
+            <h3>Region availability + pairing rules.</h3>
+            <p>Which regions support which services, recommended pairing for high-availability deployments, and the data-residency commitments per region.</p>
+          </div>
+        </section>
+
+        <section class="docs-section" id="zc-networking">
+          <div class="num">05 &middot; networking</div>
+          <h2>VPCs, peering, <em>and the edges between them.</em></h2>
+          <p>ZopCloud gives you VPCs, subnets, route tables, and security groups &mdash; the primitives every cloud has &mdash; plus first-class peering and transit gateways that work the same way across providers.</p>
+          <div class="docs-stub">
+            <span class="docs-stub-tag">Coming soon</span>
+            <h3>Network primitives + cross-region patterns.</h3>
+            <p>How to design a VPC, how peering works, when to use transit gateways, and how ZopCloud handles cross-provider connectivity in BYOC mode.</p>
+          </div>
+        </section>
+
+        <section class="docs-section" id="zc-storage">
+          <div class="num">06 &middot; storage</div>
+          <h2>Block, object, and database storage. <em>One API.</em></h2>
+          <p>ZopCloud abstracts the storage primitives across providers so the same API call provisions an S3-compatible bucket on AWS, a GCS bucket on GCP, or a Blob container on Azure &mdash; whichever your account is wired to.</p>
+          <div class="docs-stub">
+            <span class="docs-stub-tag">Coming soon</span>
+            <h3>Storage types, durability tiers, and pricing.</h3>
+            <p>Reference for block, object, and managed-database primitives. Per-tier durability and cost characteristics. How storage interacts with the rest of the ZopCloud platform.</p>
+          </div>
+        </section>
+
+        <section class="docs-section" id="zc-cli">
+          <div class="num">07 &middot; CLI reference</div>
+          <h2>Every <code>zc</code> command, every flag.</h2>
+          <p>The <code>zc</code> CLI is the canonical interface to ZopCloud. Generated from the same spec as the API so they never drift.</p>
+          <div class="docs-stub">
+            <span class="docs-stub-tag">Coming soon</span>
+            <h3>Per-command CLI reference, auto-generated.</h3>
+            <p>Usage, flags, exit codes, output formats for every command. Includes the common copy-paste examples engineers actually need.</p>
+          </div>
+        </section>
+
+        <section class="docs-section" id="zc-api">
+          <div class="num">08 &middot; API reference</div>
+          <h2>HTTPS + bearer token. <em>OpenAPI 3.</em></h2>
+          <p>ZopCloud&rsquo;s API is a single REST surface across all providers. Same paths, same auth, same response shapes &mdash; whether the underlying provider is AWS, GCP, Azure, or ZopDev&rsquo;s managed infrastructure.</p>
+          <div class="docs-stub">
+            <span class="docs-stub-tag">Coming soon</span>
+            <h3>API endpoints, SDK examples, rate limits.</h3>
+            <p>OpenAPI 3 spec, endpoint-by-endpoint reference, code samples in TypeScript, Python, Go, and Rust.</p>
+          </div>
+        </section>
+      </div><!-- /data-doc-content=zopcloud -->
+
+    </article>
+
+    <!-- ── RIGHT · "On this page" anchor list ───────────────────────
+         Populated by JS scroll-spy on load and on hashchange — reads
+         all h2/h3 headings inside the active product's content, renders
+         them as anchor links, highlights the one currently in view. -->
+    <aside class="docs-onthispage" aria-label="On this page">
+      <span class="docs-onthispage-head">On this page</span>
+      <ol class="docs-onthispage-list" data-doc-onthispage></ol>
+    </aside>
+
+  </div><!-- /docs-shell -->
+
+</main>
+
+
+<section class="final">
+  <div class="container">
+    <div class="final-grid">
+      <div>
+        <div class="final-eyebrow">end · ready when you are</div>
+        <h2>Stop watching the waste.<br/>Start cutting it.</h2>
+        <p class="final-tag">See. Find. Fix. Automatic.</p>
+        <p>Connect your first cloud account in under 5 minutes. See your first remediation in under 7. No credit card required.</p>
+        <div class="final-cta"><a class="btn btn-primary" href="signin.html">Start Free →</a> <a class="btn btn-secondary" href="demo.html">Book a Demo</a></div>
+        <div class="final-stats final-stats--inline">
+          <div><strong>walkthroughs</strong>for every engine</div>
+          <div><strong>video tours</strong>under 4 min each</div>
+          <div><strong>searchable</strong>docs across the surface</div>
+        </div>
+      </div>
+      <div class="final-aside" aria-hidden="true"></div>
+    </div>
+  </div>
+  <canvas id="tet-canvas" aria-hidden="true"></canvas>
+</section>
+
+<!-- BRIDGE MARQUEE · cream slab between dark CTA and dark footer -->
+<section class="bridge-marquee" aria-label="ZopDev brand statement">
+  <div class="bridge-track">
+    <span>Multi-cloud automation</span><span class="acc">·</span>
+    <span>Production-ready in 30 min</span><span class="acc">·</span>
+    <span>SOC 2 · ISO 27001 · zero-trust</span><span class="acc">·</span>
+    <span>30% average cloud cost cut</span><span class="acc">·</span>
+    <span>4 platforms · 1 console</span><span class="acc">·</span>
+    <span>Multi-cloud automation</span><span class="acc">·</span>
+    <span>Production-ready in 30 min</span><span class="acc">·</span>
+    <span>SOC 2 · ISO 27001 · zero-trust</span><span class="acc">·</span>
+    <span>30% average cloud cost cut</span><span class="acc">·</span>
+    <span>4 platforms · 1 console</span><span class="acc">·</span>
+  </div>
+</section>
+
+<!-- ========================================================================
+     FOOTER, identical on every page · CANONICAL.
+     5-cell grid (brand + 4 columns), trust badges, legal rail, bottom row.
+     If you change this block, run the chrome sweep so every subpage
+     stays in sync.
+     ======================================================================== -->
+<footer>
+  <div class="container">
+        <div class="foot-grid foot-grid--equal">
+      <div class="foot-col"><h3>product</h3><ul>
+        <li><a href="zopnight.html">ZopNight</a></li>
+        <li><a href="zopday.html">ZopDay</a></li>
+        <li><a href="k8s-view.html">Kubernetes View</a></li>
+        <li><a href="zopcloud.html">ZopCloud</a></li>
+        <li><a href="pricing.html">Pricing</a></li></ul></div>
+      <div class="foot-col"><h3>resources</h3><ul>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="free-ebooks.html">Ebooks</a></li>
+        <li><a href="customers.html">Case studies</a></li>
+        <li><a href="solutions.html">Use cases by industry</a></li>
+        <li><a href="product-documentation.html">Product documentation</a></li>
+        <li><a href="kubernetes-guide.html">Kubernetes guide</a></li>
+        <li><a href="changelog.html">Changelog</a></li>
+        <li><a href="developer-documentation.html">Developer documentation</a></li><li><a href="assets.html">Media kit</a></li></ul></div>
+      <div class="foot-col"><h3>company</h3><ul>
+        <li><a href="about.html">About</a></li></ul></div>
+      <div class="foot-col"><h3>community</h3><ul>
+        <li><a href="community.html">Community</a></li></ul></div>
+    </div>
+        <!-- ════════════════════════════════════════════════════════════
+         FOOTER BOTTOM PANEL · ZopDev wordmark left · world map right
+         ════════════════════════════════════════════════════════════ -->
+    
+    <!-- COMPLIANCE BADGES · SOC 2 + ISO white badges before logo + globe -->
+    
+    <div class="foot-globe">
+      <div class="foot-globe-left">
+        <a href="index.html" class="foot-globe-mark" aria-label="ZopDev">
+          <svg class="foot-globe-logo" viewBox="0 0 715 276" aria-hidden="true">
+            <use href="#logo-zopdev"/>
+          </svg>
+        </a>
+        <div class="foot-globe-badges" aria-label="Compliance certifications">
+          <span class="foot-globe-badge" aria-label="SOC 2 Type II">
+            <svg viewBox="0 0 64 64" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="32" cy="32" r="29" fill="none" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M32 8 a24 24 0 0 1 24 24 v6 a24 24 0 0 1 -24 24 a24 24 0 0 1 -24 -24 v-6 a24 24 0 0 1 24 -24 z" fill="none" stroke="currentColor" stroke-width="1" opacity=".5"/>
+              <path d="M22 32 l8 8 l14 -16" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="square" stroke-linejoin="miter"/>
+            </svg>
+            <span class="foot-globe-badge-label"><strong>SOC 2</strong> Type II</span>
+          </span>
+          <span class="foot-globe-badge" aria-label="ISO 27001:2022">
+            <svg viewBox="0 0 64 64" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+              <rect x="6" y="6" width="52" height="52" fill="none" stroke="currentColor" stroke-width="1.5"/>
+              <rect x="11" y="11" width="42" height="42" fill="none" stroke="currentColor" stroke-width="1" opacity=".5"/>
+              <text x="32" y="29" font-family="Space Grotesk, monospace" font-size="9" fill="currentColor" text-anchor="middle" letter-spacing="2">ISO</text>
+              <text x="32" y="42" font-family="Space Grotesk, sans-serif" font-size="11" font-weight="700" fill="currentColor" text-anchor="middle">27001</text>
+              <line x1="14" y1="50" x2="50" y2="50" stroke="currentColor" stroke-width="1"/>
+            </svg>
+            <span class="foot-globe-badge-label"><strong>ISO 27001</strong> 2022</span>
+          </span>
+        </div>
+      </div>
+      <div class="foot-globe-right">
+        <div class="foot-regions-v2" id="foot-regions-v2">
+          <canvas id="foot-regions-map"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom foot-bottom-3">
+      <div class="foot-copy">© <span data-year>2026</span> ZopDev · <a href="trust.html">privacy</a> · <a href="trust.html">terms</a></div>
+      <div class="foot-mid">made with <svg viewBox="0 0 7 6" aria-hidden="true"><rect x="1" y="0" width="1" height="1"/><rect x="2" y="0" width="1" height="1"/><rect x="4" y="0" width="1" height="1"/><rect x="5" y="0" width="1" height="1"/><rect x="0" y="1" width="7" height="1"/><rect x="0" y="2" width="7" height="1"/><rect x="1" y="3" width="5" height="1"/><rect x="2" y="4" width="3" height="1"/><rect x="3" y="5" width="1" height="1"/></svg> by <a href="https://zop.dev" target="_blank" rel="noopener">zop.dev</a></div>
+      <div class="foot-social">
+        <a href="https://linkedin.com/company/zopdev">linkedin</a>
+        <a href="https://twitter.com/zopdev">twitter</a>
+        <a href="https://github.com/zopdev">github</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // dynamic copyright year · announcement-bar dismiss
+  (function(){
+    document.querySelectorAll('[data-year]').forEach(function(el){ el.textContent = new Date().getFullYear(); });
+    var ann = document.getElementById('ann-bar');
+    var btn = document.getElementById('ann-close');
+    if(!ann || !btn) return;
+    var key = 'zop-ann-2026-mcp';
+    try{ if(localStorage.getItem(key) === '1') ann.style.display = 'none'; }catch(e){}
+    btn.addEventListener('click', function(){
+      ann.style.display = 'none';
+      try{ localStorage.setItem(key, '1'); }catch(e){}
+    });
+  })();
+</script>
+
+<script>
+  // ────────────────────────────────────────────────────────────────
+  // Docs · product switcher · on-this-page · scroll-spy · ⌘K focus
+  //
+  // Single source of truth: data-doc-product on .docs-shell. Switching
+  // updates the attribute, swaps which <nav data-doc-nav> and
+  // <div data-doc-content> are visible, rewrites the h1/sub/breadcrumb,
+  // syncs the URL hash (#zopnight / #zopday / #zopcloud), and persists
+  // the pick to localStorage so return visits land in the right docs.
+  // The right-side "On this page" list is rebuilt from the active
+  // product's h2 + h3 headings and scroll-spied on the visible one.
+  // ────────────────────────────────────────────────────────────────
+  (function(){
+    var shell = document.querySelector('.docs-shell');
+    if(!shell) return;
+
+    var PRODUCTS = {
+      zopnight: {
+        name:  'ZopNight',
+        crumb: 'ZopNight docs',
+        h1:    'Product <em>documentation.</em>',
+        lede:  'ZopNight is an autonomous cloud governance platform that enforces cost discipline through policy-driven remediation. <strong>Cron-based start/stop schedules, 337+ audit rules, dependency-aware orchestration</strong> across AWS, GCP, Azure, and Kubernetes. Cuts cloud spend up to 60%.',
+        mark:  'mark-zopnight'
+      },
+      zopday: {
+        name:  'ZopDay',
+        crumb: 'ZopDay docs',
+        h1:    'Deploy <em>documentation.</em>',
+        lede:  'ZopDay is an internal developer platform that collapses 14-step deploy rituals into a single <code>zd push</code>. Templates, environments, and pipelines that work the same way across every team. <strong>Currently rolling out alongside GA.</strong>',
+        mark:  'mark-zopday'
+      },
+      zopcloud: {
+        name:  'ZopCloud',
+        crumb: 'ZopCloud docs',
+        h1:    'Cloud <em>documentation.</em>',
+        lede:  'ZopCloud is the multi-cloud platform underneath ZopNight and ZopDay &mdash; compute, networking, storage, and managed services with one API across providers. <strong>Currently rolling out alongside GA.</strong>',
+        mark:  'mark-zopcloud'
+      }
+    };
+
+    var STORAGE_KEY = 'zop-docs-product';
+
+    // ── DOM refs ──────────────────────────────────────────────────
+    var crumbEl  = shell.querySelector('[data-doc-crumb]');
+    var h1El     = shell.querySelector('[data-doc-h1]');
+    var ledeEl   = shell.querySelector('[data-doc-lede]');
+    var switchBtn   = shell.querySelector('[data-doc-switch]');
+    var switchMenu  = shell.querySelector('.docs-product-switch-menu');
+    var switchMark  = shell.querySelector('[data-doc-switch-mark]');
+    var switchName  = shell.querySelector('[data-doc-switch-name]');
+    var pickBtns    = shell.querySelectorAll('[data-doc-pick]');
+    var onThisPage  = shell.querySelector('[data-doc-onthispage]');
+
+    // ── State resolver ────────────────────────────────────────────
+    function resolveInitial(){
+      var h = (location.hash || '').replace('#','').toLowerCase();
+      if(PRODUCTS[h]) return h;
+      try {
+        var saved = localStorage.getItem(STORAGE_KEY);
+        if(PRODUCTS[saved]) return saved;
+      } catch(e){}
+      return 'zopnight';
+    }
+
+    // ── Apply a product · swaps nav, content, h1, crumb, mark ────
+    function apply(product){
+      if(!PRODUCTS[product]) product = 'zopnight';
+      var def = PRODUCTS[product];
+
+      shell.setAttribute('data-doc-product', product);
+
+      // Nav + content visibility
+      shell.querySelectorAll('[data-doc-nav]').forEach(function(n){
+        if(n.getAttribute('data-doc-nav') === product) n.removeAttribute('hidden');
+        else n.setAttribute('hidden', '');
+      });
+      shell.querySelectorAll('[data-doc-content]').forEach(function(c){
+        if(c.getAttribute('data-doc-content') === product) c.removeAttribute('hidden');
+        else c.setAttribute('hidden', '');
+      });
+
+      // Header copy
+      if(crumbEl) crumbEl.textContent = def.crumb;
+      if(h1El)    h1El.innerHTML      = def.h1;
+      if(ledeEl)  ledeEl.innerHTML    = def.lede;
+
+      // Switcher button face
+      if(switchName) switchName.textContent = def.name;
+      if(switchMark) switchMark.innerHTML = '<use href="#' + def.mark + '"/>';
+
+      // Picker aria-current
+      pickBtns.forEach(function(b){
+        var on = b.getAttribute('data-doc-pick') === product;
+        b.setAttribute('aria-current', on ? 'true' : 'false');
+      });
+
+      // Persist
+      try { localStorage.setItem(STORAGE_KEY, product); } catch(e){}
+
+      // Rebuild the "On this page" list for the new product
+      buildOnThisPage(product);
+      // Reset scroll position to the top of the body so the new product
+      // starts at its introduction, not wherever the user was.
+      var body = shell.querySelector('.docs-body');
+      if(body) body.scrollIntoView({ behavior:'auto', block:'start' });
+    }
+
+    // ── Switcher toggle + outside-click close ────────────────────
+    function setMenuOpen(open){
+      if(!switchMenu || !switchBtn) return;
+      if(open){
+        switchMenu.removeAttribute('hidden');
+        switchBtn.setAttribute('aria-expanded','true');
+      } else {
+        switchMenu.setAttribute('hidden','');
+        switchBtn.setAttribute('aria-expanded','false');
+      }
+    }
+    if(switchBtn){
+      switchBtn.addEventListener('click', function(){
+        var open = switchBtn.getAttribute('aria-expanded') === 'true';
+        setMenuOpen(!open);
+      });
+    }
+    document.addEventListener('click', function(e){
+      if(!switchBtn || !switchMenu) return;
+      if(switchBtn.contains(e.target) || switchMenu.contains(e.target)) return;
+      setMenuOpen(false);
+    });
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape') setMenuOpen(false);
+    });
+
+    // ── Picker clicks ────────────────────────────────────────────
+    pickBtns.forEach(function(b){
+      b.addEventListener('click', function(){
+        var pick = b.getAttribute('data-doc-pick');
+        if(!PRODUCTS[pick]) return;
+        history.replaceState(null, '', '#' + pick);
+        apply(pick);
+        setMenuOpen(false);
+      });
+    });
+
+    // ── On this page · list builder ──────────────────────────────
+    function buildOnThisPage(product){
+      if(!onThisPage) return;
+      onThisPage.innerHTML = '';
+      var contentEl = shell.querySelector('[data-doc-content="' + product + '"]');
+      if(!contentEl) return;
+      var headings = contentEl.querySelectorAll('h2[id], section[id] h2, section[id] h3');
+      headings.forEach(function(h){
+        var section = h.closest('section');
+        var id = section ? section.id : h.id;
+        if(!id) return;
+        var li = document.createElement('li');
+        if(h.tagName === 'H3') li.className = 'is-h3';
+        var a  = document.createElement('a');
+        a.href = '#' + id;
+        a.textContent = h.textContent.replace(/\s+/g,' ').trim();
+        li.appendChild(a);
+        onThisPage.appendChild(li);
+      });
+    }
+
+    // ── Scroll-spy · highlight the on-this-page anchor for the
+    //                  section nearest the top of the viewport
+    var spyTimer = null;
+    function runSpy(){
+      if(!onThisPage) return;
+      var anchors = onThisPage.querySelectorAll('a');
+      if(!anchors.length) return;
+      var best = anchors[0], bestTop = -Infinity;
+      anchors.forEach(function(a){
+        var id = a.getAttribute('href').slice(1);
+        var el = document.getElementById(id);
+        if(!el) return;
+        var top = el.getBoundingClientRect().top;
+        // Pick the section whose top is closest to (but above) 120px
+        if(top <= 140 && top > bestTop){ bestTop = top; best = a; }
+      });
+      anchors.forEach(function(a){ a.classList.remove('is-active'); });
+      best.classList.add('is-active');
+
+      // Also highlight the matching left-nav entry
+      var matchHref = best.getAttribute('href');
+      shell.querySelectorAll('.docs-nav a').forEach(function(a){
+        a.classList.toggle('is-active', a.getAttribute('href') === matchHref);
+      });
+    }
+    window.addEventListener('scroll', function(){
+      if(spyTimer) return;
+      spyTimer = requestAnimationFrame(function(){
+        runSpy();
+        spyTimer = null;
+      });
+    }, { passive:true });
+
+    // ── ⌘K focus the search box ──────────────────────────────────
+    var searchInput = document.getElementById('docs-search-input');
+    document.addEventListener('keydown', function(e){
+      var isK = (e.key === 'k' || e.key === 'K');
+      if(!isK) return;
+      if(!(e.metaKey || e.ctrlKey)) return;
+      e.preventDefault();
+      if(searchInput) searchInput.focus();
+    });
+
+    // ── Cross-tab hash sync (back/forward nav) ───────────────────
+    window.addEventListener('hashchange', function(){
+      var h = (location.hash || '').replace('#','').toLowerCase();
+      if(PRODUCTS[h]) apply(h);
+    });
+
+    // ── Boot ─────────────────────────────────────────────────────
+    apply(resolveInitial());
+    // Run the initial scroll-spy after layout settles
+    requestAnimationFrame(runSpy);
+  })();
+</script>
+
+  <script src="cta-tetris.js" defer></script>
+
+<!-- ═══════ MOBILE NAV · 2-level accordion drawer · injected sitewide ═══════ --><div class="mob-nav-scrim" id="mob-nav-scrim" aria-hidden="true"></div>
+
+<aside class="mob-nav" id="mob-nav-drawer" aria-hidden="true" aria-label="Mobile navigation">
+  <header class="mob-nav-head">
+    <a href="index.html" class="mob-nav-logo" aria-label="ZopDev">
+      <svg viewBox="0 0 715 276" aria-hidden="true"><use href="#logo-zopdev"/></svg>
+    </a>
+    <button class="mob-nav-close" id="mob-nav-close" aria-label="Close menu" type="button">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square">
+        <path d="M3 3 L13 13 M13 3 L3 13"/>
+      </svg>
+    </button>
+  </header>
+
+  <nav class="mob-nav-body" aria-label="Mobile menu items">
+    <!-- PRODUCT · expandable -->
+    <details class="mob-nav-group">
+      <summary>
+        <span>Product</span>
+        <svg class="mob-nav-chev" width="14" height="14" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 5 L6 8 L9 5"/></svg>
+      </summary>
+      <ul>
+        <li><a href="zopnight.html">
+          <svg class="mob-nav-mark" viewBox="0 0 32 32" aria-hidden="true">
+            <rect x="0" y="0" width="32" height="32" fill="#2A4494"/>
+            <circle cx="16" cy="16" r="8" fill="#FFFFFF"/>
+          </svg>
+          ZopNight<small>Cloud governance + FinOps</small>
+        </a></li>
+        <li><a href="zopday.html">
+          <svg class="mob-nav-mark" viewBox="0 0 32 32" aria-hidden="true">
+            <rect x="0" y="0" width="32" height="32" fill="#F58549"/>
+            <circle cx="16" cy="16" r="8" fill="#FFFFFF"/>
+          </svg>
+          ZopDay<small>Internal Developer Platform</small>
+        </a></li>
+        <li><a href="zopcloud.html">
+          <svg class="mob-nav-mark" viewBox="0 0 32 32" aria-hidden="true">
+            <rect x="0" y="0" width="32" height="32" fill="#2A4494"/>
+            <rect x="12" y="8" width="8" height="6" fill="#FFFFFF"/>
+            <rect x="6" y="14" width="20" height="10" fill="#FFFFFF"/>
+          </svg>
+          ZopCloud<small>Multi-cloud topology</small>
+        </a></li>
+      </ul>
+    </details>
+
+    <!-- RESOURCES · expandable -->
+    <details class="mob-nav-group">
+      <summary>
+        <span>Resources</span>
+        <svg class="mob-nav-chev" width="14" height="14" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 5 L6 8 L9 5"/></svg>
+      </summary>
+      <ul>
+        <li><a href="blog.html">Blog<small>Engineering + cost notes</small></a></li>
+        <li><a href="free-ebooks.html">Ebooks<small>Free playbooks</small></a></li>
+        <li><a href="customers.html">Case studies<small>Real teams, real cuts</small></a></li>
+        <li><a href="solutions.html">Use cases by industry<small>SaaS, fintech, retail</small></a></li>
+        <li><a href="product-documentation.html">Product documentation<small>Walkthroughs + tours</small></a></li>
+        <li><a href="kubernetes-guide.html">Kubernetes guide<small>Cluster basics to right-sizing</small></a></li>
+        <li><a href="changelog.html">Changelog<small>What shipped this week</small></a></li>
+        <li><a href="developer-documentation.html">Developer documentation<small>API, SDKs, MCP</small></a></li>
+        <li><a href="assets.html">Media kit<small>Logos, brand assets, press</small></a></li>
+      </ul>
+    </details>
+
+    <!-- PRICING · single link -->
+    <a class="mob-nav-link" href="pricing.html">Pricing</a>
+
+    <!-- COMPANY · expandable -->
+    <details class="mob-nav-group">
+      <summary>
+        <span>Company</span>
+        <svg class="mob-nav-chev" width="14" height="14" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 5 L6 8 L9 5"/></svg>
+      </summary>
+      <ul>
+        <li><a href="about.html">About<small>Founded 2024</small></a></li>
+        <li><a href="contact.html">Contact<small>Talk to sales</small></a></li>
+      </ul>
+    </details>
+
+    <!-- COMMUNITY · single link -->
+    <a class="mob-nav-link" href="community.html">Community</a>
+  </nav>
+
+  <footer class="mob-nav-foot">
+    <div class="mob-nav-foot-utils">
+      <button class="mob-nav-theme" id="mob-nav-theme" aria-label="Toggle theme" type="button">
+        <span class="tt-opt tt-sun" aria-hidden="true">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+            <circle cx="8" cy="8" r="3" fill="currentColor" stroke="none"/>
+            <path d="M8 1.5v1.3M8 13.2v1.3M1.5 8h1.3M13.2 8h1.3M3.4 3.4l.9.9M11.7 11.7l.9.9M3.4 12.6l.9-.9M11.7 4.3l.9-.9"/>
+          </svg>
+        </span>
+        <span class="tt-opt tt-moon" aria-hidden="true">
+          <svg viewBox="0 0 16 16" fill="currentColor">
+            <path d="M12.8 10.1a5.5 5.5 0 0 1-7-7 .5.5 0 0 0-.7-.6A6.5 6.5 0 1 0 13.4 10.8a.5.5 0 0 0-.6-.7z"/>
+          </svg>
+        </span>
+      </button>
+      <a class="mob-nav-playground" href="playground.html">Playground</a>
+    </div>
+    <a class="btn btn-secondary mob-nav-foot-cta" href="signin.html">Sign In</a>
+    <a class="btn btn-accent mob-nav-foot-cta" href="demo.html"><span>Book a Demo</span> <span aria-hidden="true">&rarr;</span></a>
+  </footer>
+</aside>
+
+<script>
+(function(){
+  var toggle = document.getElementById('mob-nav-toggle');
+  var drawer = document.getElementById('mob-nav-drawer');
+  var scrim  = document.getElementById('mob-nav-scrim');
+  var close  = document.getElementById('mob-nav-close');
+  if(!toggle || !drawer) return;
+  function open(){
+    drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false');
+    if(scrim){ scrim.classList.add('open'); scrim.setAttribute('aria-hidden','false'); }
+    toggle.setAttribute('aria-expanded','true');
+    document.body.style.overflow='hidden';
+  }
+  function shut(){
+    drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true');
+    if(scrim){ scrim.classList.remove('open'); scrim.setAttribute('aria-hidden','true'); }
+    toggle.setAttribute('aria-expanded','false');
+    document.body.style.overflow='';
+  }
+  toggle.addEventListener('click', open);
+  if(scrim) scrim.addEventListener('click', shut);
+  if(close) close.addEventListener('click', shut);
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') shut(); });
+})();
+</script>
+
+
+<script>
+(function(){
+  var btn = document.getElementById('mob-nav-theme');
+  if(!btn) return;
+  btn.addEventListener('click', function(){
+    var current = document.documentElement.getAttribute('data-theme') || 'light';
+    var next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('zop-theme', next); } catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

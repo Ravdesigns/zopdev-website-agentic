@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZopDev · Transactional emails · production HTML</title>
+  <style>
+    :root{
+      --paper:#FAF7EC; --paper-2:#F0EBDB;
+      --ink:#0A0A0A; --ink-2:#525252; --ink-3:#9C9588; --ink-4:#B8B0A0;
+      --line:#D9D3BF;
+      --zop-orange:#F58549;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      --mono: 'Space Grotesk', 'Helvetica Neue', Menlo, Monaco, monospace;
+    }
+    *{ box-sizing:border-box; }
+    html, body{ margin:0; padding:0; }
+    body{
+      background: var(--paper);
+      font-family: var(--font);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+    .wrap{ max-width: 980px; margin: 0 auto; padding: 64px 32px; }
+
+    .crumb{
+      font-family: var(--mono); font-size: 11px; font-weight: 600;
+      letter-spacing: 1.4px; text-transform: uppercase;
+      color: var(--ink-3); margin: 0 0 20px;
+    }
+    .crumb a{ color: var(--ink-3); text-decoration: underline; }
+
+    .eyebrow{
+      display: inline-flex; align-items: center; gap: 10px;
+      font-family: var(--mono); font-size: 11px; font-weight: 600;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--zop-orange); margin: 0 0 14px;
+    }
+    .eyebrow::before{
+      content: ''; width: 10px; height: 10px; background: var(--zop-orange);
+    }
+    h1{
+      margin: 0 0 14px; font-size: clamp(36px, 4vw, 52px);
+      font-weight: 700; letter-spacing: -0.04em; line-height: 1.05;
+    }
+    .lede{
+      margin: 0 0 48px; font-size: 17px; line-height: 1.55;
+      color: var(--ink-2); max-width: 720px;
+    }
+    .lede strong{ color: var(--ink); font-weight: 500; }
+
+    .grid{
+      display: grid; gap: 14px;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    }
+    .card{
+      display: block; text-decoration: none;
+      padding: 22px 22px 24px;
+      background: var(--paper); border: 1px solid var(--line);
+      color: var(--ink);
+      position: relative; transition: transform .14s ease, border-color .14s ease;
+    }
+    .card::after{
+      content: ''; position: absolute; top: 0; left: 0;
+      width: 3px; height: 100%; background: var(--zop-orange);
+      transform: scaleY(0); transform-origin: top;
+      transition: transform .14s ease;
+    }
+    .card:hover{ transform: translateY(-3px); border-color: var(--ink); }
+    .card:hover::after{ transform: scaleY(1); }
+
+    .card-num{
+      font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+      letter-spacing: 1.4px; color: var(--zop-orange);
+      margin: 0 0 8px;
+    }
+    .card h3{
+      margin: 0 0 6px; font-size: 17px; font-weight: 700;
+      letter-spacing: -0.01em; line-height: 1.25;
+    }
+    .card p.subject{
+      margin: 0 0 12px; font-family: var(--mono); font-size: 11.5px;
+      color: var(--ink-3); line-height: 1.5; word-break: break-word;
+    }
+    .card p.desc{
+      margin: 0 0 12px; font-size: 13px; color: var(--ink-2);
+      line-height: 1.5;
+    }
+    .card .open{
+      font-size: 12.5px; font-weight: 600; color: var(--ink);
+    }
+    .card .open::after{ content: '  →'; color: var(--zop-orange); }
+
+    .notes{
+      margin: 56px 0 0; padding: 22px 24px;
+      background: var(--paper-2); border-left: 3px solid var(--zop-orange);
+    }
+    .notes h2{
+      margin: 0 0 8px; font-family: var(--mono); font-size: 11px;
+      color: var(--zop-orange); letter-spacing: 1.5px;
+      text-transform: uppercase; font-weight: 700;
+    }
+    .notes p{ margin: 0 0 10px; font-size: 14px; line-height: 1.6; color: var(--ink-2); }
+    .notes p:last-child{ margin-bottom: 0; }
+    .notes code{
+      font-family: var(--mono); font-size: 12.5px;
+      background: var(--paper); border: 1px solid var(--line);
+      padding: 1px 6px; color: var(--ink);
+    }
+    .notes ul{ margin: 0 0 10px 18px; padding: 0; }
+    .notes li{ font-size: 14px; line-height: 1.6; color: var(--ink-2); margin-bottom: 4px; }
+  </style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <p class="crumb"><a href="../README.md">Email handover</a> &middot; 9 production files</p>
+  <span class="eyebrow">ZopDev &middot; Transactional emails</span>
+  <h1>9 production-ready files.<br/>Drop-in for SendGrid, Postmark, Resend.</h1>
+  <p class="lede">
+    Each file below is a <strong>self-contained HTML email</strong> &mdash; table-based layout for legacy Outlook, MSO conditional VML buttons, dark-mode rules with <code style="font-family:var(--mono); font-size:13px; background:var(--paper-2); padding:1px 6px; border:1px solid var(--line);">[data-ogsc]</code> fallback, base64-embedded logo (no asset hosting), and a plain-text companion in an HTML comment at the bottom. Copy the file into your transactional service, swap the <code style="font-family:var(--mono); font-size:13px; background:var(--paper-2); padding:1px 6px; border:1px solid var(--line);">{{merge_field}}</code> syntax for your service's variables, ship it.
+  </p>
+
+  <div class="grid">
+
+    <a class="card" href="01-new-blog-post.html">
+      <p class="card-num">01</p>
+      <h3>New blog post</h3>
+      <p class="subject">New on the ZopDev blog: {{post_title}}</p>
+      <p class="desc">Single-post drop. Title, category, read-time, excerpt, "Read on zop.dev" CTA + fallback URL.</p>
+      <span class="open">Open</span>
+    </a>
+
+    <a class="card" href="02-weekly-digest.html">
+      <p class="card-num">02</p>
+      <h3>Weekly digest</h3>
+      <p class="subject">This week on ZopDev &mdash; {{week_label}}</p>
+      <p class="desc">Sunday roundup. Multi-item BLOG / EBOOK tagged list with per-row Read link.</p>
+      <span class="open">Open</span>
+    </a>
+
+    <a class="card" href="03-contact-received.html">
+      <p class="card-num">03</p>
+      <h3>Contact received</h3>
+      <p class="subject">We&rsquo;ve received your message &mdash; ZopDev</p>
+      <p class="desc">Form-submission confirmation. Echoes topic + message back. Direct-reply routes to support queue.</p>
+      <span class="open">Open</span>
+    </a>
+
+    <a class="card" href="04-welcome.html">
+      <p class="card-num">04</p>
+      <h3>Welcome</h3>
+      <p class="subject">Welcome to ZopDev</p>
+      <p class="desc">Subscriber onboarding. Sets the cadence promise (Sundays only) + 3-bullet "what lands in your inbox".</p>
+      <span class="open">Open</span>
+    </a>
+
+    <a class="card" href="05-demo-booked.html">
+      <p class="card-num">05</p>
+      <h3>Demo booked</h3>
+      <p class="subject">You&rsquo;re on the calendar &mdash; ZopDev</p>
+      <p class="desc">Demo confirmation. KV table with company / role / cloud / spend / team-size / focus.</p>
+      <span class="open">Open</span>
+    </a>
+
+    <a class="card" href="06-zopcloud-waitlist.html">
+      <p class="card-num">06</p>
+      <h3>ZopCloud waitlist</h3>
+      <p class="subject">You&rsquo;re on the ZopCloud waitlist</p>
+      <p class="desc">Pre-launch confirmation. No-drip promise + 3 "in the meantime" alternatives (ZopNight, changelog, social).</p>
+      <span class="open">Open</span>
+    </a>
+
+    <a class="card" href="07-changelog.html">
+      <p class="card-num">07</p>
+      <h3>Changelog</h3>
+      <p class="subject">You&rsquo;re subscribed to the ZopDev changelog</p>
+      <p class="desc">Changelog-feed subscription. 14-day cadence + PR-link + breaking-change-at-top guarantee.</p>
+      <span class="open">Open</span>
+    </a>
+
+    <a class="card" href="08-ebook-ready.html">
+      <p class="card-num">08</p>
+      <h3>Ebook ready</h3>
+      <p class="subject">Your copy of {{ebook_title}}</p>
+      <p class="desc">Download delivery. Web-reader card + "Continue reading" CTA + fallback URL + no-expiry note.</p>
+      <span class="open">Open</span>
+    </a>
+
+    <a class="card" href="09-reclaim-forecast.html">
+      <p class="card-num">09</p>
+      <h3>Reclaim forecast</h3>
+      <p class="subject">Your ZopNight Reclaim Forecast</p>
+      <p class="desc">ZopNight cost-calculator output. 3-stat strip ($4.8k / $14.5k / $57.8k) + dual CTA (connect read-only + talk to SE).</p>
+      <span class="open">Open</span>
+    </a>
+
+  </div>
+
+  <div class="notes">
+    <h2>Engineering notes for the dev</h2>
+    <ul>
+      <li><strong>Self-contained.</strong> Logo is base64-embedded (~29 KB per file). No asset hosting required. Swap to a CDN URL only if Outlook desktop is critical &mdash; some versions strip data URIs.</li>
+      <li><strong>Table-based layout.</strong> Outlook 2007&ndash;2019 use Word&rsquo;s HTML engine; flexbox/grid don&rsquo;t render. Classic <code>&lt;table&gt;</code> nesting is the safe path.</li>
+      <li><strong>MSO conditional VML buttons.</strong> Each CTA has a <code>&lt;v:roundrect&gt;</code> fallback wrapped in <code>&lt;!--[if mso]&gt;</code> for Outlook desktop button fidelity. The non-MSO branch is the modern HTML/CSS button for everywhere else.</li>
+      <li><strong>Dark mode.</strong> Applied via <code>@media (prefers-color-scheme: dark)</code> for Apple Mail / iOS Mail / Outlook.com modern, plus <code>[data-ogsc]</code> attribute fallback for legacy Outlook.com. Gmail web is partially supported.</li>
+      <li><strong>Plain-text companion.</strong> Every file has a plain-text version in an HTML comment at the bottom. Most ESPs auto-generate this, but audit it &mdash; clean plain-text helps deliverability and is what shows in Apple Watch / smartwatch previews.</li>
+      <li><strong>Merge fields use Mustache-style <code>&#123;&#123;variable&#125;&#125;</code>.</strong> Swap to your service&rsquo;s syntax: SendGrid <code>{{variable}}</code>, Postmark <code>{{variable}}</code>, Resend <code>{{variable}}</code>, Mailgun <code>%recipient.variable%</code>, etc.</li>
+      <li><strong>For the showcase / visual review:</strong> the carousel page lives at <a href="../email-showcase.html">../email-showcase.html</a>. The reusable skeleton without copy is at <a href="../email-template.html">../email-template.html</a>.</li>
+    </ul>
+  </div>
+
+</div>
+
+</body>
+</html>

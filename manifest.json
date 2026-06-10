@@ -1,0 +1,12 @@
+{
+  "name": "ZopDev",
+  "short_name": "ZopDev",
+  "description": "Autopilot for multi-cloud cost. See everything. Fix it in one click.",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#F58549",
+  "background_color": "#0F0F12",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
