@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="robots" content="noindex"/>
+<title>ZopDev · logotype options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Space+Grotesk:wght@300;400;500;700&family=JetBrains+Mono:wght@700;800&family=Sora:wght@700;800&family=Archivo:wght@800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#F0EBDB; --paper:#0F0F12; --line:#2A2A34; --muted:#9C9588;
+    --blue:#2A4494; --blue-d:#4A66D4; --orange:#F58549; --green:#7FB236;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{
+    background:var(--paper); color:var(--ink);
+    font-family:'Inter', system-ui, sans-serif;
+    padding:48px 40px 80px;
+  }
+  h1{
+    font-size:15px; font-weight:600; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--muted); margin-bottom:6px;
+  }
+  .note{ font-size:13px; color:var(--muted); margin-bottom:40px; max-width:72ch; line-height:1.5; }
+  .note b{ color:var(--ink); }
+
+  .opt{
+    border:1px solid var(--line);
+    margin-bottom:28px;
+  }
+  .opt-head{
+    display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;
+    padding:14px 20px;
+    border-bottom:1px solid var(--line);
+  }
+  .opt-tag{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px; font-weight:700; color:var(--orange);
+    letter-spacing:.1em;
+  }
+  .opt-name{ font-size:14px; font-weight:600; }
+  .opt-why{ font-size:12.5px; color:var(--muted); }
+
+  .opt-hero{
+    padding:40px 20px 36px;
+    display:flex; align-items:center; gap:48px; flex-wrap:wrap;
+  }
+  /* the lockup · text + 3-square cluster (proportions approximate the
+     current symbol: blue+orange top row, green under orange) */
+  .lockup{ display:inline-flex; align-items:flex-start; gap:.14em; }
+  .lockup .word{ line-height:1; letter-spacing:-0.02em; }
+  .sq{ display:grid; grid-template-columns:1fr 1fr; width:.62em; margin-top:-0.07em; }
+  .sq i{ display:block; aspect-ratio:1; }
+  .sq i:nth-child(1){ background:var(--blue-d); }
+  .sq i:nth-child(2){ background:var(--orange); }
+  .sq i:nth-child(3){ background:transparent; }
+  .sq i:nth-child(4){ background:var(--green); }
+
+  .hero-size .word{ font-size:72px; }
+  .hero-size .sq{ font-size:72px; }
+
+  /* fake navbar context · judge distinction against real Inter nav links */
+  .opt-nav{
+    display:flex; align-items:center; gap:36px;
+    padding:16px 20px;
+    border-top:1px solid var(--line);
+    background:#0A0A0D;
+  }
+  .nav-size .word{ font-size:24px; }
+  .nav-size .sq{ font-size:24px; }
+  .navlinks{ display:flex; gap:26px; font-size:14.5px; font-weight:500; color:#B8B0A0; }
+  .navlinks span:hover{ color:var(--ink); }
+  .nav-cta{
+    margin-left:auto;
+    font-size:13.5px; font-weight:600;
+    background:var(--orange); color:#0F0F12;
+    padding:9px 16px;
+  }
+
+  /* light strip · check both themes */
+  .opt-light{
+    display:flex; align-items:center; gap:48px;
+    padding:18px 20px;
+    background:#FAF7EC; color:#0A0A0A;
+    border-top:1px solid var(--line);
+  }
+  .light-size .word{ font-size:24px; }
+  .light-size .sq{ font-size:24px; }
+  .opt-light .navlinks{ color:#52524E; }
+
+  /* ── typefaces per option ── */
+  /* mixed-weight · Zop bold + Dev thinner (Space Grotesk) */
+  .f-mix .word{ font-family:'Space Grotesk'; letter-spacing:-0.025em; }
+  .f-mix .word .zop{ font-weight:700; }
+  .f-mix1 .word .dev{ font-weight:500; }
+  .f-mix2 .word .dev{ font-weight:400; }
+  .f-mix3 .word .dev{ font-weight:300; }
+
+  .f-current .word{ font-family:'Inter'; font-weight:700; letter-spacing:-0.03em; }
+  .f-sgbold  .word{ font-family:'Space Grotesk'; font-weight:700; letter-spacing:-0.025em; }
+  .f-sgmed   .word{ font-family:'Space Grotesk'; font-weight:500; letter-spacing:-0.01em; }
+  .f-jbm     .word{ font-family:'JetBrains Mono'; font-weight:800; letter-spacing:-0.055em; }
+  .f-sora    .word{ font-family:'Sora'; font-weight:800; letter-spacing:-0.035em; }
+  .f-interblk .word{ font-family:'Inter'; font-weight:900; letter-spacing:-0.055em; }
+</style>
+</head>
+<body>
+
+<h1>ZopDev · logotype options</h1>
+<p class="note">Each option shows the lockup at hero scale, inside a <b>fake navbar next to real Inter nav-links</b> (the distinction test), and on the light theme. Option A is the current mark for baseline. All previews are live text — the final mark gets converted to outlined SVG paths, so the choice adds <b>zero font loading</b> to the site.</p>
+
+<!-- A · CURRENT -->
+<div class="opt f-current">
+  <div class="opt-head"><span class="opt-tag">A</span><span class="opt-name">Current · Inter Bold (as outlined today)</span><span class="opt-why">baseline — same face as body text, which is the CEO's complaint</span></div>
+  <div class="opt-hero hero-size"><span class="lockup"><span class="word">ZopDev</span><span class="sq"><i></i><i></i><i></i><i></i></span></span></div>
+  <div class="opt-nav nav-size">
+    <span class="lockup"><span class="word">ZopDev</span><span class="sq"><i></i><i></i><i></i><i></i></span></span>
+    <nav class="navlinks"><span>Product</span><span>Resources</span><span>Pricing</span><span>Company</span></nav>
+    <span class="nav-cta">Book a Demo →</span>
+  </div>
+  <div class="opt-light light-size">
+    <span class="lockup"><span class="word">ZopDev</span><span class="sq"><i></i><i></i><i></i><i></i></span></span>
+    <nav class="navlinks"><span>Product</span><span>Resources</span><span>Pricing</span></nav>
+  </div>
+</div>
+
+<!-- B · SPACE GROTESK BOLD -->
+<div class="opt f-sgbold">
+  <div class="opt-head"><span class="opt-tag">B</span><span class="opt-name">Space Grotesk Bold</span><span class="opt-why">recommended — already your label face, clearly distinct from Inter, techy without trying</span></div>
+  <div class="opt-hero hero-size"><span class="lockup"><span class="word">ZopDev</span><span class="sq"><i></i><i></i><i></i><i></i></span></span></div>
+  <div class="opt-nav nav-size">
+    <span class="lockup"><span class="word">ZopDev</span><span class="sq"><i></i><i></i><i></i><i></i></span></span>
+    <nav class="navlinks"><span>Product</span><span>Resources</span><span>Pricing</span><span>Company</span></nav>
+    <span class="nav-cta">Book a Demo →</span>
+  </div>
+  <div class="opt-light light-size">
+    <span class="lockup"><span class="word">ZopDev</span><span class="sq"><i></i><i></i><i></i><i></i></span></span>
+    <nav class="navlinks"><span>Product</span><span>Resources</span><span>Pricing</span></nav>
+  </div>
+</div>
+
+<!-- G1 · SG MIXED · Zop 700 + Dev 500 -->
+<div class="opt f-mix f-mix1">
+  <div class="opt-head"><span class="opt-tag">G1</span><span class="opt-name">Space Grotesk · Zop Bold + Dev Medium</span><span class="opt-why">your idea — gentle weight contrast, safest of the three</span></div>
+  <div class="opt-hero hero-size"><span class="lockup"><span class="word"><span class="zop">Zop</span><span class="dev">Dev</span></span><span class="sq"><i></i><i></i><i></i><i></i></span></span></div>
+  <div class="opt-nav nav-size">
+    <span class="lockup"><span class="word"><span class="zop">Zop</span><span class="dev">Dev</span></span><span class="sq"><i></i><i></i><i></i><i></i></span></span>
+    <nav class="navlinks"><span>Product</span><span>Resources</span><span>Pricing</span><span>Company</span></nav>
+    <span class="nav-cta">Book a Demo →</span>
+  </div>
+  <div class="opt-light light-size">
+    <span class="lockup"><span class="word"><span class="zop">Zop</span><span class="dev">Dev</span></span><span class="sq"><i></i><i></i><i></i><i></i></span></span>
+    <nav class="navlinks"><span>Product</span><span>Resources</span><span>Pricing</span></nav>
+  </div>
+</div>
+
+<!-- G2 · SG MIXED · Zop 700 + Dev 400 -->
+<div class="opt f-mix f-mix2">
+  <div class="opt-head"><span class="opt-tag">G2</span><span class="opt-name">Space Grotesk · Zop Bold + Dev Regular</span><span class="opt-why">clearer contrast — the "two parts, one platform" read lands</span></div>
+  <div class="opt-hero hero-size"><span class="lockup"><span class="word"><span class="zop">Zop</span><span class="dev">Dev</span></span><span class="sq"><i></i><i></i><i></i><i></i></span></span></div>
+  <div class="opt-nav nav-size">
+    <span class="lockup"><span class="word"><span class="zop">Zop</span><span class="dev">Dev</span></span><span class="sq"><i></i><i></i><i></i><i></i></span></span>
+    <nav class="navlinks"><span>Product</span><span>Resources</span><span>Pricing</span><span>Company</span></nav>
+    <span class="nav-cta">Book a Demo →</span>
+  </div>
+  <div class="opt-light light-size">
+    <span class="lockup"><span class="word"><span class="zop">Zop</span><span class="dev">Dev</span></span><span class="sq"><i></i><i></i><i></i><i></i></span></span>
+    <nav class="navlinks"><span>Product</span><span>Resources</span><span>Pricing</span></nav>
+  </div>
+</div>
+
+<!-- G3 · SG MIXED · Zop 700 + Dev 300 -->
+<div class="opt f-mix f-mix3">
+  <div class="opt-head"><span class="opt-tag">G3</span><span class="opt-name">Space Grotesk · Zop Bold + Dev Light</span><span class="opt-why">max contrast, most editorial — risk: Dev goes wispy at nav size</span></div>
+  <div class="opt-hero hero-size"><span class="lockup"><span class="word"><span class="zop">Zop</span><span class="dev">Dev</span></span><span class="sq"><i></i><i></i><i></i><i></i></span></span></div>
+  <div class="opt-nav nav-size">
+    <span class="lockup"><span class="word"><span class="zop">Zop</span><span class="dev">Dev</span></span><span class="sq"><i></i><i></i><i></i><i></i></span></span>
+    <nav class="navlinks"><span>Product</span><span>Resources</span><span>Pricing</span><span>Company</span></nav>
+    <span class="nav-cta">Book a Demo →</span>
+  </div>
+  <div class="opt-light light-size">
+    <span class="lockup"><span class="word"><span class="zop">Zop</span><span class="dev">Dev</span></span><span class="sq"><i></i><i></i><i></i><i></i></span></span>
+    <nav class="navlinks"><span>Product</span><span>Resources</span><span>Pricing</span></nav>
+  </div>
+</div>
+
+<!-- C · SPACE GROTESK MEDIUM -->
+<div class="opt f-sgmed">
+  <div class="opt-head"><span class="opt-tag">C</span><span class="opt-name">Space Grotesk Medium</span><span class="opt-why">same family, lighter cut — quieter, more editorial</span></div>
+  <div class="opt-hero hero-size"><span class="lockup"><span class="word">ZopDev</span><span class="sq"><i></i><i></i><i></i><i></i></span></span></div>
+  <div class="opt-nav nav-size">
+    <span class="lockup"><span class="word">ZopDev</span><span class="sq"><i></i><i></i><i></i><i></i></span></span>
+    <nav class="navlinks"><span>Product</span><span>Resources</span><span>Pricing</span><span>Company</span></nav>
+    <span class="nav-cta">Book a Demo →</span>
+  </div>
+  <div class="opt-light light-size">
+    <span class="lockup"><span class="word">ZopDev</span><span class="sq"><i></i><i></i><i></i><i></i></span></span>
+    <nav class="navlinks"><span>Product</span><span>Resources</span><span>Pricing</span></nav>
+  </div>
+</div>
+
+<!-- D · JETBRAINS MONO EXTRABOLD -->
+<div class="opt f-jbm">
+  <div class="opt-head"><span class="opt-tag">D</span><span class="opt-name">JetBrains Mono ExtraBold</span><span class="opt-why">mono wordmark — maximum devtool signal, hardest break from Inter</span></div>
+  <div class="opt-hero hero-size"><span class="lockup"><span class="word">ZopDev</span><span class="sq"><i></i><i></i><i></i><i></i></span></span></div>
+  <div class="opt-nav nav-size">
+    <span class="lockup"><span class="word">ZopDev</span><span class="sq"><i></i><i></i><i></i><i></i></span></span>
+    <nav class="navlinks"><span>Product</span><span>Resources</span><span>Pricing</span><span>Company</span></nav>
+    <span class="nav-cta">Book a Demo →</span>
+  </div>
+  <div class="opt-light light-size">
+    <span class="lockup"><span class="word">ZopDev</span><span class="sq"><i></i><i></i><i></i><i></i></span></span>
+    <nav class="navlinks"><span>Product</span><span>Resources</span><span>Pricing</span></nav>
+  </div>
+</div>
+
+<!-- E · SORA EXTRABOLD -->
+<div class="opt f-sora">
+  <div class="opt-head"><span class="opt-tag">E</span><span class="opt-name">Sora ExtraBold</span><span class="opt-why">distinct geometric grotesk — rounder, friendlier, startup-modern</span></div>
+  <div class="opt-hero hero-size"><span class="lockup"><span class="word">ZopDev</span><span class="sq"><i></i><i></i><i></i><i></i></span></span></div>
+  <div class="opt-nav nav-size">
+    <span class="lockup"><span class="word">ZopDev</span><span class="sq"><i></i><i></i><i></i><i></i></span></span>
+    <nav class="navlinks"><span>Product</span><span>Resources</span><span>Pricing</span><span>Company</span></nav>
+    <span class="nav-cta">Book a Demo →</span>
+  </div>
+  <div class="opt-light light-size">
+    <span class="lockup"><span class="word">ZopDev</span><span class="sq"><i></i><i></i><i></i><i></i></span></span>
+    <nav class="navlinks"><span>Product</span><span>Resources</span><span>Pricing</span></nav>
+  </div>
+</div>
+
+<!-- F · INTER BLACK -->
+<div class="opt f-interblk">
+  <div class="opt-head"><span class="opt-tag">F</span><span class="opt-name">Inter Black · tight tracking</span><span class="opt-why">same family, heaviest cut — subtlest possible distinction, low-risk</span></div>
+  <div class="opt-hero hero-size"><span class="lockup"><span class="word">ZopDev</span><span class="sq"><i></i><i></i><i></i><i></i></span></span></div>
+  <div class="opt-nav nav-size">
+    <span class="lockup"><span class="word">ZopDev</span><span class="sq"><i></i><i></i><i></i><i></i></span></span>
+    <nav class="navlinks"><span>Product</span><span>Resources</span><span>Pricing</span><span>Company</span></nav>
+    <span class="nav-cta">Book a Demo →</span>
+  </div>
+  <div class="opt-light light-size">
+    <span class="lockup"><span class="word">ZopDev</span><span class="sq"><i></i><i></i><i></i><i></i></span></span>
+    <nav class="navlinks"><span>Product</span><span>Resources</span><span>Pricing</span></nav>
+  </div>
+</div>
+
+</body>
+</html>

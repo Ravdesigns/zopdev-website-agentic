@@ -8,3 +8,5 @@ Disallow: /maintenance.html
 Disallow: /offline.html
 
 Sitemap: https://zopdev.com/sitemap.xml
+
+Disallow: /logo-options.html
