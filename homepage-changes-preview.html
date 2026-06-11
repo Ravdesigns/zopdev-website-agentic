@@ -10031,10 +10031,22 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
         inView = e.isIntersecting;
         if(!inView && pill) pill.classList.remove('is-loading');
         else if(inView && autoplayTimer) restartLoader();
+        /* Re-phase the scene cycler when the section (re)enters view
+           so the first visible scene always plays from its start. */
+        if(inView && typeof restartSteps === 'function') restartSteps();
       });
     }, { threshold: 0.2 });
     io.observe(showcase);
   }
+  /* Browser tabs throttle setInterval while hidden · when the tab
+     becomes visible again, re-phase both cyclers so the section
+     resumes cleanly instead of mid-thought. */
+  document.addEventListener('visibilitychange', function(){
+    if(document.visibilityState === 'visible'){
+      if(typeof restartSteps === 'function') restartSteps();
+      if(autoplayTimer) startAutoplay();
+    }
+  });
 
   /* Land the orb + pill at tab 0 on load · resize keeps the pill
      aligned if the tabs wrap or the container width changes. */
