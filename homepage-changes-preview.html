@@ -9977,8 +9977,17 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
      rules as the tab autoplay. ── */
   var STEP_DWELL = 2400;
   var stepTimer = null;
+  /* Compute viewport visibility FRESH each tick · don't trust a cached
+     IntersectionObserver flag, which can stick `false` when the section
+     is taller than the IO threshold can satisfy. This is what actually
+     gates the scene cycler + tab autoplay. */
+  function showcaseVisible(){
+    var r = showcase.getBoundingClientRect();
+    var vh = window.innerHeight || document.documentElement.clientHeight || 800;
+    return r.bottom > 40 && r.top < vh - 40;
+  }
   function advanceStep(){
-    if(isHovered || !inView || !mocks) return;
+    if(isHovered || !mocks || !showcaseVisible()) return;
     var active = mocks.querySelector('.showcase-mock[data-mock="' + mocks.getAttribute('data-active') + '"]');
     if(!active) return;
     var steps = active.querySelectorAll('.ftab-mock-step');
@@ -9993,7 +10002,7 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
   restartSteps();
 
   function tick(){
-    if(isHovered || !inView) return;
+    if(isHovered || !showcaseVisible()) return;
     var next = (currentIdx + 1) % tabs.length;
     goTo(next);
   }
