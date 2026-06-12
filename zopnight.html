@@ -178,6 +178,19 @@
 .zn-cta{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
 /* CTA contrast lock · works in both light and dark site themes since the
    hero is permanently dark. Cream-on-ink primary, cream-bordered secondary. */
+/* Primary CTAs carry ZopNight's brand blue (base buttons were neutral ink).
+   The hero + final sections keep their bespoke cream/paper treatments via
+   higher-specificity !important rules below. */
+body[data-product="zopnight"] .btn-primary{
+  background: var(--logo-blue-on-dark, #4A66D4);
+  border-color: var(--logo-blue-on-dark, #4A66D4);
+  color: #F0EBDB;
+}
+body[data-product="zopnight"] .btn-primary:hover{
+  background: transparent;
+  color: var(--logo-blue-on-dark, #4A66D4);
+  border-color: var(--logo-blue-on-dark, #4A66D4);
+}
 .zn-hero .btn-primary{
   background:#F0EBDB !important; color:#0F0F12 !important;
   border-color:#F0EBDB !important;

@@ -126,6 +126,19 @@ em,i,cite,dfn,var,address,blockquote{font-style:normal}
 .zd-hero .lead strong{ color:#F0EBDB; font-weight:var(--fw-medium); }
 .zd-hero-cta{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
 /* CTA contrast lock · cream-on-ink primary, cream-bordered secondary */
+/* Primary CTAs carry ZopDay's brand orange (base buttons were neutral ink).
+   The hero + final sections keep their bespoke cream/dark treatments via
+   higher-specificity !important rules below. */
+body[data-product="zopday"] .btn-primary{
+  background: var(--zop-orange);
+  border-color: var(--zop-orange);
+  color: #0A0A0D;
+}
+body[data-product="zopday"] .btn-primary:hover{
+  background: transparent;
+  color: var(--zop-orange);
+  border-color: var(--zop-orange);
+}
 .zd-hero .btn-primary{
   background:#F0EBDB !important; color:#0F0F12 !important;
   border-color:#F0EBDB !important;
@@ -205,6 +218,8 @@ em,i,cite,dfn,var,address,blockquote{font-style:normal}
 }
 .zd-narrative-chip--problem{ color:var(--zop-orange); }
 .zd-narrative-chip--solution{ color:var(--zop-green, #7FB236); }
+.zd-narrative-chip--depth{ color:var(--zop-blue, #2A4494); }
+html[data-theme="dark"] .zd-narrative-chip--depth{ color:var(--logo-blue-on-dark, #4A66D4); }
 /* Place the chip above everything else inside the sec-head so it
    reads as a banner before the meta + headline stack. */
 .zd-sec-head{ flex-wrap:wrap; }
@@ -1830,49 +1845,49 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
         <div class="zd-posture-track-wrap">
           <div class="zd-posture-track" id="zd-posture-track">
             <article class="zd-feature zd-posture-card">
-              <span class="zd-feature-num">01 &middot; BYOC</span>
+              <div class="zd-posture-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"><path d="M9 22 A5.5 5.5 0 0 1 10 11.1 A6.5 6.5 0 0 1 22.5 9.6 A5 5 0 0 1 23 22 Z"/><path d="M13 17.5 L15.5 20 L20 14.5" stroke-width="1.8"/></svg></div>
               <h3 class="zd-feature-title">Your AWS, GCP, or Azure account &mdash; always.</h3>
               <p class="zd-feature-tag">Workloads run on your cloud. We never host them.</p>
               <p class="zd-feature-body">ZopDay is a control plane over the cloud account you already own. <strong>If you leave, the workloads stay where they are</strong> &mdash; standard Helm releases on your clusters.</p>
               <p class="zd-feature-foot">AWS &middot; GCP &middot; AZURE</p>
             </article>
             <article class="zd-feature zd-posture-card">
-              <span class="zd-feature-num">02 &middot; CLOUD-NATIVE SECRETS</span>
+              <div class="zd-posture-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"><circle cx="13" cy="12" r="5"/><path d="M16.5 15.5 L25 24 M21.5 21.5 L24 19 M19 19 L21.5 16.5"/></svg></div>
               <h3 class="zd-feature-title">Sensitive env vars stay in your cloud&rsquo;s secret store.</h3>
               <p class="zd-feature-tag">AWS Secrets Manager, Google Secret Manager, Azure Key Vault.</p>
               <p class="zd-feature-body">Sensitive values are masked in the UI and <strong>land in your cloud-native secret manager</strong>, never ours. ZopDay reads from them at deploy time.</p>
               <p class="zd-feature-foot">SECRETS &middot; YOUR VAULT</p>
             </article>
             <article class="zd-feature zd-posture-card">
-              <span class="zd-feature-num">03 &middot; NO DATA PATH</span>
+              <div class="zd-posture-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"><circle cx="16" cy="7" r="3"/><path d="M16 10 V13 M10 13 H22 M10 13 V17 M22 13 V17"/><rect x="6" y="17" width="8" height="8"/><rect x="18" y="17" width="8" height="8"/></svg></div>
               <h3 class="zd-feature-title">Control plane, not a proxy.</h3>
               <p class="zd-feature-tag">Your application traffic never hits our infra.</p>
               <p class="zd-feature-body">Helm rollouts, Live K8s view, audit events &mdash; everything ZopDay does is orchestration on your cluster. <strong>Application requests stay between your users and your services.</strong></p>
               <p class="zd-feature-foot">CONTROL PLANE &middot; NOT A PROXY</p>
             </article>
             <article class="zd-feature zd-posture-card">
-              <span class="zd-feature-num">04 &middot; ISO 27001 &middot; SOC 2</span>
+              <div class="zd-posture-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"><path d="M16 4 L26 8 V17 C26 22 21 26 16 28 C11 26 6 22 6 17 V8 Z"/><path d="M11.5 16 L14.5 19 L20.5 12.5" stroke-width="1.8"/></svg></div>
               <h3 class="zd-feature-title">ISO 27001:2022 &middot; SOC 2 Type II.</h3>
               <p class="zd-feature-tag">Annually re-audited.</p>
               <p class="zd-feature-body">Independent third-party audit, end-to-end. <strong>Letter of attestation on request.</strong></p>
               <p class="zd-feature-foot">CERTIFIED &middot; ANNUAL</p>
             </article>
             <article class="zd-feature zd-posture-card">
-              <span class="zd-feature-num">05 &middot; IRDAI ICS &middot; DPDP</span>
+              <div class="zd-posture-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"><path d="M8 4 H19 L25 10 V28 H8 Z"/><path d="M19 4 V10 H25"/><path d="M12 15 H21 M12 19 H19"/><circle cx="16.5" cy="24" r="2.5"/></svg></div>
               <h3 class="zd-feature-title">IRDAI ICS 2023 &middot; DPDP Act 2023.</h3>
               <p class="zd-feature-tag">India regulatory mapping, ready for review.</p>
               <p class="zd-feature-body">IRDAI Information &amp; Cyber Security controls mapped end-to-end. <strong>DPDP Act 2023 DPA</strong> available on request &mdash; signed before kickoff.</p>
               <p class="zd-feature-foot">IRDAI ICS &middot; DPDP DPA</p>
             </article>
             <article class="zd-feature zd-posture-card">
-              <span class="zd-feature-num">06 &middot; INDIA-RESIDENT</span>
+              <div class="zd-posture-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"><path d="M16 28 C16 28 24 20 24 13 A8 8 0 0 0 8 13 C8 20 16 28 16 28 Z"/><circle cx="16" cy="13" r="3"/></svg></div>
               <h3 class="zd-feature-title">GCP India (Mumbai) &middot; MeitY-empaneled.</h3>
               <p class="zd-feature-tag">Empaneled across AWS, Azure, GCP, OCI.</p>
               <p class="zd-feature-body">India-resident data plane for regulated workloads. <strong>Sovereign providers buildable</strong> on customer contract.</p>
               <p class="zd-feature-foot">MEITY &middot; INDIA-RESIDENT</p>
             </article>
             <article class="zd-feature zd-posture-card">
-              <span class="zd-feature-num">07 &middot; OPEN-SOURCE ROOTS</span>
+              <div class="zd-posture-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"><path d="M12 9 L5 16 L12 23 M20 9 L27 16 L20 23"/></svg></div>
               <h3 class="zd-feature-title">Built on GoFr. Apache 2.0.</h3>
               <p class="zd-feature-tag">21.5k+ stars on GitHub.</p>
               <p class="zd-feature-body">ZopDay&rsquo;s control plane is built on <strong>GoFr</strong>, the open-source Go framework created by our CTO. The same framework McAfee, FairPrice, and Fortune 500 retail teams run in production.</p>
@@ -3019,6 +3034,7 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
   <section id="section-zd-features">
     <div class="container">
       <div class="zd-sec-head">
+        <div class="zd-narrative-chip zd-narrative-chip--depth">DEPTH</div>
         <div class="meta">section 3 &middot; features</div>
         <div>
           <h2>The depth behind<br/>the three stages.</h2>
@@ -3139,6 +3155,14 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
       color:var(--ink-3);
       margin-bottom:4px;
     }
+    /* Posture cards are icon-led (matching ZopNight's trust-posture cards):
+       a 30px line icon replaces the numbered eyebrow. */
+    .zd-posture-card .zd-posture-icon{
+      display:flex; color:var(--ink-3); margin-bottom:10px;
+      transition:color var(--dur-fast, 160ms) var(--ease-out, cubic-bezier(.22,1,.36,1));
+    }
+    .zd-posture-card .zd-posture-icon svg{ width:30px; height:30px; }
+    .zd-posture-card:hover .zd-posture-icon{ color:var(--zop-orange); }
     .zd-feature-title{
       font-size:20px; font-weight:600; color:var(--ink);
       letter-spacing:-.015em; line-height:1.2; margin:0;
@@ -3601,6 +3625,7 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
 <section>
     <div class="container">
       <div class="zd-sec-head">
+        <div class="zd-narrative-chip zd-narrative-chip--solution">PROOF</div>
         <div>
           <div class="meta">section 6 &middot; proof</div>
           <h2>McAfee runs platform engineering <em>on ZopDay.</em></h2>
@@ -3666,6 +3691,7 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
   <section>
     <div class="container">
       <div class="zd-sec-head">
+        <div class="zd-narrative-chip zd-narrative-chip--depth">FIT</div>
         <div class="meta">section 7 &middot; where zopday fits</div>
         <div>
           <h2>Hosted PaaS rents you their stack. <em>Internal platforms cost you a team.</em></h2>
@@ -3741,6 +3767,7 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
   <section>
     <div class="container">
       <div class="zd-sec-head">
+        <div class="zd-narrative-chip zd-narrative-chip--solution">PRICE</div>
         <div class="meta">section 8 &middot; pricing</div>
         <div>
           <h2>Aligned pricing. <em>Free where it matters.</em></h2>
@@ -3840,6 +3867,7 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
   <section>
     <div class="container">
       <div class="zd-sec-head">
+        <div class="zd-narrative-chip zd-narrative-chip--problem">WHO</div>
         <div>
           <div class="meta">section 9 &middot; stakeholder grid</div>
           <h2>Built for every seat <em>in the room.</em></h2>
