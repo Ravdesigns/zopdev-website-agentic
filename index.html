@@ -8450,8 +8450,18 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
 .fv-unit-v{ font-size:20px; font-weight:700; color:var(--fvink); letter-spacing:-.02em; }
 .fv-unit-arr{ color:var(--fvG); font-size:13px; font-weight:700; }
 
+/* ── config form (Service Configuration · "templates, not YAML") · field
+   rows fill in sequentially, framed as form-in → manifest-out ── */
+.fv-form{ display:flex; flex-direction:column; gap:8px; width:100%; }
+.fv-form-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 11px; background:rgba(240,235,219,.04); border:1px solid var(--fvline); animation:fvFormRow 6s cubic-bezier(.4,0,.6,1) infinite; animation-delay:calc(var(--i)*.2s); }
+.fv-form-k{ font-family:var(--mono,'Space Grotesk',monospace); font-size:11px; letter-spacing:.04em; color:var(--fvdim); }
+.fv-form-v{ font-family:var(--mono,'Space Grotesk',monospace); font-size:11px; font-weight:700; padding:2px 7px; color:transparent; background:transparent; animation:fvFormVal 6s cubic-bezier(.4,0,.6,1) infinite; animation-delay:calc(var(--i)*.2s); }
+@keyframes fvFormRow{ 0%,100%{ border-color:var(--fvline); background:rgba(240,235,219,.04); } 14%,58%{ border-color:var(--fvO); background:rgba(245,133,73,.10); } }
+@keyframes fvFormVal{ 0%,10%{ color:transparent; background:transparent; } 20%,100%{ color:#0F0F12; background:var(--fvO); } }
+
 @media (prefers-reduced-motion: reduce){
   .drw-feat-vis--bespoke *{ animation:none !important; }
+  .fv-form-row{ border-color:var(--fvO) !important; } .fv-form-v{ color:#0F0F12 !important; background:var(--fvO) !important; }
   .fv-bar,.fv-hbar,.fv-health-bar{ transform:none !important; }
   .fv-spike-line{ stroke-dashoffset:0 !important; }
   .fv-untag{ opacity:0 !important; } .fv-tag{ opacity:1 !important; }
@@ -18789,7 +18799,7 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
               </div>
             </div>
             <div class="drw-rec-hero-vis">
-              
+              <div class="drw-feat-vis drw-feat-vis--bespoke fv--stack" aria-hidden="true" style="--fvG:var(--fvO); --fvB:var(--fvO);"><div class="drw-feat-vis-eyebrow">PROVISION &middot; 3 CLOUDS</div><div class="fv-stage"><div class="fv-stack"><div class="fv-layer" style="--i:0"><span class="fv-layer-name">VPC + subnets</span><span class="fv-layer-tick">&#10003;</span></div><div class="fv-layer" style="--i:1"><span class="fv-layer-name">EKS &middot; GKE &middot; AKS</span><span class="fv-layer-tick">&#10003;</span></div><div class="fv-layer" style="--i:2"><span class="fv-layer-name">Datastores + PITR</span><span class="fv-layer-tick">&#10003;</span></div><div class="fv-layer" style="--i:3"><span class="fv-layer-name">RBAC &middot; NetPol &middot; PSS</span><span class="fv-layer-tick">&#10003;</span></div></div></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">Hardened defaults on provision</span><span class="drw-feat-vis-counter">Ready in <strong>4&ndash;7 min</strong></span></div></div>
             </div>
           </div>
 
@@ -18997,7 +19007,7 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
               </div>
             </div>
             <div class="drw-rec-hero-vis">
-              
+              <div class="drw-feat-vis drw-feat-vis--bespoke fv--pipe" aria-hidden="true" style="--fvG:var(--fvO); --fvB:var(--fvO);"><div class="drw-feat-vis-eyebrow">GIT PUSH &rarr; LIVE URL</div><div class="fv-stage"><div class="fv-pipe"><span class="fv-pipe-packet"></span><span class="fv-pipe-node" style="--i:0"><span class="fv-pipe-dot"></span><span class="fv-pipe-lbl">Commit</span></span><span class="fv-pipe-line"></span><span class="fv-pipe-node" style="--i:1"><span class="fv-pipe-dot"></span><span class="fv-pipe-lbl">Build</span></span><span class="fv-pipe-line"></span><span class="fv-pipe-node" style="--i:2"><span class="fv-pipe-dot"></span><span class="fv-pipe-lbl">Deploy</span></span><span class="fv-pipe-line"></span><span class="fv-pipe-node" style="--i:3"><span class="fv-pipe-dot"></span><span class="fv-pipe-lbl">Live</span></span></div></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">Canary &rarr; progressive &rarr; full</span><span class="drw-feat-vis-counter">Deploy <strong>3m 42s</strong></span></div></div>
             </div>
           </div>
 
@@ -19234,7 +19244,7 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
               </div>
             </div>
             <div class="drw-rec-hero-vis">
-              
+              <div class="drw-feat-vis drw-feat-vis--bespoke fv--form" aria-hidden="true"><div class="drw-feat-vis-eyebrow">FORM IN &middot; MANIFEST OUT</div><div class="fv-stage"><div class="fv-form"><div class="fv-form-row" style="--i:0"><span class="fv-form-k">port</span><span class="fv-form-v">8080</span></div><div class="fv-form-row" style="--i:1"><span class="fv-form-k">replicas</span><span class="fv-form-v">3</span></div><div class="fv-form-row" style="--i:2"><span class="fv-form-k">image</span><span class="fv-form-v">api:v2.1</span></div><div class="fv-form-row" style="--i:3"><span class="fv-form-k">expose</span><span class="fv-form-v">ingress &middot; TLS</span></div></div></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">Helm renders the chart</span><span class="drw-feat-vis-counter">No <strong>YAML</strong> written</span></div></div>
             </div>
           </div>
 

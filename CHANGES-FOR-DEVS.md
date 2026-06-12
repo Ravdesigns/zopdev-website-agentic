@@ -49,6 +49,12 @@ Three files carry the changes: **index.html** (homepage), **zopnight.html**, **z
 - First fold 2-col (`.drw-rec-hero--v3`): title + sub + lede + CTAs left, visual right.
 - Outcome bullets demoted below the fold (`.drw-rec-detail--v3`, 2-col checklist).
 - Editorial spacing: hairline dividers, 48–64px rhythm (`drw-visual-led-css`).
+- **ZopDay platform drawers (`#zd-platform` · `.zd-pcard` env / deploy / yaml) had empty
+  hero-vis** — now filled with bespoke animated visuals matching the ZopNight drawers, orange-tinted
+  (`style="--fvG:var(--fvO)"`): One-Click Environments → `fv--stack` (provisioning layers),
+  Push to Deploy → `fv--pipe` (Commit→Build→Deploy→Live), Service Configuration → **`fv--form`**
+  (new — config fields fill in, "Helm renders the chart · no YAML written"). 15 bespoke visuals
+  total on the homepage now.
 
 ### Smaller homepage items
 - Hero trust line: added **YC** and **MIT**.
