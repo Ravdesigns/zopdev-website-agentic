@@ -26,6 +26,17 @@ Three files carry the changes: **index.html** (homepage), **zopnight.html**, **z
   Reduced-motion: all visible, nothing animated.
 - JS (showcase IIFE): scene cycler `STEP_DWELL = 2400`; tab dwell `DWELL = 10600`; tab switch
   resets the incoming mock to scene 1. Old `SOURCES` array + video swap removed.
+- **"Looks static" fix — hover scope (root cause).** Auto-advance used to pause on hover of the
+  *entire* frame. The section sits far down the page, so users scroll it up under a stationary
+  cursor → `mouseenter` fires on the whole dashboard → `isHovered` sticks true → both the tab
+  autoplay and the scene cycler freeze on tab 0 / scene 1, so it looked permanently static across
+  refreshes. **Fix:** hover-pause is now scoped to the thin **tab strip** (`.showcase-tabs`) only —
+  resting the cursor on the dashboard no longer freezes anything; hovering the tabs (where you'd
+  click to switch products) still pauses, as intended.
+- **Always-on ambient motion (insurance).** A faint, product-tinted "radar scan" line
+  (`.showcase-mock .ftab-mock-main::after`, keyframes `smScanSweep`, 4.6s) sweeps each dashboard
+  top→bottom continuously — pure CSS, so the panel reads as a live/monitoring product even between
+  scene changes and regardless of the JS cycler's state. Disabled under `prefers-reduced-motion`.
 - **Powered-by chips** (`.showcase-cap-brand--day/--night`): real sun/moon product marks,
   clickable → zopday.html / zopnight.html, flip with `data-product`, high-contrast.
 - **Tab strip**: 6px product tick per tab (`.showcase-tab::before`); group divider moved to the

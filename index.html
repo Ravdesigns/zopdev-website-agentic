@@ -8300,8 +8300,36 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
   background: #4A66D4;
 }
 
+/* ── always-on ambient · a faint radar-style scan line sweeps the
+   dashboard top→bottom continuously. Runs purely in CSS (infinite),
+   so the panel always reads as a LIVE, monitoring product even
+   between scene changes and regardless of the JS step cycler's
+   state. Thin + product-tinted + low opacity → reads as "scanning",
+   not as a skeleton loader. Only the active mock is visible (others
+   are opacity:0), so the off-screen sweeps cost nothing perceptible. */
+.showcase-mock .ftab-mock-main{ overflow: hidden; }
+.showcase-mock .ftab-mock-main::after{
+  content: '';
+  position: absolute; left: 0; right: 0; top: 0; height: 2px;
+  pointer-events: none; z-index: 1; opacity: 0;
+  background: linear-gradient(90deg, transparent, rgba(245,133,73,.5) 50%, transparent);
+  box-shadow: 0 0 12px 1px rgba(245,133,73,.3);
+  animation: smScanSweep 4.6s cubic-bezier(.55,0,.45,1) infinite;
+}
+.showcase-mock.ftab-mock--night .ftab-mock-main::after{
+  background: linear-gradient(90deg, transparent, rgba(74,102,212,.55) 50%, transparent);
+  box-shadow: 0 0 12px 1px rgba(74,102,212,.34);
+}
+@keyframes smScanSweep{
+  0%{ top: -2%; opacity: 0; }
+  14%{ opacity: .85; }
+  86%{ opacity: .85; }
+  100%{ top: 100%; opacity: 0; }
+}
+
 /* ── reduced motion · everything visible, nothing animated ── */
 @media (prefers-reduced-motion: reduce){
+  .showcase-mock .ftab-mock-main::after{ animation: none !important; opacity: 0 !important; }
   .showcase-mock .ftab-mock-step :is(.ftab-mock-rec-row, .fm-cloud-card){
     opacity: 1; transform: none; transition: none;
   }
@@ -10132,16 +10160,28 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
     resumeTimer = setTimeout(startAutoplay, IDLE_AFTER_INTERACT);
   }
 
-  /* Hover pause · the entire showcase region (not just the tab strip)
-     so the user can study the video without it auto-switching. */
-  showcase.addEventListener('mouseenter', function(){
-    isHovered = true;
-    if(pill) pill.classList.remove('is-loading');
-  });
-  showcase.addEventListener('mouseleave', function(){
-    isHovered = false;
-    if(autoplayTimer) restartLoader();
-  });
+  /* Hover pause · ONLY the tab strip (the controls), NOT the whole
+     dashboard. The showcase sits far down the page, so users scroll
+     it up UNDER a stationary cursor — if the pause is scoped to the
+     entire frame, `mouseenter` fires the moment the dashboard slides
+     under the cursor and `isHovered` sticks true, freezing both the
+     tab autoplay AND the scene cycler. The section then looks
+     permanently static (frozen on tab 0 / step 0) no matter how many
+     times you refresh. Scoping the pause to the thin tab strip means
+     resting the cursor on the dashboard while reading it no longer
+     freezes anything; hovering the tabs (where you'd interact to pick
+     a product) still pauses, which is the intended affordance. */
+  var tabStrip = showcase.querySelector('.showcase-tabs');
+  if(tabStrip){
+    tabStrip.addEventListener('mouseenter', function(){
+      isHovered = true;
+      if(pill) pill.classList.remove('is-loading');
+    });
+    tabStrip.addEventListener('mouseleave', function(){
+      isHovered = false;
+      if(autoplayTimer) restartLoader();
+    });
+  }
 
   /* IntersectionObserver · pause when the section is off-screen so
      autoplay doesn't burn CPU + change state while the user is
