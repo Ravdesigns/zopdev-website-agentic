@@ -989,6 +989,38 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
       border-radius:2px;
     }
 </style>
+<style id="zd-drawer-visuals-css">
+/* ── Ported drw-feat-vis animated visual (from index.html) so the
+   ZopDay drawers can carry the same engine-drawer visual on the right.
+   + generic 5-col tile row + below-fold outcome grid. ── */
+.drw-feat-vis{ position:relative; margin:0; padding:18px 24px 20px; background:#0F0F12; border:1px solid #2A2A34; color:#E6E6EA; overflow:hidden; isolation:isolate; font-family:'Space Grotesk', system-ui, sans-serif; }
+.drw-feat-vis-eyebrow{ font-family:var(--mono,'Space Grotesk',monospace); font-size:10.5px; font-weight:700; letter-spacing:.16em; color:var(--zop-orange); margin-bottom:14px; }
+.drw-feat-vis-stage{ position:relative; display:block; padding:16px 0 20px; overflow:hidden; }
+.drw-feat-vis-row{ display:grid; grid-template-columns:repeat(5, 1fr); gap:10px; position:relative; z-index:2; }
+.drw-feat-vis-tile{ display:flex; flex-direction:column; align-items:center; gap:8px; padding:14px 8px 12px; background:rgba(240,235,219,.04); border:1px solid #2A2A34; transition:background .35s cubic-bezier(.22,1,.36,1), border-color .35s cubic-bezier(.22,1,.36,1); animation:drw-feat-vis-hit 6s cubic-bezier(.4,0,.6,1) infinite; animation-delay:var(--d,0ms); }
+.drw-feat-vis-tile-mark{ font-family:var(--mono,'Space Grotesk',monospace); font-size:11px; font-weight:700; letter-spacing:.08em; color:#9C9CA3; animation:drw-feat-vis-hit-mark 6s cubic-bezier(.4,0,.6,1) infinite; animation-delay:var(--d,0ms); }
+.drw-feat-vis-tile-tag{ font-family:var(--mono,'Space Grotesk',monospace); font-size:10px; font-weight:600; letter-spacing:.06em; color:transparent; padding:2px 6px; animation:drw-feat-vis-hit-tag 6s cubic-bezier(.4,0,.6,1) infinite; animation-delay:var(--d,0ms); }
+@keyframes drw-feat-vis-hit{ 0%,100%{ background:rgba(240,235,219,.04); border-color:#2A2A34; } 10%,50%{ background:rgba(245,133,73,.16); border-color:var(--zop-orange); } }
+@keyframes drw-feat-vis-hit-mark{ 0%,100%{ color:#9C9CA3; } 10%,50%{ color:#F0EBDB; } }
+@keyframes drw-feat-vis-hit-tag{ 0%,100%{ color:transparent; background:transparent; } 20%,60%{ color:#0F0F12; background:var(--zop-orange); } 100%{ color:#F0EBDB; background:transparent; } }
+.drw-feat-vis-beam{ position:absolute; top:0; bottom:0; width:60px; background:linear-gradient(90deg, rgba(245,133,73,0) 0%, rgba(245,133,73,.18) 40%, rgba(245,133,73,.5) 50%, rgba(245,133,73,.18) 60%, rgba(245,133,73,0) 100%); filter:blur(2px); z-index:1; pointer-events:none; animation:drw-feat-vis-beam 6s cubic-bezier(.4,0,.6,1) infinite; }
+@keyframes drw-feat-vis-beam{ 0%{ left:-10%; opacity:0; } 10%{ opacity:1; } 90%{ opacity:1; } 100%{ left:105%; opacity:0; } }
+.drw-feat-vis-foot{ display:flex; align-items:center; justify-content:space-between; gap:16px; padding-top:12px; border-top:1px solid #1F1F26; font-family:var(--mono,'Space Grotesk',monospace); font-size:10.5px; letter-spacing:.06em; color:#7B7B82; }
+.drw-feat-vis-counter strong{ color:var(--zop-orange); font-weight:700; letter-spacing:.04em; }
+.drw-rec-hero-aside--vis{ display:block; }
+/* outcome checklist moved below the hero · 2-col grid so it reads calm */
+.drw-zd-outcomes{ margin:0 0 48px; padding:0 0 8px; }
+.drw-zd-outcomes .drw-outcome-list{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:14px 32px; }
+@media (max-width:760px){ .drw-zd-outcomes .drw-outcome-list{ grid-template-columns:1fr; } }
+@media (prefers-reduced-motion: reduce){
+  .drw-feat-vis-tile,.drw-feat-vis-tile-mark,.drw-feat-vis-tile-tag,.drw-feat-vis-beam{ animation:none !important; }
+  .drw-feat-vis-tile{ background:rgba(245,133,73,.10); border-color:var(--zop-orange); }
+  .drw-feat-vis-tile-mark{ color:#F0EBDB !important; }
+  .drw-feat-vis-tile-tag{ color:#0F0F12 !important; background:var(--zop-orange) !important; }
+}
+@media (max-width:640px){ .drw-feat-vis-row{ grid-template-columns:repeat(3, 1fr); } .drw-feat-vis-foot{ flex-direction:column; align-items:flex-start; gap:6px; } }
+</style>
+
 </head>
 <body data-product="zopday">
 <a class="skip-to-main" href="#main-content">Skip to main content</a>
@@ -2329,8 +2361,13 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
                   <a class="btn btn-primary" href="zopday.html">Explore ZopDay <span aria-hidden="true">&rarr;</span></a>
                 </div>
               </div>
-              <div class="drw-rec-hero-aside">
-                <ul class="drw-outcome-list">
+              <div class="drw-rec-hero-aside drw-rec-hero-aside--vis">
+                <div class="drw-feat-vis drw-feat-vis--generic" aria-hidden="true"><div class="drw-feat-vis-eyebrow">PROVISION &middot; HARDENED DEFAULTS</div><div class="drw-feat-vis-stage"><div class="drw-feat-vis-row"><span class="drw-feat-vis-tile" style="--d:0ms"><span class="drw-feat-vis-tile-mark">EKS</span><span class="drw-feat-vis-tile-tag">ready</span></span><span class="drw-feat-vis-tile" style="--d:240ms"><span class="drw-feat-vis-tile-mark">GKE</span><span class="drw-feat-vis-tile-tag">ready</span></span><span class="drw-feat-vis-tile" style="--d:480ms"><span class="drw-feat-vis-tile-mark">AKS</span><span class="drw-feat-vis-tile-tag">ready</span></span><span class="drw-feat-vis-tile" style="--d:720ms"><span class="drw-feat-vis-tile-mark">RDS</span><span class="drw-feat-vis-tile-tag">PITR</span></span><span class="drw-feat-vis-tile" style="--d:960ms"><span class="drw-feat-vis-tile-mark">Redis</span><span class="drw-feat-vis-tile-tag">HA</span></span></div><span class="drw-feat-vis-beam" aria-hidden="true"></span></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">RBAC &middot; NetPol &middot; PSS applied on provision</span><span class="drw-feat-vis-counter">Ready in <strong>4&ndash;7 min</strong></span></div></div>
+              </div>
+            </div>
+
+            <!-- outcome checklist · moved below the hero so the visual leads the right column (matches ZN engine drawers) -->
+            <div class="drw-zd-outcomes"><ul class="drw-outcome-list">
                   <li>
                     <span class="drw-outcome-check" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5 L7 12 L13 5"/></svg></span>
                     <span><strong>Three clouds, one wizard</strong>, EKS, GKE, AKS with identical hardening defaults</span>
@@ -2351,9 +2388,7 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
                     <span class="drw-outcome-check" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5 L7 12 L13 5"/></svg></span>
                     <span><strong>4&ndash;7 minutes</strong> from create-cluster to healthy nodes</span>
                   </li>
-                </ul>
-              </div>
-            </div>
+                </ul></div>
 
             <!-- 3-COL STRIPE-STYLE PARAGRAPH BLOCK -->
             <div class="drw-rec-three">
@@ -2494,8 +2529,13 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
                   <a class="btn btn-primary" href="zopday.html">Explore ZopDay <span aria-hidden="true">&rarr;</span></a>
                 </div>
               </div>
-              <div class="drw-rec-hero-aside">
-                <ul class="drw-outcome-list">
+              <div class="drw-rec-hero-aside drw-rec-hero-aside--vis">
+                <div class="drw-feat-vis drw-feat-vis--generic" aria-hidden="true"><div class="drw-feat-vis-eyebrow">GIT PUSH &rarr; LIVE URL</div><div class="drw-feat-vis-stage"><div class="drw-feat-vis-row"><span class="drw-feat-vis-tile" style="--d:0ms"><span class="drw-feat-vis-tile-mark">Build</span><span class="drw-feat-vis-tile-tag">✓</span></span><span class="drw-feat-vis-tile" style="--d:240ms"><span class="drw-feat-vis-tile-mark">Scan</span><span class="drw-feat-vis-tile-tag">✓</span></span><span class="drw-feat-vis-tile" style="--d:480ms"><span class="drw-feat-vis-tile-mark">Push</span><span class="drw-feat-vis-tile-tag">✓</span></span><span class="drw-feat-vis-tile" style="--d:720ms"><span class="drw-feat-vis-tile-mark">Canary</span><span class="drw-feat-vis-tile-tag">6/6</span></span><span class="drw-feat-vis-tile" style="--d:960ms"><span class="drw-feat-vis-tile-mark">Live</span><span class="drw-feat-vis-tile-tag">200</span></span></div><span class="drw-feat-vis-beam" aria-hidden="true"></span></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">Canary &rarr; progressive &rarr; full</span><span class="drw-feat-vis-counter">Deploy <strong>3m 42s</strong></span></div></div>
+              </div>
+            </div>
+
+            <!-- outcome checklist · moved below the hero so the visual leads the right column (matches ZN engine drawers) -->
+            <div class="drw-zd-outcomes"><ul class="drw-outcome-list">
                   <li>
                     <span class="drw-outcome-check" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5 L7 12 L13 5"/></svg></span>
                     <span><strong>Push, branch, webhook, or UI</strong>, every trigger tied to an environment policy</span>
@@ -2516,9 +2556,7 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
                     <span class="drw-outcome-check" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5 L7 12 L13 5"/></svg></span>
                     <span><strong>One-click rollback</strong>, build skipped, secrets stay in your cloud</span>
                   </li>
-                </ul>
-              </div>
-            </div>
+                </ul></div>
 
             <!-- 3-COL STRIPE-STYLE PARAGRAPH BLOCK -->
             <div class="drw-rec-three">
@@ -2658,8 +2696,13 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
                   <a class="btn btn-primary" href="zopday.html">Explore ZopDay <span aria-hidden="true">&rarr;</span></a>
                 </div>
               </div>
-              <div class="drw-rec-hero-aside">
-                <ul class="drw-outcome-list">
+              <div class="drw-rec-hero-aside drw-rec-hero-aside--vis">
+                <div class="drw-feat-vis drw-feat-vis--generic" aria-hidden="true"><div class="drw-feat-vis-eyebrow">EVERY CLUSTER &middot; LIVE</div><div class="drw-feat-vis-stage"><div class="drw-feat-vis-row"><span class="drw-feat-vis-tile" style="--d:0ms"><span class="drw-feat-vis-tile-mark">Pods</span><span class="drw-feat-vis-tile-tag">107</span></span><span class="drw-feat-vis-tile" style="--d:240ms"><span class="drw-feat-vis-tile-mark">Deploys</span><span class="drw-feat-vis-tile-tag">75</span></span><span class="drw-feat-vis-tile" style="--d:480ms"><span class="drw-feat-vis-tile-mark">CPU</span><span class="drw-feat-vis-tile-tag">62%</span></span><span class="drw-feat-vis-tile" style="--d:720ms"><span class="drw-feat-vis-tile-mark">Mem</span><span class="drw-feat-vis-tile-tag">58%</span></span><span class="drw-feat-vis-tile" style="--d:960ms"><span class="drw-feat-vis-tile-mark">Errors</span><span class="drw-feat-vis-tile-tag">0</span></span></div><span class="drw-feat-vis-beam" aria-hidden="true"></span></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">21 K8s resource pages, live</span><span class="drw-feat-vis-counter">Healthy <strong>92%</strong></span></div></div>
+              </div>
+            </div>
+
+            <!-- outcome checklist · moved below the hero so the visual leads the right column (matches ZN engine drawers) -->
+            <div class="drw-zd-outcomes"><ul class="drw-outcome-list">
                   <li>
                     <span class="drw-outcome-check" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5 L7 12 L13 5"/></svg></span>
                     <span><strong>21 resource pages</strong> with detail drawers, pods through namespaces</span>
@@ -2680,9 +2723,7 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
                     <span class="drw-outcome-check" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5 L7 12 L13 5"/></svg></span>
                     <span><strong>One credential, one platform layer</strong>, across AWS, GCP, and Azure</span>
                   </li>
-                </ul>
-              </div>
-            </div>
+                </ul></div>
 
             <!-- 3-COL STRIPE-STYLE PARAGRAPH BLOCK -->
             <div class="drw-rec-three">
