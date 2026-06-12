@@ -8242,22 +8242,42 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
   top: var(--cy0, 40%);
   left: var(--cx0, 50%);
 }
+/* ── live mouse cursor · a real pointer hovers across the active
+   dashboard, glides to the scene's action target and clicks (ripple),
+   looping continuously. THIS is the section's always-on motion now.
+   The arrow glyph + ripple come from the base .fm-cursor / ::after;
+   here we just drive a VISIBLE, infinite travel+click. (The old
+   smTravel/smClick never animated opacity, so the base opacity:0 stuck
+   and the cursor was invisible.) Per-scene --cx0/--cy0 → --cx1/--cy1
+   define the path; transform-origin:top-left keeps the arrow tip on
+   target while the click scales it. ── */
 .showcase-mock[data-step="0"] .ftab-mock-step[data-step="0"] .fm-cursor,
 .showcase-mock[data-step="1"] .ftab-mock-step[data-step="1"] .fm-cursor,
 .showcase-mock[data-step="2"] .ftab-mock-step[data-step="2"] .fm-cursor,
 .showcase-mock[data-step="3"] .ftab-mock-step[data-step="3"] .fm-cursor{
-  animation: smTravel 2.2s cubic-bezier(.45,.05,.35,1) forwards,
-             smClick 2.2s linear forwards;
+  transform-origin: top left;
+  animation: smCursorAct 2.6s cubic-bezier(.5,0,.35,1) infinite;
 }
-@keyframes smTravel{
-  0%, 18%{ top: var(--cy0, 40%); left: var(--cx0, 50%); }
-  72%, 100%{ top: var(--cy1, 50%); left: var(--cx1, 60%); }
+.showcase-mock[data-step="0"] .ftab-mock-step[data-step="0"] .fm-cursor::after,
+.showcase-mock[data-step="1"] .ftab-mock-step[data-step="1"] .fm-cursor::after,
+.showcase-mock[data-step="2"] .ftab-mock-step[data-step="2"] .fm-cursor::after,
+.showcase-mock[data-step="3"] .ftab-mock-step[data-step="3"] .fm-cursor::after{
+  animation: smCursorRipple 2.6s ease-out infinite;
 }
-@keyframes smClick{
-  0%, 78%{ box-shadow: 0 0 0 0 rgba(245,133,73,0); transform: scale(1); }
-  84%{ box-shadow: 0 0 0 4px rgba(245,133,73,.45); transform: scale(.82); }
-  96%{ box-shadow: 0 0 0 16px rgba(245,133,73,0); transform: scale(1); }
-  100%{ box-shadow: 0 0 0 0 rgba(245,133,73,0); transform: scale(1); }
+@keyframes smCursorAct{
+  0%   { opacity: 0; top: var(--cy0,40%); left: var(--cx0,50%); transform: translate(-15px,-15px) scale(1); }
+  12%  { opacity: 1; top: var(--cy0,40%); left: var(--cx0,50%); transform: translate(0,0) scale(1); }
+  56%  { opacity: 1; top: var(--cy1,50%); left: var(--cx1,60%); transform: translate(0,0) scale(1); }
+  66%  { top: var(--cy1,50%); left: var(--cx1,60%); transform: translate(0,0) scale(.7); }
+  76%  { top: var(--cy1,50%); left: var(--cx1,60%); transform: translate(0,0) scale(1); }
+  93%  { opacity: 1; top: var(--cy1,50%); left: var(--cx1,60%); transform: translate(0,0) scale(1); }
+  100% { opacity: 0; top: var(--cy1,50%); left: var(--cx1,60%); transform: translate(0,0) scale(1); }
+}
+@keyframes smCursorRipple{
+  0%, 62%  { width: 0; height: 0; opacity: 0; margin: 0; }
+  66%      { width: 0; height: 0; opacity: .6; margin: 0; }
+  84%      { width: 30px; height: 30px; opacity: 0; margin: -15px 0 0 -15px; }
+  100%     { width: 30px; height: 30px; opacity: 0; margin: -15px 0 0 -15px; }
 }
 
 /* ── progress bars refill on scene entry ── */
@@ -8300,36 +8320,8 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
   background: #4A66D4;
 }
 
-/* ── always-on ambient · a faint radar-style scan line sweeps the
-   dashboard top→bottom continuously. Runs purely in CSS (infinite),
-   so the panel always reads as a LIVE, monitoring product even
-   between scene changes and regardless of the JS step cycler's
-   state. Thin + product-tinted + low opacity → reads as "scanning",
-   not as a skeleton loader. Only the active mock is visible (others
-   are opacity:0), so the off-screen sweeps cost nothing perceptible. */
-.showcase-mock .ftab-mock-main{ overflow: hidden; }
-.showcase-mock .ftab-mock-main::after{
-  content: '';
-  position: absolute; left: 0; right: 0; top: 0; height: 2px;
-  pointer-events: none; z-index: 1; opacity: 0;
-  background: linear-gradient(90deg, transparent, rgba(245,133,73,.5) 50%, transparent);
-  box-shadow: 0 0 12px 1px rgba(245,133,73,.3);
-  animation: smScanSweep 4.6s cubic-bezier(.55,0,.45,1) infinite;
-}
-.showcase-mock.ftab-mock--night .ftab-mock-main::after{
-  background: linear-gradient(90deg, transparent, rgba(74,102,212,.55) 50%, transparent);
-  box-shadow: 0 0 12px 1px rgba(74,102,212,.34);
-}
-@keyframes smScanSweep{
-  0%{ top: -2%; opacity: 0; }
-  14%{ opacity: .85; }
-  86%{ opacity: .85; }
-  100%{ top: 100%; opacity: 0; }
-}
-
 /* ── reduced motion · everything visible, nothing animated ── */
 @media (prefers-reduced-motion: reduce){
-  .showcase-mock .ftab-mock-main::after{ animation: none !important; opacity: 0 !important; }
   .showcase-mock .ftab-mock-step :is(.ftab-mock-rec-row, .fm-cloud-card){
     opacity: 1; transform: none; transition: none;
   }
@@ -8338,8 +8330,11 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
   .showcase-mock .ftab-mock-rec-row:has(.fm-spin){ animation: none !important; }
   .showcase-mock .fm-cursor{
     animation: none !important;
+    opacity: 1;
     top: var(--cy1, 50%); left: var(--cx1, 60%);
+    transform: translate(0, 0);
   }
+  .showcase-mock .fm-cursor::after{ animation: none !important; opacity: 0; }
   .showcase-mock .fm-scan-bar::after{
     animation: none !important;
     transform: scaleX(var(--fill, .74));

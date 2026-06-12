@@ -33,10 +33,13 @@ Three files carry the changes: **index.html** (homepage), **zopnight.html**, **z
   refreshes. **Fix:** hover-pause is now scoped to the thin **tab strip** (`.showcase-tabs`) only —
   resting the cursor on the dashboard no longer freezes anything; hovering the tabs (where you'd
   click to switch products) still pauses, as intended.
-- **Always-on ambient motion (insurance).** A faint, product-tinted "radar scan" line
-  (`.showcase-mock .ftab-mock-main::after`, keyframes `smScanSweep`, 4.6s) sweeps each dashboard
-  top→bottom continuously — pure CSS, so the panel reads as a live/monitoring product even between
-  scene changes and regardless of the JS cycler's state. Disabled under `prefers-reduced-motion`.
+- **Always-on motion = a live mouse cursor (replaces an earlier scan-line idea).** Each scene's
+  `.fm-cursor` (the base SVG arrow + ripple at `index.html`'s `.fm-cursor`/`::after`) now runs a
+  VISIBLE, infinite `smCursorAct` + `smCursorRipple` (2.6s): the pointer glides from the scene's
+  `--cx0/--cy0` to `--cx1/--cy1` and clicks (scale + ripple), looping. Previously the showcase
+  overrode it with one-shot `smTravel`/`smClick` that never animated opacity, so the base
+  `opacity:0` stuck and the cursor was invisible. Disabled (static pointer at target) under
+  `prefers-reduced-motion`.
 - **Powered-by chips** (`.showcase-cap-brand--day/--night`): real sun/moon product marks,
   clickable → zopday.html / zopnight.html, flip with `data-product`, high-contrast.
 - **Tab strip**: 6px product tick per tab (`.showcase-tab::before`); group divider moved to the
@@ -77,6 +80,10 @@ Three files carry the changes: **index.html** (homepage), **zopnight.html**, **z
 - Pricing footnote scoped to Enterprise ("Free/Team/Growth are flat-fee").
 - Compare table: † footnote reconciling "147 Azure rules" vs "450+ across all clouds".
 - Hero pill → `k8s-view.html` (matches its "Live Kubernetes cluster state" copy).
+- **Closing-section order aligned with ZopDay + homepage.** Was `final → bridge-marquee →
+  graduation-band → footer`; now `final → graduation-band → bridge-marquee → footer` (marquee is
+  the last section before the footer, as on every other page). Pure section reorder, no content
+  change.
 
 ---
 
