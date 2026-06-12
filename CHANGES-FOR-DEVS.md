@@ -119,10 +119,11 @@ Pass to make the two product pages true siblings (same design system, product ac
 
 - **Closing-section order** aligned (see ZopNight note above): both now end `final → graduation band
   → bridge-marquee → footer`, like the homepage.
-- **Narrative eyebrow chips at parity.** ZopDay was missing chips on 5 sections; added them so both
-  pages carry a chip on every major section: ZopDay features=`DEPTH`, proof=`PROOF`, compare=`FIT`,
-  pricing=`PRICE`, stakeholder=`WHO` (matching ZopNight's labels + colours). Also added the missing
-  `.zd-narrative-chip--depth` colour rule (blue / `#4A66D4` on dark).
+- **Narrative eyebrow chips → 3 labels only (`PROBLEM` · `SOLUTION` · `DEPTH`).** Chips live only on
+  those three narrative sections. Removed the extra `PROOF` / `FIT` / `PRICE` / `WHO` chips from
+  both pages plus ZopDay's `METHOD` (deploy-loop). Net: ZopNight = PROBLEM (problem) + SOLUTION
+  (engines) + DEPTH (features); ZopDay = SOLUTION (stages) + DEPTH (features) — ZopDay has no
+  problem section. (`.zd-narrative-chip--depth` colour rule kept — the DEPTH chip uses it.)
 - **Trust-posture cards → icon-led on ZopDay.** The 7 posture cards used numbered eyebrows
   (`01 · BYOC` …); they now lead with a 30px line icon (new `.zd-posture-icon`), matching
   ZopNight's icon-led posture cards. Category keyword is retained in each card's foot tag.
