@@ -134,6 +134,12 @@ Pass to make the two product pages true siblings (same design system, product ac
   grid `.zd-engines-grid`). **The per-stage drawers + 3D `zd-stage-3d` canvases were removed**;
   stage detail now lives in the depth bento below + the dashboard. (Leftover dead CSS from the old
   drawers — `drw-visual-led-css`, `drw-feat-vis-*`, `.zd-stages-bento` — can be pruned later.)
+- **Depth sections → carousels (both pages).** "The depth behind the three engines/stages" was a
+  static multi-column grid (ZopNight 9 tiles, ZopDay 7 cards — all present, nothing was missing).
+  Both are now carousels using one shared generic component `.fcar` (`#fcar-css` + `#fcar-js`,
+  same transform-based mechanism as the trust-posture carousel): 3 cards visible (2 tablet · 1
+  mobile), prev/next arrows + dots. Active-dot tinted per product (ZopNight blue, ZopDay orange).
+  Old `.zn-depth-grid` / `.zd-features-grid` grid rules are now unused (prunable).
 - **Primary CTA buttons carry each product's brand colour.** Page-scoped
   `body[data-product="zopnight"] .btn-primary` → blue (`#4A66D4`),
   `body[data-product="zopday"] .btn-primary` → orange (`#F58549`). Base buttons were neutral ink;

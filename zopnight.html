@@ -2916,6 +2916,56 @@ html[data-theme="dark"] .znd-cv-card-body{ color:#D4CDB5; }
        mirrors the homepage ZopNight bento (5 engines + 5 cap-strip)
        in a denser, text-only grid · no SVG visuals.
        ============================================================ -->
+  <style id="fcar-css">
+    /* Generic feature carousel · same transform-based mechanism as the
+       trust-posture carousel. Shows 3 cards (2 tablet · 1 mobile) with
+       prev/next + dots. Used by the depth section. */
+    .fcar{ position:relative; margin-top:48px; }
+    .fcar-wrap{ overflow:hidden; }
+    .fcar-track{ display:flex; gap:18px; transition:transform .45s cubic-bezier(.22,1,.36,1); will-change:transform; }
+    .fcar-track > *{ flex:0 0 calc((100% - 36px)/3); min-width:0; box-sizing:border-box; }
+    @media (max-width:980px){ .fcar-track > *{ flex:0 0 calc((100% - 18px)/2); } }
+    @media (max-width:640px){ .fcar-track > *{ flex:0 0 100%; } }
+    .fcar-nav{
+      position:absolute; top:50%; transform:translateY(-50%);
+      width:40px; height:40px; display:flex; align-items:center; justify-content:center;
+      background:var(--bg-0); border:1px solid var(--line); color:var(--ink);
+      font-size:22px; line-height:1; cursor:pointer; z-index:4;
+      transition:background .16s ease, color .16s ease, border-color .16s ease;
+    }
+    .fcar-nav:hover{ background:var(--ink); color:var(--bg-0); border-color:var(--ink); }
+    .fcar-nav:disabled{ opacity:.3; cursor:default; }
+    .fcar-nav:disabled:hover{ background:var(--bg-0); color:var(--ink); border-color:var(--line); }
+    .fcar-prev{ left:-20px; }
+    .fcar-next{ right:-20px; }
+    .fcar-dots{ display:flex; gap:8px; justify-content:center; margin-top:28px; }
+    .fcar-dot{ width:8px; height:8px; border:none; padding:0; cursor:pointer; border-radius:50%; background:rgba(240,235,219,.3); transition:width .25s ease, background .25s ease, border-radius .25s ease; }
+    .fcar-dot.is-active{ width:24px; border-radius:4px; background:var(--logo-blue-on-dark, #4A66D4); }
+    @media (max-width:640px){ .fcar-prev{ left:4px; } .fcar-next{ right:4px; } .fcar-nav{ width:34px; height:34px; } }
+  </style>
+  <script id="fcar-js">
+  (function(){
+    function initCar(car){
+      var track=car.querySelector('.fcar-track');
+      var prev=car.querySelector('.fcar-prev'), next=car.querySelector('.fcar-next');
+      var dotsBox=car.querySelector('.fcar-dots');
+      if(!track||!prev||!next||!dotsBox) return;
+      var cards=track.children, total=cards.length, index=0;
+      function visible(){ var w=window.innerWidth; return w<=640?1:(w<=980?2:3); }
+      function maxIdx(){ return Math.max(0, total-visible()); }
+      function step(){ if(!total) return 0; var w=cards[0].getBoundingClientRect().width; var g=parseFloat(getComputedStyle(track).columnGap||getComputedStyle(track).gap||'0'); return w+g; }
+      function dots(mx){ dotsBox.innerHTML=''; for(var i=0;i<=mx;i++){ var b=document.createElement('button'); b.type='button'; b.className='fcar-dot'+(i===index?' is-active':''); b.setAttribute('aria-label','Go to slide '+(i+1)); (function(t){ b.addEventListener('click',function(){ index=t; upd(); }); })(i); dotsBox.appendChild(b); } }
+      function upd(){ var mx=maxIdx(); if(index>mx)index=mx; if(index<0)index=0; track.style.transform='translateX('+(-index*step())+'px)'; prev.disabled=(index===0); next.disabled=(index>=mx); dots(mx); }
+      prev.addEventListener('click',function(){ if(index>0){index--;upd();} });
+      next.addEventListener('click',function(){ if(index<maxIdx()){index++;upd();} });
+      var rt; window.addEventListener('resize',function(){ clearTimeout(rt); rt=setTimeout(upd,120); });
+      upd();
+    }
+    function boot(){ document.querySelectorAll('[data-fcar]').forEach(initCar); }
+    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
+  })();
+  </script>
+
   <section id="section-3-features">
     <div class="container">
       <div class="zn-sec-head">
@@ -2932,7 +2982,8 @@ html[data-theme="dark"] .znd-cv-card-body{ color:#D4CDB5; }
          bento. Each one is a feature the team would otherwise build
          internally (reports, showback, tagging, inventory, budgets,
          ownership, MCP, audit-remediation, architecture). -->
-    <div class="zn-depth-grid">
+    <div class="fcar" data-fcar role="region" aria-roledescription="carousel" aria-label="More ZopNight features">
+        <div class="fcar-wrap"><div class="fcar-track">
       <article class="zn-depth-tile">
         <span class="zn-depth-num">01 · REPORTS &amp; DASHBOARDS</span>
         <h3 class="zn-depth-title">Boardroom-ready cost reports.</h3>
@@ -2987,7 +3038,11 @@ html[data-theme="dark"] .znd-cv-card-body{ color:#D4CDB5; }
         <p class="zn-depth-body">Atlas &mdash; searchable inventory of 380+ resource types across AWS, GCP, Azure. Canvas &mdash; interactive dependency graph, live edges auto-derived from cloud metadata. Subnet swimlanes, security-group hubs, VPC peering, attached storage. The map maintains itself.</p>
         <p class="zn-depth-foot">ATLAS &middot; CANVAS &middot; LIVE</p>
       </article>
-    </div>
+    </div></div>
+        <button type="button" class="fcar-nav fcar-prev" aria-label="Previous">&lsaquo;</button>
+        <button type="button" class="fcar-nav fcar-next" aria-label="Next">&rsaquo;</button>
+        <div class="fcar-dots" role="tablist"></div>
+      </div>
 
     <style>
       /* ZopNight depth-grid · 9 PDF feature tiles. Same asymmetric
