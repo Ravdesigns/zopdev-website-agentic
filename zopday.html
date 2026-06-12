@@ -1021,6 +1021,117 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
 @media (max-width:640px){ .drw-feat-vis-row{ grid-template-columns:repeat(3, 1fr); } .drw-feat-vis-foot{ flex-direction:column; align-items:flex-start; gap:6px; } }
 </style>
 
+<style id="drw-feat-vis-bespoke-css">
+/* Bespoke per-drawer visuals · share the .drw-feat-vis dark frame + eyebrow
+   + foot; each modifier (.fv--*) styles a unique .fv-stage body. */
+.drw-feat-vis--bespoke .fv-stage{ position:relative; padding:14px 0 18px; min-height:132px; display:flex; align-items:center; justify-content:center; }
+.drw-feat-vis--bespoke .fv-stage > *{ width:100%; }
+
+/* generic value tints reused */
+:root{ --fvO:#F58549; --fvB:#4A66D4; --fvG:#7FB236; --fvink:#E6E6EA; --fvdim:#7B7B82; --fvline:#2A2A34; }
+
+/* ── bars (Dashboards) ── */
+.fv-bars{ display:flex; align-items:flex-end; gap:10px; height:120px; padding:0 4px; }
+.fv-bar{ flex:1; background:linear-gradient(180deg,var(--fvO),rgba(245,133,73,.35)); transform-origin:bottom; transform:scaleY(0); animation:fv-rise .9s cubic-bezier(.22,1,.36,1) forwards; animation-delay:calc(var(--i)*.12s); height:var(--h); }
+@keyframes fv-rise{ to{ transform:scaleY(1); } }
+
+/* ── horizontal bars (Showback) ── */
+.fv-hbars{ display:flex; flex-direction:column; gap:11px; width:100%; }
+.fv-hrow{ display:grid; grid-template-columns:64px 1fr 44px; align-items:center; gap:10px; font-family:var(--mono,'Space Grotesk',monospace); font-size:11px; }
+.fv-hlabel{ color:var(--fvdim); }
+.fv-htrack{ height:12px; background:rgba(240,235,219,.05); position:relative; }
+.fv-hbar{ position:absolute; inset:0 auto 0 0; width:var(--w); background:var(--fvO); transform-origin:left; transform:scaleX(0); animation:fv-grow .9s cubic-bezier(.22,1,.36,1) forwards; animation-delay:calc(var(--i)*.14s); }
+@keyframes fv-grow{ to{ transform:scaleX(1); } }
+.fv-hval{ color:var(--fvink); text-align:right; font-weight:700; }
+
+/* ── tag flip (Auto-Tagging) ── */
+.fv-tags{ display:flex; flex-direction:column; gap:9px; width:100%; font-family:var(--mono,'Space Grotesk',monospace); font-size:11px; }
+.fv-tagrow{ display:flex; align-items:center; justify-content:space-between; padding:7px 10px; background:rgba(240,235,219,.04); border:1px solid var(--fvline); }
+.fv-res{ color:var(--fvink); }
+.fv-tagflip{ position:relative; min-width:78px; height:16px; }
+.fv-untag,.fv-tag{ position:absolute; right:0; top:0; padding:1px 7px; transition:opacity .4s; }
+.fv-untag{ color:var(--fvdim); animation:fv-untag 4s steps(1) infinite; animation-delay:calc(var(--i)*.5s); }
+.fv-tag{ color:#0F0F12; background:var(--fvO); font-weight:700; opacity:0; animation:fv-tag 4s steps(1) infinite; animation-delay:calc(var(--i)*.5s); }
+@keyframes fv-untag{ 0%,40%{opacity:1} 50%,100%{opacity:0} }
+@keyframes fv-tag{ 0%,40%{opacity:0} 50%,100%{opacity:1} }
+
+/* ── inventory grid (All-Resources) + pods (Live State) ── */
+.fv-grid{ display:grid; grid-template-columns:repeat(var(--cols,8),1fr); gap:5px; width:100%; }
+.fv-cell{ aspect-ratio:1; background:rgba(240,235,219,.05); border:1px solid var(--fvline); animation:fv-cell 4s ease-in-out infinite; animation-delay:calc(var(--i)*.07s); }
+@keyframes fv-cell{ 0%,100%{ background:rgba(240,235,219,.05); } 40%,60%{ background:rgba(245,133,73,.55); border-color:var(--fvO); } }
+.fv--pods .fv-cell{ animation-name:fv-pod; }
+@keyframes fv-pod{ 0%,100%{ background:rgba(127,178,54,.5); border-color:var(--fvG); } 45%,55%{ background:rgba(127,178,54,.12); } }
+.fv-health{ margin-top:10px; height:8px; background:rgba(240,235,219,.06); }
+.fv-health-bar{ display:block; height:100%; width:92%; background:var(--fvG); transform-origin:left; transform:scaleX(0); animation:fv-grow 1.1s cubic-bezier(.22,1,.36,1) forwards .3s; }
+
+/* ── node graph (Architecture) ── */
+.fv-graph,.fv-radius,.fv-spike{ width:100%; height:124px; display:block; }
+.fv-edge{ stroke:var(--fvline); stroke-width:1.4; stroke-dasharray:4 4; animation:fv-flow 3s linear infinite; }
+@keyframes fv-flow{ to{ stroke-dashoffset:-16; } }
+.fv-node{ fill:#0F0F12; stroke:var(--fvB); stroke-width:1.6; animation:fv-nodepulse 3s ease-in-out infinite; animation-delay:calc(var(--i)*.3s); }
+.fv-node--hub{ fill:var(--fvB); stroke:var(--fvB); animation:none; }
+@keyframes fv-nodepulse{ 0%,100%{ stroke:var(--fvline); } 40%,60%{ stroke:var(--fvO); } }
+.fv-pulse{ fill:var(--fvO); }
+
+/* ── blast radius (Blast Radius) ── */
+.fv-ring{ fill:none; stroke:var(--fvO); stroke-width:1.4; opacity:0; transform-origin:120px 60px; animation:fv-ring 2.4s ease-out infinite; animation-delay:calc(var(--i)*.8s); }
+@keyframes fv-ring{ 0%{ transform:scale(.3); opacity:.7; } 100%{ transform:scale(2.6); opacity:0; } }
+.fv-redge{ stroke:var(--fvline); stroke-width:1.3; }
+.fv-rdep{ fill:#0F0F12; stroke:var(--fvG); stroke-width:1.6; animation:fv-nodepulse 2.4s ease-in-out infinite; animation-delay:calc(var(--i)*.4s); }
+.fv-rcore{ fill:var(--fvO); }
+
+/* ── spike chart (Cost Anomaly) ── */
+.fv-spike-area{ fill:rgba(245,133,73,.12); }
+.fv-spike-line{ fill:none; stroke:var(--fvO); stroke-width:2; stroke-dasharray:600; stroke-dashoffset:600; animation:fv-draw 2s ease-out forwards; }
+@keyframes fv-draw{ to{ stroke-dashoffset:0; } }
+.fv-spike-dot{ fill:var(--fvO); }
+.fv-spike-ping{ fill:none; stroke:var(--fvO); stroke-width:2; transform-origin:150px 20px; animation:fv-ping 1.8s ease-out infinite; }
+@keyframes fv-ping{ 0%{ transform:scale(1); opacity:.8; } 100%{ transform:scale(4); opacity:0; } }
+
+/* ── terminal (MCP) ── */
+.fv-term{ width:100%; font-family:var(--mono,'Space Grotesk',monospace); font-size:11.5px; line-height:1.7; }
+.fv-term-q{ color:var(--fvink); }
+.fv-term-p{ color:var(--fvO); font-weight:700; }
+.fv-term-a{ color:var(--fvdim); padding-left:2px; }
+.fv-term-arr{ color:var(--fvO); }
+.fv-term-cursor{ display:inline-block; width:7px; height:14px; background:var(--fvO); margin-left:4px; vertical-align:-2px; animation:fv-blink 1.1s steps(2) infinite; }
+@keyframes fv-blink{ 50%{ opacity:0; } }
+
+/* ── pipeline (Deployment) ── */
+.fv-pipe{ position:relative; display:flex; align-items:center; justify-content:space-between; width:100%; padding:0 6px; }
+.fv-pipe-line{ flex:1; height:2px; background:var(--fvline); margin:0 4px; align-self:flex-start; margin-top:9px; }
+.fv-pipe-node{ display:flex; flex-direction:column; align-items:center; gap:8px; }
+.fv-pipe-dot{ width:18px; height:18px; border:2px solid var(--fvline); background:#0F0F12; border-radius:50%; animation:fv-stage 4s ease-in-out infinite; animation-delay:calc(var(--i)*.6s); }
+@keyframes fv-stage{ 0%,100%{ border-color:var(--fvline); background:#0F0F12; } 30%,70%{ border-color:var(--fvO); background:var(--fvO); } }
+.fv-pipe-lbl{ font-family:var(--mono,'Space Grotesk',monospace); font-size:10px; letter-spacing:.08em; color:var(--fvdim); }
+.fv-pipe-packet{ position:absolute; top:7px; left:6px; width:8px; height:8px; background:var(--fvG); border-radius:50%; animation:fv-packet 4s cubic-bezier(.5,0,.5,1) infinite; }
+@keyframes fv-packet{ 0%{ left:6px; } 100%{ left:calc(100% - 14px); } }
+
+/* ── stack layers (Landing Zone) ── */
+.fv-stack{ display:flex; flex-direction:column; gap:8px; width:100%; }
+.fv-layer{ display:flex; align-items:center; justify-content:space-between; padding:9px 12px; background:rgba(240,235,219,.04); border:1px solid var(--fvline); border-left:3px solid var(--fvO); font-family:var(--mono,'Space Grotesk',monospace); font-size:11px; color:var(--fvink); opacity:0; transform:translateY(8px); animation:fv-layer-in .5s cubic-bezier(.22,1,.36,1) forwards; animation-delay:calc(var(--i)*.5s + .2s); }
+@keyframes fv-layer-in{ to{ opacity:1; transform:translateY(0); } }
+.fv-layer-tick{ color:var(--fvG); font-weight:700; }
+
+/* ── unit cards (Unit Economics) ── */
+.fv-units{ display:flex; gap:10px; width:100%; }
+.fv-unit{ flex:1; display:flex; flex-direction:column; gap:5px; padding:12px 10px; background:rgba(240,235,219,.04); border:1px solid var(--fvline); opacity:0; animation:fv-layer-in .5s cubic-bezier(.22,1,.36,1) forwards; animation-delay:calc(var(--i)*.16s); }
+.fv-unit-k{ font-family:var(--mono,'Space Grotesk',monospace); font-size:9.5px; letter-spacing:.08em; color:var(--fvdim); }
+.fv-unit-v{ font-size:20px; font-weight:700; color:var(--fvink); letter-spacing:-.02em; }
+.fv-unit-arr{ color:var(--fvG); font-size:13px; font-weight:700; }
+
+@media (prefers-reduced-motion: reduce){
+  .drw-feat-vis--bespoke *{ animation:none !important; }
+  .fv-bar,.fv-hbar,.fv-health-bar{ transform:none !important; }
+  .fv-spike-line{ stroke-dashoffset:0 !important; }
+  .fv-untag{ opacity:0 !important; } .fv-tag{ opacity:1 !important; }
+  .fv-layer,.fv-unit{ opacity:1 !important; transform:none !important; }
+  .fv-cell{ background:rgba(245,133,73,.3) !important; }
+  .fv--pods .fv-cell{ background:rgba(127,178,54,.4) !important; }
+}
+@media (max-width:640px){ .fv-units{ flex-wrap:wrap; } }
+</style>
+
 </head>
 <body data-product="zopday">
 <a class="skip-to-main" href="#main-content">Skip to main content</a>
@@ -2362,7 +2473,7 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
                 </div>
               </div>
               <div class="drw-rec-hero-aside drw-rec-hero-aside--vis">
-                <div class="drw-feat-vis drw-feat-vis--generic" aria-hidden="true"><div class="drw-feat-vis-eyebrow">PROVISION &middot; HARDENED DEFAULTS</div><div class="drw-feat-vis-stage"><div class="drw-feat-vis-row"><span class="drw-feat-vis-tile" style="--d:0ms"><span class="drw-feat-vis-tile-mark">EKS</span><span class="drw-feat-vis-tile-tag">ready</span></span><span class="drw-feat-vis-tile" style="--d:240ms"><span class="drw-feat-vis-tile-mark">GKE</span><span class="drw-feat-vis-tile-tag">ready</span></span><span class="drw-feat-vis-tile" style="--d:480ms"><span class="drw-feat-vis-tile-mark">AKS</span><span class="drw-feat-vis-tile-tag">ready</span></span><span class="drw-feat-vis-tile" style="--d:720ms"><span class="drw-feat-vis-tile-mark">RDS</span><span class="drw-feat-vis-tile-tag">PITR</span></span><span class="drw-feat-vis-tile" style="--d:960ms"><span class="drw-feat-vis-tile-mark">Redis</span><span class="drw-feat-vis-tile-tag">HA</span></span></div><span class="drw-feat-vis-beam" aria-hidden="true"></span></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">RBAC &middot; NetPol &middot; PSS applied on provision</span><span class="drw-feat-vis-counter">Ready in <strong>4&ndash;7 min</strong></span></div></div>
+                <div class="drw-feat-vis drw-feat-vis--bespoke fv--stack" aria-hidden="true"><div class="drw-feat-vis-eyebrow">PROVISION &middot; HARDENED</div><div class="fv-stage"><div class="fv-stack"><div class="fv-layer" style="--i:0"><span class="fv-layer-name">VPC + subnets</span><span class="fv-layer-tick">&#10003;</span></div><div class="fv-layer" style="--i:1"><span class="fv-layer-name">K8s cluster</span><span class="fv-layer-tick">&#10003;</span></div><div class="fv-layer" style="--i:2"><span class="fv-layer-name">Datastores + PITR</span><span class="fv-layer-tick">&#10003;</span></div><div class="fv-layer" style="--i:3"><span class="fv-layer-name">RBAC · NetPol · PSS</span><span class="fv-layer-tick">&#10003;</span></div></div></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">Hardened defaults on provision</span><span class="drw-feat-vis-counter">Ready in <strong>4&ndash;7 min</strong></span></div></div>
               </div>
             </div>
 
@@ -2530,7 +2641,7 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
                 </div>
               </div>
               <div class="drw-rec-hero-aside drw-rec-hero-aside--vis">
-                <div class="drw-feat-vis drw-feat-vis--generic" aria-hidden="true"><div class="drw-feat-vis-eyebrow">GIT PUSH &rarr; LIVE URL</div><div class="drw-feat-vis-stage"><div class="drw-feat-vis-row"><span class="drw-feat-vis-tile" style="--d:0ms"><span class="drw-feat-vis-tile-mark">Build</span><span class="drw-feat-vis-tile-tag">✓</span></span><span class="drw-feat-vis-tile" style="--d:240ms"><span class="drw-feat-vis-tile-mark">Scan</span><span class="drw-feat-vis-tile-tag">✓</span></span><span class="drw-feat-vis-tile" style="--d:480ms"><span class="drw-feat-vis-tile-mark">Push</span><span class="drw-feat-vis-tile-tag">✓</span></span><span class="drw-feat-vis-tile" style="--d:720ms"><span class="drw-feat-vis-tile-mark">Canary</span><span class="drw-feat-vis-tile-tag">6/6</span></span><span class="drw-feat-vis-tile" style="--d:960ms"><span class="drw-feat-vis-tile-mark">Live</span><span class="drw-feat-vis-tile-tag">200</span></span></div><span class="drw-feat-vis-beam" aria-hidden="true"></span></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">Canary &rarr; progressive &rarr; full</span><span class="drw-feat-vis-counter">Deploy <strong>3m 42s</strong></span></div></div>
+                <div class="drw-feat-vis drw-feat-vis--bespoke fv--pipe" aria-hidden="true"><div class="drw-feat-vis-eyebrow">GIT PUSH &rarr; LIVE URL</div><div class="fv-stage"><div class="fv-pipe"><span class="fv-pipe-packet"></span><span class="fv-pipe-node" style="--i:0"><span class="fv-pipe-dot"></span><span class="fv-pipe-lbl">Commit</span></span><span class="fv-pipe-line"></span><span class="fv-pipe-node" style="--i:1"><span class="fv-pipe-dot"></span><span class="fv-pipe-lbl">Build</span></span><span class="fv-pipe-line"></span><span class="fv-pipe-node" style="--i:2"><span class="fv-pipe-dot"></span><span class="fv-pipe-lbl">Deploy</span></span><span class="fv-pipe-line"></span><span class="fv-pipe-node" style="--i:3"><span class="fv-pipe-dot"></span><span class="fv-pipe-lbl">Live</span></span></div></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">Canary &rarr; progressive &rarr; full</span><span class="drw-feat-vis-counter">Deploy <strong>3m 42s</strong></span></div></div>
               </div>
             </div>
 
@@ -2697,7 +2808,7 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
                 </div>
               </div>
               <div class="drw-rec-hero-aside drw-rec-hero-aside--vis">
-                <div class="drw-feat-vis drw-feat-vis--generic" aria-hidden="true"><div class="drw-feat-vis-eyebrow">EVERY CLUSTER &middot; LIVE</div><div class="drw-feat-vis-stage"><div class="drw-feat-vis-row"><span class="drw-feat-vis-tile" style="--d:0ms"><span class="drw-feat-vis-tile-mark">Pods</span><span class="drw-feat-vis-tile-tag">107</span></span><span class="drw-feat-vis-tile" style="--d:240ms"><span class="drw-feat-vis-tile-mark">Deploys</span><span class="drw-feat-vis-tile-tag">75</span></span><span class="drw-feat-vis-tile" style="--d:480ms"><span class="drw-feat-vis-tile-mark">CPU</span><span class="drw-feat-vis-tile-tag">62%</span></span><span class="drw-feat-vis-tile" style="--d:720ms"><span class="drw-feat-vis-tile-mark">Mem</span><span class="drw-feat-vis-tile-tag">58%</span></span><span class="drw-feat-vis-tile" style="--d:960ms"><span class="drw-feat-vis-tile-mark">Errors</span><span class="drw-feat-vis-tile-tag">0</span></span></div><span class="drw-feat-vis-beam" aria-hidden="true"></span></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">21 K8s resource pages, live</span><span class="drw-feat-vis-counter">Healthy <strong>92%</strong></span></div></div>
+                <div class="drw-feat-vis drw-feat-vis--bespoke fv--pods" aria-hidden="true"><div class="drw-feat-vis-eyebrow">EVERY CLUSTER &middot; LIVE</div><div class="fv-stage"><div class="fv-grid" style="--cols:10"><span class="fv-cell" style="--i:0"></span><span class="fv-cell" style="--i:1"></span><span class="fv-cell" style="--i:2"></span><span class="fv-cell" style="--i:3"></span><span class="fv-cell" style="--i:4"></span><span class="fv-cell" style="--i:5"></span><span class="fv-cell" style="--i:6"></span><span class="fv-cell" style="--i:7"></span><span class="fv-cell" style="--i:8"></span><span class="fv-cell" style="--i:9"></span><span class="fv-cell" style="--i:10"></span><span class="fv-cell" style="--i:11"></span><span class="fv-cell" style="--i:12"></span><span class="fv-cell" style="--i:13"></span><span class="fv-cell" style="--i:14"></span><span class="fv-cell" style="--i:15"></span><span class="fv-cell" style="--i:16"></span><span class="fv-cell" style="--i:17"></span><span class="fv-cell" style="--i:18"></span><span class="fv-cell" style="--i:19"></span><span class="fv-cell" style="--i:20"></span><span class="fv-cell" style="--i:21"></span><span class="fv-cell" style="--i:22"></span><span class="fv-cell" style="--i:23"></span><span class="fv-cell" style="--i:24"></span><span class="fv-cell" style="--i:25"></span><span class="fv-cell" style="--i:26"></span><span class="fv-cell" style="--i:27"></span><span class="fv-cell" style="--i:28"></span><span class="fv-cell" style="--i:29"></span><span class="fv-cell" style="--i:30"></span><span class="fv-cell" style="--i:31"></span><span class="fv-cell" style="--i:32"></span><span class="fv-cell" style="--i:33"></span><span class="fv-cell" style="--i:34"></span><span class="fv-cell" style="--i:35"></span><span class="fv-cell" style="--i:36"></span><span class="fv-cell" style="--i:37"></span><span class="fv-cell" style="--i:38"></span><span class="fv-cell" style="--i:39"></span></div><div class="fv-health"><span class="fv-health-bar"></span></div></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">21 K8s resource pages, live</span><span class="drw-feat-vis-counter">Healthy <strong>92%</strong></span></div></div>
               </div>
             </div>
 

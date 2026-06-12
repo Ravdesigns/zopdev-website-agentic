@@ -8328,6 +8328,117 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
 </style>
 
 <style id="drw-feat-vis-generic-css">.drw-feat-vis--generic .drw-feat-vis-row{ grid-template-columns:repeat(5,1fr); } @media(max-width:640px){ .drw-feat-vis--generic .drw-feat-vis-row{ grid-template-columns:repeat(3,1fr);} }</style>
+<style id="drw-feat-vis-bespoke-css">
+/* Bespoke per-drawer visuals · share the .drw-feat-vis dark frame + eyebrow
+   + foot; each modifier (.fv--*) styles a unique .fv-stage body. */
+.drw-feat-vis--bespoke .fv-stage{ position:relative; padding:14px 0 18px; min-height:132px; display:flex; align-items:center; justify-content:center; }
+.drw-feat-vis--bespoke .fv-stage > *{ width:100%; }
+
+/* generic value tints reused */
+:root{ --fvO:#F58549; --fvB:#4A66D4; --fvG:#7FB236; --fvink:#E6E6EA; --fvdim:#7B7B82; --fvline:#2A2A34; }
+
+/* ── bars (Dashboards) ── */
+.fv-bars{ display:flex; align-items:flex-end; gap:10px; height:120px; padding:0 4px; }
+.fv-bar{ flex:1; background:linear-gradient(180deg,var(--fvO),rgba(245,133,73,.35)); transform-origin:bottom; transform:scaleY(0); animation:fv-rise .9s cubic-bezier(.22,1,.36,1) forwards; animation-delay:calc(var(--i)*.12s); height:var(--h); }
+@keyframes fv-rise{ to{ transform:scaleY(1); } }
+
+/* ── horizontal bars (Showback) ── */
+.fv-hbars{ display:flex; flex-direction:column; gap:11px; width:100%; }
+.fv-hrow{ display:grid; grid-template-columns:64px 1fr 44px; align-items:center; gap:10px; font-family:var(--mono,'Space Grotesk',monospace); font-size:11px; }
+.fv-hlabel{ color:var(--fvdim); }
+.fv-htrack{ height:12px; background:rgba(240,235,219,.05); position:relative; }
+.fv-hbar{ position:absolute; inset:0 auto 0 0; width:var(--w); background:var(--fvO); transform-origin:left; transform:scaleX(0); animation:fv-grow .9s cubic-bezier(.22,1,.36,1) forwards; animation-delay:calc(var(--i)*.14s); }
+@keyframes fv-grow{ to{ transform:scaleX(1); } }
+.fv-hval{ color:var(--fvink); text-align:right; font-weight:700; }
+
+/* ── tag flip (Auto-Tagging) ── */
+.fv-tags{ display:flex; flex-direction:column; gap:9px; width:100%; font-family:var(--mono,'Space Grotesk',monospace); font-size:11px; }
+.fv-tagrow{ display:flex; align-items:center; justify-content:space-between; padding:7px 10px; background:rgba(240,235,219,.04); border:1px solid var(--fvline); }
+.fv-res{ color:var(--fvink); }
+.fv-tagflip{ position:relative; min-width:78px; height:16px; }
+.fv-untag,.fv-tag{ position:absolute; right:0; top:0; padding:1px 7px; transition:opacity .4s; }
+.fv-untag{ color:var(--fvdim); animation:fv-untag 4s steps(1) infinite; animation-delay:calc(var(--i)*.5s); }
+.fv-tag{ color:#0F0F12; background:var(--fvO); font-weight:700; opacity:0; animation:fv-tag 4s steps(1) infinite; animation-delay:calc(var(--i)*.5s); }
+@keyframes fv-untag{ 0%,40%{opacity:1} 50%,100%{opacity:0} }
+@keyframes fv-tag{ 0%,40%{opacity:0} 50%,100%{opacity:1} }
+
+/* ── inventory grid (All-Resources) + pods (Live State) ── */
+.fv-grid{ display:grid; grid-template-columns:repeat(var(--cols,8),1fr); gap:5px; width:100%; }
+.fv-cell{ aspect-ratio:1; background:rgba(240,235,219,.05); border:1px solid var(--fvline); animation:fv-cell 4s ease-in-out infinite; animation-delay:calc(var(--i)*.07s); }
+@keyframes fv-cell{ 0%,100%{ background:rgba(240,235,219,.05); } 40%,60%{ background:rgba(245,133,73,.55); border-color:var(--fvO); } }
+.fv--pods .fv-cell{ animation-name:fv-pod; }
+@keyframes fv-pod{ 0%,100%{ background:rgba(127,178,54,.5); border-color:var(--fvG); } 45%,55%{ background:rgba(127,178,54,.12); } }
+.fv-health{ margin-top:10px; height:8px; background:rgba(240,235,219,.06); }
+.fv-health-bar{ display:block; height:100%; width:92%; background:var(--fvG); transform-origin:left; transform:scaleX(0); animation:fv-grow 1.1s cubic-bezier(.22,1,.36,1) forwards .3s; }
+
+/* ── node graph (Architecture) ── */
+.fv-graph,.fv-radius,.fv-spike{ width:100%; height:124px; display:block; }
+.fv-edge{ stroke:var(--fvline); stroke-width:1.4; stroke-dasharray:4 4; animation:fv-flow 3s linear infinite; }
+@keyframes fv-flow{ to{ stroke-dashoffset:-16; } }
+.fv-node{ fill:#0F0F12; stroke:var(--fvB); stroke-width:1.6; animation:fv-nodepulse 3s ease-in-out infinite; animation-delay:calc(var(--i)*.3s); }
+.fv-node--hub{ fill:var(--fvB); stroke:var(--fvB); animation:none; }
+@keyframes fv-nodepulse{ 0%,100%{ stroke:var(--fvline); } 40%,60%{ stroke:var(--fvO); } }
+.fv-pulse{ fill:var(--fvO); }
+
+/* ── blast radius (Blast Radius) ── */
+.fv-ring{ fill:none; stroke:var(--fvO); stroke-width:1.4; opacity:0; transform-origin:120px 60px; animation:fv-ring 2.4s ease-out infinite; animation-delay:calc(var(--i)*.8s); }
+@keyframes fv-ring{ 0%{ transform:scale(.3); opacity:.7; } 100%{ transform:scale(2.6); opacity:0; } }
+.fv-redge{ stroke:var(--fvline); stroke-width:1.3; }
+.fv-rdep{ fill:#0F0F12; stroke:var(--fvG); stroke-width:1.6; animation:fv-nodepulse 2.4s ease-in-out infinite; animation-delay:calc(var(--i)*.4s); }
+.fv-rcore{ fill:var(--fvO); }
+
+/* ── spike chart (Cost Anomaly) ── */
+.fv-spike-area{ fill:rgba(245,133,73,.12); }
+.fv-spike-line{ fill:none; stroke:var(--fvO); stroke-width:2; stroke-dasharray:600; stroke-dashoffset:600; animation:fv-draw 2s ease-out forwards; }
+@keyframes fv-draw{ to{ stroke-dashoffset:0; } }
+.fv-spike-dot{ fill:var(--fvO); }
+.fv-spike-ping{ fill:none; stroke:var(--fvO); stroke-width:2; transform-origin:150px 20px; animation:fv-ping 1.8s ease-out infinite; }
+@keyframes fv-ping{ 0%{ transform:scale(1); opacity:.8; } 100%{ transform:scale(4); opacity:0; } }
+
+/* ── terminal (MCP) ── */
+.fv-term{ width:100%; font-family:var(--mono,'Space Grotesk',monospace); font-size:11.5px; line-height:1.7; }
+.fv-term-q{ color:var(--fvink); }
+.fv-term-p{ color:var(--fvO); font-weight:700; }
+.fv-term-a{ color:var(--fvdim); padding-left:2px; }
+.fv-term-arr{ color:var(--fvO); }
+.fv-term-cursor{ display:inline-block; width:7px; height:14px; background:var(--fvO); margin-left:4px; vertical-align:-2px; animation:fv-blink 1.1s steps(2) infinite; }
+@keyframes fv-blink{ 50%{ opacity:0; } }
+
+/* ── pipeline (Deployment) ── */
+.fv-pipe{ position:relative; display:flex; align-items:center; justify-content:space-between; width:100%; padding:0 6px; }
+.fv-pipe-line{ flex:1; height:2px; background:var(--fvline); margin:0 4px; align-self:flex-start; margin-top:9px; }
+.fv-pipe-node{ display:flex; flex-direction:column; align-items:center; gap:8px; }
+.fv-pipe-dot{ width:18px; height:18px; border:2px solid var(--fvline); background:#0F0F12; border-radius:50%; animation:fv-stage 4s ease-in-out infinite; animation-delay:calc(var(--i)*.6s); }
+@keyframes fv-stage{ 0%,100%{ border-color:var(--fvline); background:#0F0F12; } 30%,70%{ border-color:var(--fvO); background:var(--fvO); } }
+.fv-pipe-lbl{ font-family:var(--mono,'Space Grotesk',monospace); font-size:10px; letter-spacing:.08em; color:var(--fvdim); }
+.fv-pipe-packet{ position:absolute; top:7px; left:6px; width:8px; height:8px; background:var(--fvG); border-radius:50%; animation:fv-packet 4s cubic-bezier(.5,0,.5,1) infinite; }
+@keyframes fv-packet{ 0%{ left:6px; } 100%{ left:calc(100% - 14px); } }
+
+/* ── stack layers (Landing Zone) ── */
+.fv-stack{ display:flex; flex-direction:column; gap:8px; width:100%; }
+.fv-layer{ display:flex; align-items:center; justify-content:space-between; padding:9px 12px; background:rgba(240,235,219,.04); border:1px solid var(--fvline); border-left:3px solid var(--fvO); font-family:var(--mono,'Space Grotesk',monospace); font-size:11px; color:var(--fvink); opacity:0; transform:translateY(8px); animation:fv-layer-in .5s cubic-bezier(.22,1,.36,1) forwards; animation-delay:calc(var(--i)*.5s + .2s); }
+@keyframes fv-layer-in{ to{ opacity:1; transform:translateY(0); } }
+.fv-layer-tick{ color:var(--fvG); font-weight:700; }
+
+/* ── unit cards (Unit Economics) ── */
+.fv-units{ display:flex; gap:10px; width:100%; }
+.fv-unit{ flex:1; display:flex; flex-direction:column; gap:5px; padding:12px 10px; background:rgba(240,235,219,.04); border:1px solid var(--fvline); opacity:0; animation:fv-layer-in .5s cubic-bezier(.22,1,.36,1) forwards; animation-delay:calc(var(--i)*.16s); }
+.fv-unit-k{ font-family:var(--mono,'Space Grotesk',monospace); font-size:9.5px; letter-spacing:.08em; color:var(--fvdim); }
+.fv-unit-v{ font-size:20px; font-weight:700; color:var(--fvink); letter-spacing:-.02em; }
+.fv-unit-arr{ color:var(--fvG); font-size:13px; font-weight:700; }
+
+@media (prefers-reduced-motion: reduce){
+  .drw-feat-vis--bespoke *{ animation:none !important; }
+  .fv-bar,.fv-hbar,.fv-health-bar{ transform:none !important; }
+  .fv-spike-line{ stroke-dashoffset:0 !important; }
+  .fv-untag{ opacity:0 !important; } .fv-tag{ opacity:1 !important; }
+  .fv-layer,.fv-unit{ opacity:1 !important; transform:none !important; }
+  .fv-cell{ background:rgba(245,133,73,.3) !important; }
+  .fv--pods .fv-cell{ background:rgba(127,178,54,.4) !important; }
+}
+@media (max-width:640px){ .fv-units{ flex-wrap:wrap; } }
+</style>
+
 </head>
 <body>
 
@@ -12107,7 +12218,7 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
                 </div>
             </div>
             <div class="drw-rec-hero-vis">
-              <div class="drw-feat-vis drw-feat-vis--generic" aria-hidden="true"><div class="drw-feat-vis-eyebrow">ATLAS &middot; CANVAS &middot; LIVE</div><div class="drw-feat-vis-stage"><div class="drw-feat-vis-row"><span class="drw-feat-vis-tile" style="--d:0ms"><span class="drw-feat-vis-tile-mark">VPC</span><span class="drw-feat-vis-tile-tag">peered</span></span><span class="drw-feat-vis-tile" style="--d:240ms"><span class="drw-feat-vis-tile-mark">EKS</span><span class="drw-feat-vis-tile-tag">48</span></span><span class="drw-feat-vis-tile" style="--d:480ms"><span class="drw-feat-vis-tile-mark">RDS</span><span class="drw-feat-vis-tile-tag">12</span></span><span class="drw-feat-vis-tile" style="--d:720ms"><span class="drw-feat-vis-tile-mark">S3</span><span class="drw-feat-vis-tile-tag">regional</span></span><span class="drw-feat-vis-tile" style="--d:960ms"><span class="drw-feat-vis-tile-mark">ALB</span><span class="drw-feat-vis-tile-tag">edges</span></span></div><span class="drw-feat-vis-beam" aria-hidden="true"></span></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">Edges auto-derived from cloud metadata</span><span class="drw-feat-vis-counter">Mapped <strong>2,221</strong></span></div></div>
+              <div class="drw-feat-vis drw-feat-vis--bespoke fv--graph" aria-hidden="true"><div class="drw-feat-vis-eyebrow">ATLAS &middot; CANVAS &middot; LIVE</div><div class="fv-stage"><svg class="fv-graph" viewBox="0 0 240 120" xmlns="http://www.w3.org/2000/svg"><line class="fv-edge" x1="120" y1="60" x2="46" y2="28"/><line class="fv-edge" x1="120" y1="60" x2="40" y2="84"/><line class="fv-edge" x1="120" y1="60" x2="120" y2="18"/><line class="fv-edge" x1="120" y1="60" x2="200" y2="30"/><line class="fv-edge" x1="120" y1="60" x2="206" y2="88"/><line class="fv-edge" x1="120" y1="60" x2="120" y2="104"/><circle class="fv-node fv-node--hub" cx="120" cy="60" r="13"/><circle class="fv-node" cx="46" cy="28" r="6" style="--i:0"/><circle class="fv-node" cx="40" cy="84" r="6" style="--i:1"/><circle class="fv-node" cx="120" cy="18" r="6" style="--i:2"/><circle class="fv-node" cx="200" cy="30" r="6" style="--i:3"/><circle class="fv-node" cx="206" cy="88" r="6" style="--i:4"/><circle class="fv-node" cx="120" cy="104" r="6" style="--i:5"/><circle class="fv-pulse" cx="120" cy="60" r="4"><animateMotion dur="2.4s" repeatCount="indefinite" path="M0,0 L-74,-32"/></circle></svg></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">Edges auto-derived from cloud metadata</span><span class="drw-feat-vis-counter">Mapped <strong>2,221</strong></span></div></div>
             </div>
           </div>
 
@@ -12277,7 +12388,7 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
                 </div>
             </div>
             <div class="drw-rec-hero-vis">
-              <div class="drw-feat-vis drw-feat-vis--generic" aria-hidden="true"><div class="drw-feat-vis-eyebrow">BOARD-READY &middot; SCHEDULED</div><div class="drw-feat-vis-stage"><div class="drw-feat-vis-row"><span class="drw-feat-vis-tile" style="--d:0ms"><span class="drw-feat-vis-tile-mark">Spend</span><span class="drw-feat-vis-tile-tag">$</span></span><span class="drw-feat-vis-tile" style="--d:240ms"><span class="drw-feat-vis-tile-mark">Trend</span><span class="drw-feat-vis-tile-tag">30d</span></span><span class="drw-feat-vis-tile" style="--d:480ms"><span class="drw-feat-vis-tile-mark">Forecast</span><span class="drw-feat-vis-tile-tag">Q3</span></span><span class="drw-feat-vis-tile" style="--d:720ms"><span class="drw-feat-vis-tile-mark">Budget</span><span class="drw-feat-vis-tile-tag">82%</span></span><span class="drw-feat-vis-tile" style="--d:960ms"><span class="drw-feat-vis-tile-mark">Export</span><span class="drw-feat-vis-tile-tag">CSV</span></span></div><span class="drw-feat-vis-beam" aria-hidden="true"></span></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">Scheduled exports &middot; CSV / PDF</span><span class="drw-feat-vis-counter">Across <strong>14 regions</strong></span></div></div>
+              <div class="drw-feat-vis drw-feat-vis--bespoke fv--bars" aria-hidden="true"><div class="drw-feat-vis-eyebrow">SPEND &middot; TREND &middot; FORECAST</div><div class="fv-stage"><div class="fv-bars"><span class="fv-bar" style="--h:45%;--i:0"></span><span class="fv-bar" style="--h:60%;--i:1"></span><span class="fv-bar" style="--h:50%;--i:2"></span><span class="fv-bar" style="--h:72%;--i:3"></span><span class="fv-bar" style="--h:66%;--i:4"></span><span class="fv-bar" style="--h:85%;--i:5"></span></div></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">Scheduled exports &middot; CSV / PDF</span><span class="drw-feat-vis-counter">Across <strong>14 regions</strong></span></div></div>
             </div>
           </div>
 
@@ -12442,7 +12553,7 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
                 </div>
             </div>
             <div class="drw-rec-hero-vis">
-              <div class="drw-feat-vis drw-feat-vis--generic" aria-hidden="true"><div class="drw-feat-vis-eyebrow">UNTAGGED &rarr; TAGGED</div><div class="drw-feat-vis-stage"><div class="drw-feat-vis-row"><span class="drw-feat-vis-tile" style="--d:0ms"><span class="drw-feat-vis-tile-mark">env</span><span class="drw-feat-vis-tile-tag">prod</span></span><span class="drw-feat-vis-tile" style="--d:240ms"><span class="drw-feat-vis-tile-mark">team</span><span class="drw-feat-vis-tile-tag">data</span></span><span class="drw-feat-vis-tile" style="--d:480ms"><span class="drw-feat-vis-tile-mark">project</span><span class="drw-feat-vis-tile-tag">ckt</span></span><span class="drw-feat-vis-tile" style="--d:720ms"><span class="drw-feat-vis-tile-mark">owner</span><span class="drw-feat-vis-tile-tag">set</span></span><span class="drw-feat-vis-tile" style="--d:960ms"><span class="drw-feat-vis-tile-mark">cost</span><span class="drw-feat-vis-tile-tag">ctr</span></span></div><span class="drw-feat-vis-beam" aria-hidden="true"></span></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">Rules applied on discovery</span><span class="drw-feat-vis-counter">Untagged <strong>0</strong></span></div></div>
+              <div class="drw-feat-vis drw-feat-vis--bespoke fv--tags" aria-hidden="true"><div class="drw-feat-vis-eyebrow">UNTAGGED &rarr; TAGGED</div><div class="fv-stage"><div class="fv-tags"><div class="fv-tagrow" style="--i:0"><span class="fv-res">i-0a72f3</span><span class="fv-tagflip"><span class="fv-untag">untagged</span><span class="fv-tag">env:prod</span></span></div><div class="fv-tagrow" style="--i:1"><span class="fv-res">vol-44b1</span><span class="fv-tagflip"><span class="fv-untag">untagged</span><span class="fv-tag">team:data</span></span></div><div class="fv-tagrow" style="--i:2"><span class="fv-res">rds-orders</span><span class="fv-tagflip"><span class="fv-untag">untagged</span><span class="fv-tag">project:ckt</span></span></div><div class="fv-tagrow" style="--i:3"><span class="fv-res">s3-assets</span><span class="fv-tagflip"><span class="fv-untag">untagged</span><span class="fv-tag">owner:set</span></span></div></div></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">Rules applied on discovery</span><span class="drw-feat-vis-counter">Untagged <strong>0</strong></span></div></div>
             </div>
           </div>
 
@@ -12612,7 +12723,7 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
                 </div>
             </div>
             <div class="drw-rec-hero-vis">
-              <div class="drw-feat-vis drw-feat-vis--generic" aria-hidden="true"><div class="drw-feat-vis-eyebrow">COST BY OWNER</div><div class="drw-feat-vis-stage"><div class="drw-feat-vis-row"><span class="drw-feat-vis-tile" style="--d:0ms"><span class="drw-feat-vis-tile-mark">Platform</span><span class="drw-feat-vis-tile-tag">$4.2k</span></span><span class="drw-feat-vis-tile" style="--d:240ms"><span class="drw-feat-vis-tile-mark">Data</span><span class="drw-feat-vis-tile-tag">$3.1k</span></span><span class="drw-feat-vis-tile" style="--d:480ms"><span class="drw-feat-vis-tile-mark">Web</span><span class="drw-feat-vis-tile-tag">$2.4k</span></span><span class="drw-feat-vis-tile" style="--d:720ms"><span class="drw-feat-vis-tile-mark">ML</span><span class="drw-feat-vis-tile-tag">$1.8k</span></span><span class="drw-feat-vis-tile" style="--d:960ms"><span class="drw-feat-vis-tile-mark">QA</span><span class="drw-feat-vis-tile-tag">$0.9k</span></span></div><span class="drw-feat-vis-beam" aria-hidden="true"></span></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">Every dollar attributed to a team</span><span class="drw-feat-vis-counter"><strong>154 teams</strong></span></div></div>
+              <div class="drw-feat-vis drw-feat-vis--bespoke fv--hbars" aria-hidden="true"><div class="drw-feat-vis-eyebrow">COST BY OWNER</div><div class="fv-stage"><div class="fv-hbars"><div class="fv-hrow"><span class="fv-hlabel">Platform</span><span class="fv-htrack"><span class="fv-hbar" style="--w:100%;--i:0"></span></span><span class="fv-hval">$4.2k</span></div><div class="fv-hrow"><span class="fv-hlabel">Data</span><span class="fv-htrack"><span class="fv-hbar" style="--w:74%;--i:1"></span></span><span class="fv-hval">$3.1k</span></div><div class="fv-hrow"><span class="fv-hlabel">Web</span><span class="fv-htrack"><span class="fv-hbar" style="--w:56%;--i:2"></span></span><span class="fv-hval">$2.4k</span></div><div class="fv-hrow"><span class="fv-hlabel">ML</span><span class="fv-htrack"><span class="fv-hbar" style="--w:43%;--i:3"></span></span><span class="fv-hval">$1.8k</span></div></div></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">Every dollar attributed to a team</span><span class="drw-feat-vis-counter"><strong>154 teams</strong></span></div></div>
             </div>
           </div>
 
@@ -12778,7 +12889,7 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
                 </div>
             </div>
             <div class="drw-rec-hero-vis">
-              <div class="drw-feat-vis drw-feat-vis--generic" aria-hidden="true"><div class="drw-feat-vis-eyebrow">EVERY RESOURCE &middot; ONE VIEW</div><div class="drw-feat-vis-stage"><div class="drw-feat-vis-row"><span class="drw-feat-vis-tile" style="--d:0ms"><span class="drw-feat-vis-tile-mark">EC2</span><span class="drw-feat-vis-tile-tag">run</span></span><span class="drw-feat-vis-tile" style="--d:240ms"><span class="drw-feat-vis-tile-mark">RDS</span><span class="drw-feat-vis-tile-tag">12</span></span><span class="drw-feat-vis-tile" style="--d:480ms"><span class="drw-feat-vis-tile-mark">S3</span><span class="drw-feat-vis-tile-tag">∞</span></span><span class="drw-feat-vis-tile" style="--d:720ms"><span class="drw-feat-vis-tile-mark">Lambda</span><span class="drw-feat-vis-tile-tag">240</span></span><span class="drw-feat-vis-tile" style="--d:960ms"><span class="drw-feat-vis-tile-mark">EKS</span><span class="drw-feat-vis-tile-tag">48</span></span></div><span class="drw-feat-vis-beam" aria-hidden="true"></span></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">Across AWS &middot; GCP &middot; Azure</span><span class="drw-feat-vis-counter">Tracked <strong>2,221</strong></span></div></div>
+              <div class="drw-feat-vis drw-feat-vis--bespoke fv--grid" aria-hidden="true"><div class="drw-feat-vis-eyebrow">EVERY RESOURCE &middot; ONE VIEW</div><div class="fv-stage"><div class="fv-grid" style="--cols:8"><span class="fv-cell" style="--i:0"></span><span class="fv-cell" style="--i:1"></span><span class="fv-cell" style="--i:2"></span><span class="fv-cell" style="--i:3"></span><span class="fv-cell" style="--i:4"></span><span class="fv-cell" style="--i:5"></span><span class="fv-cell" style="--i:6"></span><span class="fv-cell" style="--i:7"></span><span class="fv-cell" style="--i:8"></span><span class="fv-cell" style="--i:9"></span><span class="fv-cell" style="--i:10"></span><span class="fv-cell" style="--i:11"></span><span class="fv-cell" style="--i:12"></span><span class="fv-cell" style="--i:13"></span><span class="fv-cell" style="--i:14"></span><span class="fv-cell" style="--i:15"></span><span class="fv-cell" style="--i:16"></span><span class="fv-cell" style="--i:17"></span><span class="fv-cell" style="--i:18"></span><span class="fv-cell" style="--i:19"></span><span class="fv-cell" style="--i:20"></span><span class="fv-cell" style="--i:21"></span><span class="fv-cell" style="--i:22"></span><span class="fv-cell" style="--i:23"></span><span class="fv-cell" style="--i:24"></span><span class="fv-cell" style="--i:25"></span><span class="fv-cell" style="--i:26"></span><span class="fv-cell" style="--i:27"></span><span class="fv-cell" style="--i:28"></span><span class="fv-cell" style="--i:29"></span><span class="fv-cell" style="--i:30"></span><span class="fv-cell" style="--i:31"></span></div></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">Across AWS &middot; GCP &middot; Azure</span><span class="drw-feat-vis-counter">Tracked <strong>2,221</strong></span></div></div>
             </div>
           </div>
 
@@ -12941,7 +13052,7 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
                 </div>
             </div>
             <div class="drw-rec-hero-vis">
-              <div class="drw-feat-vis drw-feat-vis--generic" aria-hidden="true"><div class="drw-feat-vis-eyebrow">BEFORE YOU CHANGE</div><div class="drw-feat-vis-stage"><div class="drw-feat-vis-row"><span class="drw-feat-vis-tile" style="--d:0ms"><span class="drw-feat-vis-tile-mark">svc</span><span class="drw-feat-vis-tile-tag">→</span></span><span class="drw-feat-vis-tile" style="--d:240ms"><span class="drw-feat-vis-tile-mark">db</span><span class="drw-feat-vis-tile-tag">→</span></span><span class="drw-feat-vis-tile" style="--d:480ms"><span class="drw-feat-vis-tile-mark">queue</span><span class="drw-feat-vis-tile-tag">→</span></span><span class="drw-feat-vis-tile" style="--d:720ms"><span class="drw-feat-vis-tile-mark">cache</span><span class="drw-feat-vis-tile-tag">→</span></span><span class="drw-feat-vis-tile" style="--d:960ms"><span class="drw-feat-vis-tile-mark">LB</span><span class="drw-feat-vis-tile-tag">✓</span></span></div><span class="drw-feat-vis-beam" aria-hidden="true"></span></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">Dependency-aware impact preview</span><span class="drw-feat-vis-counter">Surprises <strong>0</strong></span></div></div>
+              <div class="drw-feat-vis drw-feat-vis--bespoke fv--radius" aria-hidden="true"><div class="drw-feat-vis-eyebrow">BEFORE YOU CHANGE</div><div class="fv-stage"><svg class="fv-radius" viewBox="0 0 240 120" xmlns="http://www.w3.org/2000/svg"><circle class="fv-ring" cx="120" cy="60" r="20" style="--i:0"/><circle class="fv-ring" cx="120" cy="60" r="20" style="--i:1"/><circle class="fv-ring" cx="120" cy="60" r="20" style="--i:2"/><line class="fv-redge" x1="120" y1="60" x2="60" y2="36"/><line class="fv-redge" x1="120" y1="60" x2="64" y2="90"/><line class="fv-redge" x1="120" y1="60" x2="184" y2="40"/><line class="fv-redge" x1="120" y1="60" x2="180" y2="86"/><circle class="fv-rdep" cx="60" cy="36" r="6" style="--i:0"/><circle class="fv-rdep" cx="64" cy="90" r="6" style="--i:1"/><circle class="fv-rdep" cx="184" cy="40" r="6" style="--i:2"/><circle class="fv-rdep" cx="180" cy="86" r="6" style="--i:3"/><circle class="fv-rcore" cx="120" cy="60" r="11"/></svg></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">Dependency-aware impact preview</span><span class="drw-feat-vis-counter">Surprises <strong>0</strong></span></div></div>
             </div>
           </div>
 
@@ -13111,7 +13222,7 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
                 </div>
             </div>
             <div class="drw-rec-hero-vis">
-              <div class="drw-feat-vis drw-feat-vis--generic" aria-hidden="true"><div class="drw-feat-vis-eyebrow">FIVE-DIMENSION SCAN</div><div class="drw-feat-vis-stage"><div class="drw-feat-vis-row"><span class="drw-feat-vis-tile" style="--d:0ms"><span class="drw-feat-vis-tile-mark">Mon</span><span class="drw-feat-vis-tile-tag">$1.2k</span></span><span class="drw-feat-vis-tile" style="--d:240ms"><span class="drw-feat-vis-tile-mark">Tue</span><span class="drw-feat-vis-tile-tag">$1.2k</span></span><span class="drw-feat-vis-tile" style="--d:480ms"><span class="drw-feat-vis-tile-mark">Wed</span><span class="drw-feat-vis-tile-tag">$3.8k</span></span><span class="drw-feat-vis-tile" style="--d:720ms"><span class="drw-feat-vis-tile-mark">Thu</span><span class="drw-feat-vis-tile-tag">$1.3k</span></span><span class="drw-feat-vis-tile" style="--d:960ms"><span class="drw-feat-vis-tile-mark">Fri</span><span class="drw-feat-vis-tile-tag">$1.2k</span></span></div><span class="drw-feat-vis-beam" aria-hidden="true"></span></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">Org &middot; account &middot; group &middot; resource &middot; team</span><span class="drw-feat-vis-counter">Caught in <strong>minutes</strong></span></div></div>
+              <div class="drw-feat-vis drw-feat-vis--bespoke fv--spike" aria-hidden="true"><div class="drw-feat-vis-eyebrow">FIVE-DIMENSION SCAN</div><div class="fv-stage"><svg class="fv-spike" viewBox="0 0 240 110" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path class="fv-spike-area" d="M0,86 L40,82 L80,84 L120,80 L150,20 L180,78 L240,74 L240,110 L0,110 Z"/><path class="fv-spike-line" d="M0,86 L40,82 L80,84 L120,80 L150,20 L180,78 L240,74"/><circle class="fv-spike-dot" cx="150" cy="20" r="4.5"/><circle class="fv-spike-ping" cx="150" cy="20" r="4.5"/></svg></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">Org &middot; account &middot; group &middot; resource &middot; team</span><span class="drw-feat-vis-counter">Caught in <strong>minutes</strong></span></div></div>
             </div>
           </div>
 
@@ -13273,7 +13384,7 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
                 </div>
             </div>
             <div class="drw-rec-hero-vis">
-              <div class="drw-feat-vis drw-feat-vis--generic" aria-hidden="true"><div class="drw-feat-vis-eyebrow">READ-ONLY &middot; RBAC-SCOPED</div><div class="drw-feat-vis-stage"><div class="drw-feat-vis-row"><span class="drw-feat-vis-tile" style="--d:0ms"><span class="drw-feat-vis-tile-mark">read</span><span class="drw-feat-vis-tile-tag">✓</span></span><span class="drw-feat-vis-tile" style="--d:240ms"><span class="drw-feat-vis-tile-mark">list</span><span class="drw-feat-vis-tile-tag">✓</span></span><span class="drw-feat-vis-tile" style="--d:480ms"><span class="drw-feat-vis-tile-mark">scan</span><span class="drw-feat-vis-tile-tag">✓</span></span><span class="drw-feat-vis-tile" style="--d:720ms"><span class="drw-feat-vis-tile-mark">cost</span><span class="drw-feat-vis-tile-tag">✓</span></span><span class="drw-feat-vis-tile" style="--d:960ms"><span class="drw-feat-vis-tile-mark">write</span><span class="drw-feat-vis-tile-tag">✗</span></span></div><span class="drw-feat-vis-beam" aria-hidden="true"></span></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">Claude &middot; Cursor &middot; Codex</span><span class="drw-feat-vis-counter"><strong>43</strong> tools</span></div></div>
+              <div class="drw-feat-vis drw-feat-vis--bespoke fv--term" aria-hidden="true"><div class="drw-feat-vis-eyebrow">READ-ONLY &middot; RBAC-SCOPED</div><div class="fv-stage"><div class="fv-term"><div class="fv-term-q"><span class="fv-term-p">&gt;_</span> what did we spend on Kubernetes?</div><div class="fv-term-a"><span class="fv-term-arr">&#8627;</span> <strong>$184,302</strong> across 48 clusters</div><div class="fv-term-q"><span class="fv-term-p">&gt;_</span><span class="fv-term-cursor"></span></div></div></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">Claude &middot; Cursor &middot; Codex</span><span class="drw-feat-vis-counter"><strong>43</strong> read-only tools</span></div></div>
             </div>
           </div>
 
@@ -13447,7 +13558,7 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
                 </div>
             </div>
             <div class="drw-rec-hero-vis">
-              <div class="drw-feat-vis drw-feat-vis--generic" aria-hidden="true"><div class="drw-feat-vis-eyebrow">COST PER UNIT</div><div class="drw-feat-vis-stage"><div class="drw-feat-vis-row"><span class="drw-feat-vis-tile" style="--d:0ms"><span class="drw-feat-vis-tile-mark">$/cust</span><span class="drw-feat-vis-tile-tag">↓</span></span><span class="drw-feat-vis-tile" style="--d:240ms"><span class="drw-feat-vis-tile-mark">$/req</span><span class="drw-feat-vis-tile-tag">↓</span></span><span class="drw-feat-vis-tile" style="--d:480ms"><span class="drw-feat-vis-tile-mark">$/tenant</span><span class="drw-feat-vis-tile-tag">↓</span></span><span class="drw-feat-vis-tile" style="--d:720ms"><span class="drw-feat-vis-tile-mark">$/GB</span><span class="drw-feat-vis-tile-tag">↓</span></span><span class="drw-feat-vis-tile" style="--d:960ms"><span class="drw-feat-vis-tile-mark">$/job</span><span class="drw-feat-vis-tile-tag">↓</span></span></div><span class="drw-feat-vis-beam" aria-hidden="true"></span></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">Spend mapped to business units</span><span class="drw-feat-vis-counter"><strong>5 lenses</strong></span></div></div>
+              <div class="drw-feat-vis drw-feat-vis--bespoke fv--units" aria-hidden="true"><div class="drw-feat-vis-eyebrow">COST PER UNIT</div><div class="fv-stage"><div class="fv-units"><div class="fv-unit" style="--i:0"><span class="fv-unit-k">$ / customer</span><span class="fv-unit-v">$0.42</span><span class="fv-unit-arr">&darr;</span></div><div class="fv-unit" style="--i:1"><span class="fv-unit-k">$ / request</span><span class="fv-unit-v">$0.003</span><span class="fv-unit-arr">&darr;</span></div><div class="fv-unit" style="--i:2"><span class="fv-unit-k">$ / tenant</span><span class="fv-unit-v">$18</span><span class="fv-unit-arr">&darr;</span></div></div></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">Spend mapped to business units</span><span class="drw-feat-vis-counter"><strong>5 lenses</strong></span></div></div>
             </div>
           </div>
 
