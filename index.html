@@ -10065,10 +10065,15 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
     if(active) movePill(active);
   });
 
-  /* Honour prefers-reduced-motion · skip autoplay so the section
-     doesn't change on its own for users who opt out of motion. */
-  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(!reduced) startAutoplay();
+  /* Always advance the walkthrough · the tab + scene progression is
+     CONTENT (users need to see all five products / scenes), not
+     decoration. prefers-reduced-motion is honoured at the CSS layer
+     instead — it disables the decorative micro-motion (cursor travel,
+     spinners, scan-bar fill, row stagger) while the section still
+     steps through its content. Tabs remain clickable to pause/idle.
+     [Previously gated behind !reduced, which left Reduce-Motion users
+     stuck on the first tab.] */
+  startAutoplay();
   } /* end init() */
 
   /* DOMContentLoaded gate · runs init once the showcase section
