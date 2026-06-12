@@ -2590,435 +2590,69 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
         <p class="sub">Day 0 to landing zone. Every day to deploys. Every minute to live state.</p>
       </div>
 
-      <div class="features features-bento zd-stages-bento">
+      <style id="zd-engines-css">
+        /* Three-stage overview cards · simple icon cards mirroring ZopNight's
+           `.zn-engine` engine-overview cards (icon → title → tag → body → foot),
+           so the overview structure matches across the two product pages. The
+           stage detail now lives only in the depth bento below + the dashboard. */
+        .zd-engines-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:24px; margin-top:32px; }
+        @media (max-width:980px){ .zd-engines-grid{ grid-template-columns:1fr; } }
+        .zd-engine{
+          background:var(--bg-0); border:1px solid var(--line);
+          padding:32px 28px; display:flex; flex-direction:column; gap:14px;
+          position:relative;
+          transition:transform var(--dur-med, 250ms) var(--ease-out, cubic-bezier(.22,1,.36,1)),
+                     box-shadow var(--dur-med, 250ms) var(--ease-out, cubic-bezier(.22,1,.36,1));
+        }
+        .zd-engine::after{
+          content:''; position:absolute; top:0; left:0; width:4px; height:100%;
+          background:var(--zop-orange); transform:scaleY(0); transform-origin:top;
+          transition:transform var(--dur-med, 250ms) var(--ease-out, cubic-bezier(.22,1,.36,1));
+          pointer-events:none;
+        }
+        .zd-engine:hover{ transform:translateY(-4px); box-shadow:0 8px 0 -4px var(--ink); }
+        .zd-engine:hover::after{ transform:scaleY(1); }
+        .zd-engine:hover .zd-engine-icon{ color:var(--zop-orange); }
+        .zd-engine-icon{
+          color:var(--ink-3); margin-bottom:6px;
+          transition:color var(--dur-fast, 160ms) var(--ease-out, cubic-bezier(.22,1,.36,1));
+        }
+        .zd-engine-icon svg{ width:36px; height:36px; }
+        .zd-engine-title{ font-size:22px; font-weight:600; color:var(--ink); letter-spacing:-.015em; line-height:1.15; margin:0; }
+        .zd-engine-tag{ margin:0; font-size:14px; color:var(--ink); font-weight:500; }
+        .zd-engine-body{ margin:0; font-size:13.5px; line-height:1.55; color:var(--ink-3); }
+        .zd-engine-body strong{ color:var(--ink); font-weight:500; }
+        .zd-engine-foot{
+          margin-top:auto; padding-top:14px; border-top:1px solid var(--line);
+          font-family:'Space Grotesk', system-ui, -apple-system, sans-serif;
+          font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-4);
+        }
+      </style>
 
-        <article class="feature" data-feature="landing" tabindex="0">
-          <div class="num"><span> 01 &middot; Landing Zone</span><span class="feat-num-badge">Day 0</span></div>
-          <button class="feat-expand" aria-label="Expand Landing Zone details">
-            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="square" stroke-linejoin="miter"><path d="M 4 8 L 4 4 L 8 4 M 16 12 L 16 16 L 12 16 M 4 4 L 9 9 M 16 16 L 11 11"/></svg>
-          </button>
-          <h3>Landing Zone</h3>
-          <p>Production-grade compute, datastores, networks. 30 minutes, every cloud. GKE &middot; EKS &middot; AKS via wizard. MySQL &middot; Postgres &middot; Redis with HA, backups, deletion protection. RBAC and secrets from minute zero. IRDAI controls applied by default.</p>
-          <div class="feat-visual" aria-hidden="true"><canvas class="zd-stage-3d" data-stage="landing" tabindex="-1"></canvas></div>
-          <template class="feat-drawer-tpl">
-            <!-- HERO BLOCK · 2-col split -->
-            <div class="drw-rec-hero drw-rec-hero--v3">
-              <div class="drw-rec-hero-text">
-                <h2 class="drw-rec-h">Landing Zone</h2>
-                <p class="drw-rec-sub">Production-ready clusters in minutes.</p>
-                <p class="drw-lede">Hardened K8s clusters across AWS, GCP, and Azure, RBAC, Network Policies, Pod Security Standards, observability, and autoscaler all wired in on provision. Day 1 looks like day 100.</p>
-                <div class="drw-rec-cta">
-                  <a class="btn btn-primary" href="zopday.html">Explore ZopDay <span aria-hidden="true">&rarr;</span></a>
-                </div>
-              </div>
-              <div class="drw-rec-hero-vis">
-                <div class="drw-feat-vis drw-feat-vis--bespoke fv--stack" aria-hidden="true"><div class="drw-feat-vis-eyebrow">PROVISION &middot; HARDENED</div><div class="fv-stage"><div class="fv-stack"><div class="fv-layer" style="--i:0"><span class="fv-layer-name">VPC + subnets</span><span class="fv-layer-tick">&#10003;</span></div><div class="fv-layer" style="--i:1"><span class="fv-layer-name">K8s cluster</span><span class="fv-layer-tick">&#10003;</span></div><div class="fv-layer" style="--i:2"><span class="fv-layer-name">Datastores + PITR</span><span class="fv-layer-tick">&#10003;</span></div><div class="fv-layer" style="--i:3"><span class="fv-layer-name">RBAC · NetPol · PSS</span><span class="fv-layer-tick">&#10003;</span></div></div></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">Hardened defaults on provision</span><span class="drw-feat-vis-counter">Ready in <strong>4&ndash;7 min</strong></span></div></div>
-              </div>
-            </div>
+      <div class="zd-engines-grid">
 
-            <!-- outcome checklist · moved below the hero so the visual leads the right column (matches ZN engine drawers) -->
-            <div class="drw-rec-detail drw-rec-detail--v3"><ul class="drw-outcome-list">
-                  <li>
-                    <span class="drw-outcome-check" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5 L7 12 L13 5"/></svg></span>
-                    <span><strong>Three clouds, one wizard</strong>, EKS, GKE, AKS with identical hardening defaults</span>
-                  </li>
-                  <li>
-                    <span class="drw-outcome-check" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5 L7 12 L13 5"/></svg></span>
-                    <span><strong>RBAC + Network Policies + PSS</strong> applied on provision</span>
-                  </li>
-                  <li>
-                    <span class="drw-outcome-check" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5 L7 12 L13 5"/></svg></span>
-                    <span><strong>Observability + log / metric pipes</strong> wired from minute zero</span>
-                  </li>
-                  <li>
-                    <span class="drw-outcome-check" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5 L7 12 L13 5"/></svg></span>
-                    <span><strong>HPA + Cluster Autoscaler</strong> pre-configured to your workload shape</span>
-                  </li>
-                  <li>
-                    <span class="drw-outcome-check" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5 L7 12 L13 5"/></svg></span>
-                    <span><strong>4&ndash;7 minutes</strong> from create-cluster to healthy nodes</span>
-                  </li>
-                </ul></div>
-
-            <!-- 3-COL STRIPE-STYLE PARAGRAPH BLOCK -->
-            <div class="drw-rec-three">
-              <div class="drw-rec-pillar">
-                <div class="drw-rec-pillar-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter">
-                    <circle cx="12" cy="12" r="9"/>
-                    <ellipse cx="12" cy="12" rx="4" ry="9" opacity=".55"/>
-                    <path d="M3 12 H21" opacity=".55"/>
-                  </svg>
-                </div>
-                <h4>Three clouds, one provisioning surface.</h4>
-                <p><strong>EKS on AWS, GKE on GCP, AKS on Azure</strong>, one wizard, three clouds, identical hardening defaults. Region selectable per cluster; multi-region rollout from a single click. New VPC or bring your own. IRDAI controls applied by default for India workloads.</p>
-              </div>
-              <div class="drw-rec-pillar">
-                <div class="drw-rec-pillar-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter">
-                    <path d="M12 3 L20 6 V13 C20 17 16 20 12 21 C8 20 4 17 4 13 V6 Z"/>
-                    <path d="M9 12 L11 14 L15 10"/>
-                  </svg>
-                </div>
-                <h4>Hardened on provision.</h4>
-                <p>RBAC roles, Network Policies, Pod Security Standards, audit-log forwarding, log / metric pipes, all applied at provision time. <strong>The platform discipline survives day three, day thirty, day three hundred</strong>, because the controls were applied on day one, not bolted on later.</p>
-              </div>
-              <div class="drw-rec-pillar">
-                <div class="drw-rec-pillar-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter">
-                    <path d="M3 18 L8 13 L12 15 L17 8 L21 11"/>
-                    <path d="M16 8 L21 8 L21 13"/>
-                  </svg>
-                </div>
-                <h4>Autoscalers that already know your shape.</h4>
-                <p>HPA and Cluster Autoscaler pre-configured. Define min and max once; cooldowns and target utilisation tune to the workload&rsquo;s actual traffic shape rather than a textbook default. <strong>Integrates with ZopNight&rsquo;s autoscaling engine downstream.</strong></p>
-              </div>
-            </div>
-
-            <div class="drw-discover-head">More to discover</div>
-            <div class="drw-discover">
-              <article>
-                <div class="drw-vis" aria-hidden="true">
-                  <svg viewBox="0 0 220 96" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="14" y="14" width="60" height="32" fill="#FAF7EC" stroke="#D9D3BF"/>
-                    <text x="44" y="29" font-family="Space Grotesk, monospace" font-size="8" fill="#525252" text-anchor="middle">MYSQL</text>
-                    <text x="44" y="40" font-family="Space Grotesk, monospace" font-size="7" fill="#16805a" text-anchor="middle">HA &middot; 30D</text>
-                    <rect x="80" y="14" width="60" height="32" fill="#FAF7EC" stroke="#D9D3BF"/>
-                    <text x="110" y="29" font-family="Space Grotesk, monospace" font-size="8" fill="#525252" text-anchor="middle">POSTGRES</text>
-                    <text x="110" y="40" font-family="Space Grotesk, monospace" font-size="7" fill="#16805a" text-anchor="middle">HA &middot; 30D</text>
-                    <rect x="146" y="14" width="60" height="32" fill="#FAF7EC" stroke="#D9D3BF"/>
-                    <text x="176" y="29" font-family="Space Grotesk, monospace" font-size="8" fill="#525252" text-anchor="middle">REDIS</text>
-                    <text x="176" y="40" font-family="Space Grotesk, monospace" font-size="7" fill="#16805a" text-anchor="middle">HA &middot; 30D</text>
-                    <line x1="14" y1="56" x2="206" y2="56" stroke="#D9D3BF" stroke-dasharray="2 2"/>
-                    <text x="14" y="74" font-family="Space Grotesk, monospace" font-size="8" fill="#525252">DEFAULTS</text>
-                    <rect x="68" y="66" width="64" height="13" fill="none" stroke="#F58549"/>
-                    <text x="100" y="75" font-family="Space Grotesk, monospace" font-size="7" fill="#F58549" text-anchor="middle">DELETION PROTECT</text>
-                  </svg>
-                </div>
-                <h4>Databases hardened the same way.</h4>
-                <p>MySQL, Postgres, Redis, provisioned with HA, backups, and deletion protection from minute zero. The same hardening discipline that runs on the cluster runs on the datastore. Connection secrets land in the cluster's native secret store.</p>
-                <a href="signin.html">See datastore provisioning &rarr;</a>
-              </article>
-              <article>
-                <div class="drw-vis" aria-hidden="true">
-                  <svg viewBox="0 0 220 96" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="14" y="20" width="192" height="56" fill="#FAF7EC" stroke="#D9D3BF"/>
-                    <line x1="14" y1="34" x2="206" y2="34" stroke="#D9D3BF" stroke-dasharray="2 2"/>
-                    <line x1="14" y1="52" x2="206" y2="52" stroke="#D9D3BF" stroke-dasharray="2 2"/>
-                    <text x="20" y="30" font-family="Space Grotesk, monospace" font-size="7" fill="#525252">PRIVATE</text>
-                    <text x="20" y="48" font-family="Space Grotesk, monospace" font-size="7" fill="#525252">PUBLIC</text>
-                    <text x="20" y="66" font-family="Space Grotesk, monospace" font-size="7" fill="#525252">DATA</text>
-                    <rect x="80" y="22" width="44" height="9" fill="#F58549"/>
-                    <rect x="80" y="40" width="64" height="9" fill="#F58549" opacity=".55"/>
-                    <rect x="80" y="58" width="34" height="9" fill="#F58549" opacity=".35"/>
-                    <rect x="160" y="40" width="40" height="9" fill="none" stroke="#F58549"/>
-                    <text x="180" y="48" font-family="Space Grotesk, monospace" font-size="7" fill="#F58549" text-anchor="middle">NAT GW</text>
-                  </svg>
-                </div>
-                <h4>New VPC or bring your own.</h4>
-                <p>ZopDay either stands up a fresh VPC with the right subnet topology, or wires into an existing one without your network team rewriting their plan. VPC peering, security-group hubs, subnet swimlanes, auto-derived from the cluster's actual placement.</p>
-                <a href="signin.html">See network setup &rarr;</a>
-              </article>
-              <article>
-                <div class="drw-vis" aria-hidden="true">
-                  <svg viewBox="0 0 220 96" xmlns="http://www.w3.org/2000/svg">
-                    <line x1="14" y1="48" x2="206" y2="48" stroke="#D9D3BF"/>
-                    <circle cx="22" cy="48" r="4" fill="#F58549"/>
-                    <text x="22" y="36" font-family="Space Grotesk, monospace" font-size="7" fill="#525252" text-anchor="middle">0:00</text>
-                    <text x="22" y="68" font-family="Space Grotesk, monospace" font-size="7" fill="#0F0F12" text-anchor="middle">INIT</text>
-                    <circle cx="68" cy="48" r="4" fill="#F58549"/>
-                    <text x="68" y="36" font-family="Space Grotesk, monospace" font-size="7" fill="#525252" text-anchor="middle">1:30</text>
-                    <text x="68" y="68" font-family="Space Grotesk, monospace" font-size="7" fill="#0F0F12" text-anchor="middle">IAM</text>
-                    <circle cx="114" cy="48" r="4" fill="#F58549"/>
-                    <text x="114" y="36" font-family="Space Grotesk, monospace" font-size="7" fill="#525252" text-anchor="middle">3:00</text>
-                    <text x="114" y="68" font-family="Space Grotesk, monospace" font-size="7" fill="#0F0F12" text-anchor="middle">PLANE</text>
-                    <circle cx="160" cy="48" r="4" fill="#F58549"/>
-                    <text x="160" y="36" font-family="Space Grotesk, monospace" font-size="7" fill="#525252" text-anchor="middle">4:30</text>
-                    <text x="160" y="68" font-family="Space Grotesk, monospace" font-size="7" fill="#0F0F12" text-anchor="middle">NODES</text>
-                    <circle cx="200" cy="48" r="5" fill="#16805a"/>
-                    <text x="200" y="36" font-family="Space Grotesk, monospace" font-size="7" fill="#16805a" text-anchor="middle">5:00</text>
-                    <text x="200" y="68" font-family="Space Grotesk, monospace" font-size="7" fill="#16805a" text-anchor="middle">LIVE</text>
-                  </svg>
-                </div>
-                <h4>4&ndash;7 minutes from create to <span style="font-family:var(--mono)">kubectl get nodes</span>.</h4>
-                <p>The wizard hands off to a provisioning job that runs in parallel where the cloud allows it. Per-step pre-flight checks fire before any expensive call, credentials valid, region quota available, IAM permissions sufficient, so a failure surfaces in seconds rather than fifteen minutes in.</p>
-                <a href="signin.html">See the provisioning timeline &rarr;</a>
-              </article>
-            </div>
-            <div class="drw-evidence">
-              <span class="drw-evidence-tag">McAfee &middot; on ZopDay</span>
-              <div>
-                <blockquote>&ldquo;12 AWS accounts. 48 Kubernetes clusters. Same wizard. Same hardening defaults. Same audit trail across every cluster.&rdquo;</blockquote>
-                <cite>McAfee, ZopDay deployment</cite>
-              </div>
-            </div>
-            <div class="drw-cta">
-              <a class="btn btn-primary" href="signin.html">Spin up a cluster <span aria-hidden="true">&rarr;</span></a>
-              <a class="btn btn-secondary" href="contact.html">Talk to platform sales <span aria-hidden="true">&rarr;</span></a>
-              <p class="drw-cta-tag">Production-grade cluster ready before your coffee.</p>
-            </div>
-          </template>
+        <article class="zd-engine">
+          <div class="zd-engine-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"><path d="M16 4 L28 10 L16 16 L4 10 Z"/><path d="M4 15 L16 21 L28 15"/><path d="M4 20 L16 26 L28 20"/></svg></div>
+          <h3 class="zd-engine-title">Landing Zone</h3>
+          <p class="zd-engine-tag">Day 0 &middot; every cloud.</p>
+          <p class="zd-engine-body">Production-grade compute, datastores, networks. 30 minutes, every cloud. GKE &middot; EKS &middot; AKS via wizard. MySQL &middot; Postgres &middot; Redis with HA, backups, deletion protection. RBAC and secrets from minute zero. IRDAI controls applied by default.</p>
+          <div class="zd-engine-foot">GKE &middot; EKS &middot; AKS</div>
         </article>
 
-        <article class="feature" data-feature="deployment" tabindex="0">
-          <div class="num"><span> 02 &middot; Deployment</span><span class="feat-num-badge">Every day</span></div>
-          <button class="feat-expand" aria-label="Expand Deployment details">
-            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="square" stroke-linejoin="miter"><path d="M 4 8 L 4 4 L 8 4 M 16 12 L 16 16 L 12 16 M 4 4 L 9 9 M 16 16 L 11 11"/></svg>
-          </button>
-          <h3>Deployment</h3>
-          <p>Push code &rarr; production via Helm. No Dockerfile required, ZopDay auto-builds from your repo. Security scans on every build. DORA-grade visibility. One-click rollback. Sensitive env vars masked, stored in your cloud-native secret manager, never ours.</p>
-          <div class="feat-visual" aria-hidden="true"><canvas class="zd-stage-3d" data-stage="deployment" tabindex="-1"></canvas></div>
-          <template class="feat-drawer-tpl">
-            <!-- HERO BLOCK · 2-col split -->
-            <div class="drw-rec-hero drw-rec-hero--v3">
-              <div class="drw-rec-hero-text">
-                <h2 class="drw-rec-h">Deployment</h2>
-                <p class="drw-rec-sub">From git push to live, in minutes.</p>
-                <p class="drw-lede">ZopDay watches your branches and ships through the strategy you pick, rolling, canary, or blue/green. Manifests, build, push, gate, rollback, all one pipeline. No Dockerfile required. Audit trail on every deploy.</p>
-                <div class="drw-rec-cta">
-                  <a class="btn btn-primary" href="zopday.html">Explore ZopDay <span aria-hidden="true">&rarr;</span></a>
-                </div>
-              </div>
-              <div class="drw-rec-hero-vis">
-                <div class="drw-feat-vis drw-feat-vis--bespoke fv--pipe" aria-hidden="true"><div class="drw-feat-vis-eyebrow">GIT PUSH &rarr; LIVE URL</div><div class="fv-stage"><div class="fv-pipe"><span class="fv-pipe-packet"></span><span class="fv-pipe-node" style="--i:0"><span class="fv-pipe-dot"></span><span class="fv-pipe-lbl">Commit</span></span><span class="fv-pipe-line"></span><span class="fv-pipe-node" style="--i:1"><span class="fv-pipe-dot"></span><span class="fv-pipe-lbl">Build</span></span><span class="fv-pipe-line"></span><span class="fv-pipe-node" style="--i:2"><span class="fv-pipe-dot"></span><span class="fv-pipe-lbl">Deploy</span></span><span class="fv-pipe-line"></span><span class="fv-pipe-node" style="--i:3"><span class="fv-pipe-dot"></span><span class="fv-pipe-lbl">Live</span></span></div></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">Canary &rarr; progressive &rarr; full</span><span class="drw-feat-vis-counter">Deploy <strong>3m 42s</strong></span></div></div>
-              </div>
-            </div>
-
-            <!-- outcome checklist · moved below the hero so the visual leads the right column (matches ZN engine drawers) -->
-            <div class="drw-rec-detail drw-rec-detail--v3"><ul class="drw-outcome-list">
-                  <li>
-                    <span class="drw-outcome-check" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5 L7 12 L13 5"/></svg></span>
-                    <span><strong>Push, branch, webhook, or UI</strong>, every trigger tied to an environment policy</span>
-                  </li>
-                  <li>
-                    <span class="drw-outcome-check" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5 L7 12 L13 5"/></svg></span>
-                    <span><strong>Rolling, canary, blue / green</strong>, switched per service, no Helm rewrites</span>
-                  </li>
-                  <li>
-                    <span class="drw-outcome-check" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5 L7 12 L13 5"/></svg></span>
-                    <span><strong>Health-gated phases</strong>, halt and roll back on regression</span>
-                  </li>
-                  <li>
-                    <span class="drw-outcome-check" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5 L7 12 L13 5"/></svg></span>
-                    <span><strong>No Dockerfile required</strong>, Railpack auto-builds from the repo</span>
-                  </li>
-                  <li>
-                    <span class="drw-outcome-check" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5 L7 12 L13 5"/></svg></span>
-                    <span><strong>One-click rollback</strong>, build skipped, secrets stay in your cloud</span>
-                  </li>
-                </ul></div>
-
-            <!-- 3-COL STRIPE-STYLE PARAGRAPH BLOCK -->
-            <div class="drw-rec-three">
-              <div class="drw-rec-pillar">
-                <div class="drw-rec-pillar-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter">
-                    <path d="M4 7 L12 3 L20 7 L20 17 L12 21 L4 17 Z"/>
-                    <path d="M4 7 L12 11 L20 7"/>
-                    <path d="M12 11 V21"/>
-                  </svg>
-                </div>
-                <h4>Strategies, switched per service.</h4>
-                <p>Git push, branch deploy, webhook, or manual via UI / API, each trigger tied to an environment policy. <strong>Rolling for stable services. Canary (5% &rarr; 25% &rarr; 100%). Blue / green when an instant cutover matters more than gradual exposure.</strong> Switch strategy in the UI; ZopDay rewrites the Helm manifests beneath.</p>
-              </div>
-              <div class="drw-rec-pillar">
-                <div class="drw-rec-pillar-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter">
-                    <path d="M4 12 H8 L10 7 L14 17 L16 12 H20"/>
-                  </svg>
-                </div>
-                <h4>Health gates that hold the line.</h4>
-                <p>Each phase ends in a gate that checks pod health, the SLO contract registered with the service, and any custom probes. <strong>If the next phase would breach the SLO, the pipeline halts and reverts to the prior wave.</strong> PodDisruptionBudgets and configured maintenance windows are honoured.</p>
-              </div>
-              <div class="drw-rec-pillar">
-                <div class="drw-rec-pillar-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter">
-                    <rect x="3" y="6" width="18" height="12" rx="1"/>
-                    <path d="M3 10 H21"/>
-                    <path d="M7 14 H10"/>
-                  </svg>
-                </div>
-                <h4>Auto-built. No Dockerfile.</h4>
-                <p>ZopDay builds from the repo directly. The runner detects language, framework, and dependency graph from the repo structure, <strong>Node, Go, Python, Java first-class</strong>, and produces a hardened image with security scans complete before push to the registry. <strong>DORA-lite metrics emerge from your deploy history automatically.</strong></p>
-              </div>
-            </div>
-            <div class="drw-discover-head">More to discover</div>
-            <div class="drw-discover">
-              <article>
-                <div class="drw-vis" aria-hidden="true">
-                  <svg viewBox="0 0 220 96" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="14" y="32" width="40" height="32" fill="#FAF7EC" stroke="#D9D3BF"/>
-                    <text x="34" y="51" font-family="Space Grotesk, monospace" font-size="8" fill="#525252" text-anchor="middle">REPO</text>
-                    <path d="M 54 48 l 12 0 m -6 -6 l 6 6 l -6 6" stroke="#525252" fill="none"/>
-                    <rect x="68" y="22" width="80" height="52" fill="#FAF7EC" stroke="#F58549"/>
-                    <text x="108" y="36" font-family="Space Grotesk, monospace" font-size="8" fill="#F58549" text-anchor="middle">BUILDPACK</text>
-                    <text x="108" y="50" font-family="Space Grotesk, monospace" font-size="8" fill="#F58549" text-anchor="middle">MULTI-STAGE</text>
-                    <text x="108" y="64" font-family="Space Grotesk, monospace" font-size="8" fill="#F58549" text-anchor="middle">CACHE</text>
-                    <path d="M 148 48 l 12 0 m -6 -6 l 6 6 l -6 6" stroke="#525252" fill="none"/>
-                    <rect x="162" y="32" width="44" height="32" fill="#FAF7EC" stroke="#16805a"/>
-                    <text x="184" y="48" font-family="Space Grotesk, monospace" font-size="8" fill="#16805a" text-anchor="middle">SIGNED</text>
-                    <text x="184" y="60" font-family="Space Grotesk, monospace" font-size="8" fill="#16805a" text-anchor="middle">&#10003;</text>
-                  </svg>
-                </div>
-                <h4>Auto-built. No Dockerfile.</h4>
-                <p>ZopDay builds from the repo directly. Your team doesn't write a Dockerfile, doesn't maintain a build-pipeline YAML, doesn't tune cache layers. The runner detects language, framework, and dependency graph from the repo structure, Node, Go, Python, Java first-class.</p>
-                <a href="signin.html">See the build pipeline &rarr;</a>
-              </article>
-              <article>
-                <div class="drw-vis" aria-hidden="true">
-                  <svg viewBox="0 0 220 96" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="14" y="14" width="192" height="68" fill="#FAF7EC" stroke="#D9D3BF"/>
-                    <text x="22" y="28" font-family="Space Grotesk, monospace" font-size="9" fill="#525252">VULNERABILITIES</text>
-                    <text x="22" y="44" font-family="Space Grotesk, sans-serif" font-size="11" font-weight="600" fill="#16805a">0 critical</text>
-                    <text x="78" y="44" font-family="Space Grotesk, sans-serif" font-size="11" font-weight="600" fill="#b46500">2 high</text>
-                    <text x="118" y="44" font-family="Space Grotesk, sans-serif" font-size="11" font-weight="600" fill="#525252">14 med</text>
-                    <line x1="22" y1="50" x2="200" y2="50" stroke="#D9D3BF"/>
-                    <text x="22" y="64" font-family="Space Grotesk, monospace" font-size="8" fill="#525252">SIGNED</text>
-                    <text x="60" y="64" font-family="Space Grotesk, monospace" font-size="8" fill="#16805a">&#10003;</text>
-                    <text x="22" y="76" font-family="Space Grotesk, monospace" font-size="8" fill="#525252">BLOCK ON</text>
-                    <rect x="80" y="68" width="44" height="11" fill="none" stroke="#F58549"/>
-                    <text x="102" y="76" font-family="Space Grotesk, monospace" font-size="7" fill="#F58549" text-anchor="middle">CRITICAL</text>
-                  </svg>
-                </div>
-                <h4>Security on every build.</h4>
-                <p>Every build runs a known-CVE scan on the image layers, a license audit on the dependency graph, and an image signing step before push. Results land in the deploy log itself, not in a separate dashboard no one opens, and a configurable severity threshold can hard-block the deploy.</p>
-                <a href="signin.html">See the scanning policy &rarr;</a>
-              </article>
-              <article>
-                <div class="drw-vis" aria-hidden="true">
-                  <svg viewBox="0 0 220 96" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="14" y="14" width="192" height="20" fill="#FAF7EC" stroke="#D9D3BF"/>
-                    <text x="22" y="28" font-family="Space Grotesk, monospace" font-size="8" fill="#0F0F12">a8f12d &middot; rolling &middot; gate &#10003;</text>
-                    <rect x="158" y="18" width="44" height="12" fill="none" stroke="#F58549"/>
-                    <text x="180" y="27" font-family="Space Grotesk, monospace" font-size="7" fill="#F58549" text-anchor="middle">ROLL BACK</text>
-                    <line x1="14" y1="40" x2="206" y2="40" stroke="#D9D3BF" stroke-dasharray="2 2"/>
-                    <text x="14" y="56" font-family="Space Grotesk, monospace" font-size="7" fill="#525252">DORA</text>
-                    <rect x="14" y="60" width="44" height="22" fill="#FAF7EC" stroke="#D9D3BF"/>
-                    <text x="36" y="71" font-family="Space Grotesk, sans-serif" font-size="11" font-weight="600" fill="#0F0F12" text-anchor="middle">2.4/d</text>
-                    <text x="36" y="79" font-family="Space Grotesk, monospace" font-size="6" fill="#525252" text-anchor="middle">FREQ</text>
-                    <rect x="62" y="60" width="44" height="22" fill="#FAF7EC" stroke="#D9D3BF"/>
-                    <text x="84" y="71" font-family="Space Grotesk, sans-serif" font-size="11" font-weight="600" fill="#0F0F12" text-anchor="middle">18m</text>
-                    <text x="84" y="79" font-family="Space Grotesk, monospace" font-size="6" fill="#525252" text-anchor="middle">LEAD</text>
-                    <rect x="110" y="60" width="44" height="22" fill="#FAF7EC" stroke="#D9D3BF"/>
-                    <text x="132" y="71" font-family="Space Grotesk, sans-serif" font-size="11" font-weight="600" fill="#16805a" text-anchor="middle">2.4%</text>
-                    <text x="132" y="79" font-family="Space Grotesk, monospace" font-size="6" fill="#525252" text-anchor="middle">CFR</text>
-                    <rect x="158" y="60" width="44" height="22" fill="#FAF7EC" stroke="#D9D3BF"/>
-                    <text x="180" y="71" font-family="Space Grotesk, sans-serif" font-size="11" font-weight="600" fill="#0F0F12" text-anchor="middle">11m</text>
-                    <text x="180" y="79" font-family="Space Grotesk, monospace" font-size="6" fill="#525252" text-anchor="middle">MTTR</text>
-                  </svg>
-                </div>
-                <h4>One-click rollback. DORA-grade visibility.</h4>
-                <p>Every deploy is reversible from the UI that triggered it. The deploy history carries the commit, the strategy, every gate outcome, and the rollback target. DORA metrics calculate from that history automatically, deploy frequency, lead time, change-fail rate, MTTR, without anyone building a second dashboard.</p>
-                <a href="signin.html">See the deploy history &rarr;</a>
-              </article>
-            </div>
-            <div class="drw-evidence">
-              <span class="drw-evidence-tag">Aggregated outcome &middot; ZopDay deployment pattern</span>
-              <div>
-                <blockquote>&ldquo;Push to deploy on GKE. Three regions. SLO-gated. Manifests we never had to write. The audit trail closes the compliance loop without a separate runbook.&rdquo;</blockquote>
-                <cite>Aggregated outcome, ZopDay deployment pattern</cite>
-              </div>
-            </div>
-            <div class="drw-cta">
-              <a class="btn btn-primary" href="signin.html">Push a deploy <span aria-hidden="true">&rarr;</span></a>
-              <a class="btn btn-secondary" href="contact.html">Talk to platform sales <span aria-hidden="true">&rarr;</span></a>
-              <p class="drw-cta-tag">Connect a repo. Pick a service shape.</p>
-            </div>
-          </template>
+        <article class="zd-engine">
+          <div class="zd-engine-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"><path d="M16 6 L16 22"/><path d="M10 12 L16 6 L22 12"/><path d="M7 25 H25"/></svg></div>
+          <h3 class="zd-engine-title">Deployment</h3>
+          <p class="zd-engine-tag">Every day &middot; git push to live.</p>
+          <p class="zd-engine-body">Push code &rarr; production via Helm. No Dockerfile required, ZopDay auto-builds from your repo. Security scans on every build. DORA-grade visibility. One-click rollback. Sensitive env vars masked, stored in your cloud-native secret manager, never ours.</p>
+          <div class="zd-engine-foot">GIT PUSH &rarr; LIVE URL</div>
         </article>
 
-        <article class="feature" data-feature="livestate" tabindex="0">
-          <div class="num"><span> 03 &middot; Live State</span><span class="feat-num-badge">Every minute</span></div>
-          <button class="feat-expand" aria-label="Expand Live State details">
-            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="square" stroke-linejoin="miter"><path d="M 4 8 L 4 4 L 8 4 M 16 12 L 16 16 L 12 16 M 4 4 L 9 9 M 16 16 L 11 11"/></svg>
-          </button>
-          <h3>Live State</h3>
-          <p>K8s state, real-time, 21 resource pages with detail drawers across every connected cluster. Cluster reachability probed every 60 seconds; transient hiccups retry silently. If a cluster goes inactive, deleted, RBAC revoked, cert expired, Sync, Connect Datastore, and Install Component gate cleanly. Audit trail captures every change.</p>
-          <div class="feat-visual" aria-hidden="true"><canvas class="zd-stage-3d" data-stage="livestate" tabindex="-1"></canvas></div>
-          <template class="feat-drawer-tpl">
-            <!-- HERO BLOCK · 2-col split -->
-            <div class="drw-rec-hero drw-rec-hero--v3">
-              <div class="drw-rec-hero-text">
-                <h2 class="drw-rec-h">Live State</h2>
-                <p class="drw-rec-sub">Cluster, live. Audited, every change.</p>
-                <p class="drw-lede">Live K8s state across every connected cluster, with reachability probed continuously. The map keeps up. The audit trail keeps the receipts.</p>
-                <div class="drw-rec-cta">
-                  <a class="btn btn-primary" href="zopday.html">Explore ZopDay <span aria-hidden="true">&rarr;</span></a>
-                </div>
-              </div>
-              <div class="drw-rec-hero-vis">
-                <div class="drw-feat-vis drw-feat-vis--bespoke fv--pods" aria-hidden="true"><div class="drw-feat-vis-eyebrow">EVERY CLUSTER &middot; LIVE</div><div class="fv-stage"><div class="fv-grid" style="--cols:10"><span class="fv-cell" style="--i:0"></span><span class="fv-cell" style="--i:1"></span><span class="fv-cell" style="--i:2"></span><span class="fv-cell" style="--i:3"></span><span class="fv-cell" style="--i:4"></span><span class="fv-cell" style="--i:5"></span><span class="fv-cell" style="--i:6"></span><span class="fv-cell" style="--i:7"></span><span class="fv-cell" style="--i:8"></span><span class="fv-cell" style="--i:9"></span><span class="fv-cell" style="--i:10"></span><span class="fv-cell" style="--i:11"></span><span class="fv-cell" style="--i:12"></span><span class="fv-cell" style="--i:13"></span><span class="fv-cell" style="--i:14"></span><span class="fv-cell" style="--i:15"></span><span class="fv-cell" style="--i:16"></span><span class="fv-cell" style="--i:17"></span><span class="fv-cell" style="--i:18"></span><span class="fv-cell" style="--i:19"></span><span class="fv-cell" style="--i:20"></span><span class="fv-cell" style="--i:21"></span><span class="fv-cell" style="--i:22"></span><span class="fv-cell" style="--i:23"></span><span class="fv-cell" style="--i:24"></span><span class="fv-cell" style="--i:25"></span><span class="fv-cell" style="--i:26"></span><span class="fv-cell" style="--i:27"></span><span class="fv-cell" style="--i:28"></span><span class="fv-cell" style="--i:29"></span><span class="fv-cell" style="--i:30"></span><span class="fv-cell" style="--i:31"></span><span class="fv-cell" style="--i:32"></span><span class="fv-cell" style="--i:33"></span><span class="fv-cell" style="--i:34"></span><span class="fv-cell" style="--i:35"></span><span class="fv-cell" style="--i:36"></span><span class="fv-cell" style="--i:37"></span><span class="fv-cell" style="--i:38"></span><span class="fv-cell" style="--i:39"></span></div><div class="fv-health"><span class="fv-health-bar"></span></div></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">21 K8s resource pages, live</span><span class="drw-feat-vis-counter">Healthy <strong>92%</strong></span></div></div>
-              </div>
-            </div>
-
-            <!-- outcome checklist · moved below the hero so the visual leads the right column (matches ZN engine drawers) -->
-            <div class="drw-rec-detail drw-rec-detail--v3"><ul class="drw-outcome-list">
-                  <li>
-                    <span class="drw-outcome-check" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5 L7 12 L13 5"/></svg></span>
-                    <span><strong>21 resource pages</strong> with detail drawers, pods through namespaces</span>
-                  </li>
-                  <li>
-                    <span class="drw-outcome-check" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5 L7 12 L13 5"/></svg></span>
-                    <span><strong>Reachability probed every 60s</strong>, silent retry on transient blips</span>
-                  </li>
-                  <li>
-                    <span class="drw-outcome-check" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5 L7 12 L13 5"/></svg></span>
-                    <span><strong>Inactive cluster gates cleanly</strong>, Sync, Connect Datastore, Install Component</span>
-                  </li>
-                  <li>
-                    <span class="drw-outcome-check" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5 L7 12 L13 5"/></svg></span>
-                    <span><strong>Append-only audit trail</strong>, actor + timestamp + body, SIEM-forwardable</span>
-                  </li>
-                  <li>
-                    <span class="drw-outcome-check" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5 L7 12 L13 5"/></svg></span>
-                    <span><strong>One credential, one platform layer</strong>, across AWS, GCP, and Azure</span>
-                  </li>
-                </ul></div>
-
-            <!-- 3-COL STRIPE-STYLE PARAGRAPH BLOCK -->
-            <div class="drw-rec-three">
-              <div class="drw-rec-pillar">
-                <div class="drw-rec-pillar-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter">
-                    <rect x="3" y="4" width="18" height="6" rx="1"/>
-                    <rect x="3" y="14" width="18" height="6" rx="1"/>
-                    <circle cx="7" cy="7" r="1" fill="currentColor"/>
-                    <circle cx="7" cy="17" r="1" fill="currentColor"/>
-                  </svg>
-                </div>
-                <h4>21 resource pages, every connected cluster.</h4>
-                <p>Pods, deployments, statefulsets, daemonsets, replicasets, jobs, configmaps, secrets, autoscalers, services, ingresses, endpoints, network policies, PVCs, PVs, storage classes, service accounts, CRDs, nodes, namespaces, events. <strong>Each surface ships a detail drawer with labels, annotations, conditions, and type-specific fields.</strong></p>
-              </div>
-              <div class="drw-rec-pillar">
-                <div class="drw-rec-pillar-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter">
-                    <circle cx="12" cy="12" r="9"/>
-                    <path d="M12 7 V12 L15 14"/>
-                  </svg>
-                </div>
-                <h4>Reachability probed every 60 seconds.</h4>
-                <p>Cluster reachability is probed on open and on a 60-second interval. <strong>Transient network hiccups retry silently</strong>, so a single blip doesn&rsquo;t disable the cluster page. When the probe consistently fails, the cluster moves to inactive and the dependent surfaces gate cleanly behind a clear status, not a cryptic SDK error.</p>
-              </div>
-              <div class="drw-rec-pillar">
-                <div class="drw-rec-pillar-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter">
-                    <rect x="4" y="3" width="16" height="18" rx="1"/>
-                    <path d="M8 8 H16"/>
-                    <path d="M8 12 H16"/>
-                    <path d="M8 16 H13"/>
-                  </svg>
-                </div>
-                <h4>Append-only audit trail.</h4>
-                <p>Every change captures actor, action, timestamp, and request body. Forwardable to your SIEM. <strong>The audit log is the system of record, no quiet edits, no surprise diffs at the audit window.</strong> One credential, one platform layer, across AWS, GCP, and Azure.</p>
-              </div>
-            </div>
-
-            <div class="drw-cta">
-              <a class="btn btn-primary" href="signin.html">See the live K8s view <span aria-hidden="true">&rarr;</span></a>
-              <a class="btn btn-secondary" href="contact.html">Talk to platform sales <span aria-hidden="true">&rarr;</span></a>
-              <p class="drw-cta-tag">21 resource pages, every connected cluster.</p>
-            </div>
-          </template>
+        <article class="zd-engine">
+          <div class="zd-engine-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"><path d="M3 16 H10 L13 9 L18 23 L21 16 H29"/></svg></div>
+          <h3 class="zd-engine-title">Live State</h3>
+          <p class="zd-engine-tag">Every minute &middot; live cluster state.</p>
+          <p class="zd-engine-body">K8s state, real-time, 21 resource pages with detail drawers across every connected cluster. Cluster reachability probed every 60 seconds; transient hiccups retry silently. If a cluster goes inactive, deleted, RBAC revoked, cert expired, Sync, Connect Datastore, and Install Component gate cleanly. Audit trail captures every change.</p>
+          <div class="zd-engine-foot">21 RESOURCE PAGES &middot; LIVE</div>
         </article>
 
       </div>

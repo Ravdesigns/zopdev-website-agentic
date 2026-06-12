@@ -127,9 +127,13 @@ Pass to make the two product pages true siblings (same design system, product ac
 - **Trust-posture cards → icon-led on ZopDay.** The 7 posture cards used numbered eyebrows
   (`01 · BYOC` …); they now lead with a 30px line icon (new `.zd-posture-icon`), matching
   ZopNight's icon-led posture cards. Category keyword is retained in each card's foot tag.
-  (The *engines/stages overview* cards are intentionally left different — ZopDay's are the
-  interactive feature cards with 3D previews + drawers, a richer treatment than ZopNight's simple
-  engine summary; adding icons there would clutter the 3D visuals.)
+- **Stages overview → simple icon cards (`.zd-engine`), matching ZopNight's engines overview.**
+  The three "Three stages" cards (Landing Zone / Deployment / Live State) were interactive
+  feature cards (numbered eyebrow + 3D canvas preview + drawer). Per direction they're now plain
+  icon cards mirroring ZopNight's `.zn-engine` cards (icon → title → tag → body → foot, 3-col
+  grid `.zd-engines-grid`). **The per-stage drawers + 3D `zd-stage-3d` canvases were removed**;
+  stage detail now lives in the depth bento below + the dashboard. (Leftover dead CSS from the old
+  drawers — `drw-visual-led-css`, `drw-feat-vis-*`, `.zd-stages-bento` — can be pruned later.)
 - **Primary CTA buttons carry each product's brand colour.** Page-scoped
   `body[data-product="zopnight"] .btn-primary` → blue (`#4A66D4`),
   `body[data-product="zopday"] .btn-primary` → orange (`#F58549`). Base buttons were neutral ink;
