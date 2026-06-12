@@ -1007,11 +1007,9 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
 @keyframes drw-feat-vis-beam{ 0%{ left:-10%; opacity:0; } 10%{ opacity:1; } 90%{ opacity:1; } 100%{ left:105%; opacity:0; } }
 .drw-feat-vis-foot{ display:flex; align-items:center; justify-content:space-between; gap:16px; padding-top:12px; border-top:1px solid #1F1F26; font-family:var(--mono,'Space Grotesk',monospace); font-size:10.5px; letter-spacing:.06em; color:#7B7B82; }
 .drw-feat-vis-counter strong{ color:var(--zop-orange); font-weight:700; letter-spacing:.04em; }
-.drw-rec-hero-aside--vis{ display:block; }
-/* outcome checklist moved below the hero · 2-col grid so it reads calm */
-.drw-zd-outcomes{ margin:0 0 48px; padding:0 0 8px; }
-.drw-zd-outcomes .drw-outcome-list{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:14px 32px; }
-@media (max-width:760px){ .drw-zd-outcomes .drw-outcome-list{ grid-template-columns:1fr; } }
+/* (.drw-rec-hero-aside--vis / .drw-zd-outcomes removed · the 3 drawers now
+   use the homepage v3 layout: .drw-rec-hero--v3 + .drw-rec-detail--v3,
+   styled in #drw-visual-led-css below.) */
 @media (prefers-reduced-motion: reduce){
   .drw-feat-vis-tile,.drw-feat-vis-tile-mark,.drw-feat-vis-tile-tag,.drw-feat-vis-beam{ animation:none !important; }
   .drw-feat-vis-tile{ background:rgba(245,133,73,.10); border-color:var(--zop-orange); }
@@ -1019,6 +1017,132 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
   .drw-feat-vis-tile-tag{ color:#0F0F12 !important; background:var(--zop-orange) !important; }
 }
 @media (max-width:640px){ .drw-feat-vis-row{ grid-template-columns:repeat(3, 1fr); } .drw-feat-vis-foot{ flex-direction:column; align-items:flex-start; gap:6px; } }
+</style>
+
+<style id="drw-visual-led-css">
+/* ═════════════════════════════════════════════════════════════════
+   DRAWER FIRST-FOLD · 2-col visual-led (v3) + editorial spacing
+   Ported from index.html so the ZopDay product-page drawers match the
+   homepage feature drawers: heading + sub + lede + CTAs LEFT, visual
+   mockup RIGHT (visual column slightly wider), outcome bullets demoted
+   below the fold into a 2-col grid, hairline dividers between sections.
+   ZopDay note · --g-600 / --g-700 aren't defined on this page, so the
+   muted sub + lede colours fall back to --ink-3 / --ink-2 (the same
+   warm greys the homepage dark theme resolves them to). ════════════ */
+.drw-rec-hero.drw-rec-hero--v3{
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: 48px;
+  align-items: start;
+  margin: 8px 0 56px;
+  padding-bottom: 48px;
+  border-bottom: 1px solid var(--line);
+}
+.drw-rec-hero--v3 .drw-rec-hero-text{
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.drw-rec-hero--v3 .drw-rec-h{
+  margin: 0;
+  font-size: clamp(28px, 3.4vw, 40px);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  color: var(--ink);
+}
+.drw-rec-hero--v3 .drw-rec-sub{
+  margin: 0;
+  font-family: var(--font);
+  font-size: clamp(16px, 1.5vw, 18px);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--g-600, var(--ink-3));
+  line-height: 1.4;
+  letter-spacing: 0;
+}
+.drw-rec-hero--v3 .drw-lede{
+  margin: 4px 0 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--g-700, var(--ink-2));
+  max-width: 56ch;
+}
+.drw-rec-hero--v3 .drw-rec-cta{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 12px 0 0;
+}
+.drw-rec-hero--v3 .drw-rec-hero-vis{
+  display: flex;
+  align-items: flex-start;
+  justify-content: stretch;
+  min-width: 0;
+}
+.drw-rec-hero--v3 .drw-rec-hero-vis > *{ width: 100%; }
+.drw-rec-hero--v3 .drw-rec-hero-vis > .drw-feat-vis{ margin: 0; }
+
+/* BELOW FOLD · outcome bullets demoted from the hero into a 2-col grid */
+.drw-rec-detail.drw-rec-detail--v3{
+  margin: 0 0 64px;
+  padding-bottom: 56px;
+  border-bottom: 1px solid var(--line);
+}
+.drw-rec-detail--v3 .drw-outcome-list{
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 32px;
+}
+.drw-rec-detail--v3 .drw-outcome-list li{
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--g-700, var(--ink-2));
+}
+.drw-rec-detail--v3 .drw-outcome-check{
+  flex: none;
+  width: 18px; height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--zop-green, #7FB236);
+  margin-top: 2px;
+}
+.drw-rec-detail--v3 .drw-outcome-check svg{ width: 14px; height: 14px; }
+.drw-rec-detail--v3 .drw-outcome-list li strong{ color: var(--ink); font-weight: 600; }
+
+/* Editorial rhythm · hairlines between major drawer sections */
+.drawer-content .drw-rec-three{
+  margin: 0 0 64px !important;
+  padding-bottom: 56px;
+  border-bottom: 1px solid var(--line);
+}
+.drawer-content .drw-discover-head{ margin: 0 0 24px !important; }
+.drawer-content .drw-discover{ margin: 0 0 24px !important; }
+
+/* Mobile · stack the hero, single-column outcome grid */
+@media (max-width: 880px){
+  .drw-rec-hero.drw-rec-hero--v3{
+    grid-template-columns: 1fr;
+    gap: 24px;
+    margin: 4px 0 36px;
+    padding-bottom: 36px;
+  }
+  .drw-rec-detail--v3 .drw-outcome-list{
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .drw-rec-hero--v3 .drw-rec-cta{
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
 </style>
 
 <style id="drw-feat-vis-bespoke-css">
@@ -2463,7 +2587,7 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
           <div class="feat-visual" aria-hidden="true"><canvas class="zd-stage-3d" data-stage="landing" tabindex="-1"></canvas></div>
           <template class="feat-drawer-tpl">
             <!-- HERO BLOCK · 2-col split -->
-            <div class="drw-rec-hero">
+            <div class="drw-rec-hero drw-rec-hero--v3">
               <div class="drw-rec-hero-text">
                 <h2 class="drw-rec-h">Landing Zone</h2>
                 <p class="drw-rec-sub">Production-ready clusters in minutes.</p>
@@ -2472,13 +2596,13 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
                   <a class="btn btn-primary" href="zopday.html">Explore ZopDay <span aria-hidden="true">&rarr;</span></a>
                 </div>
               </div>
-              <div class="drw-rec-hero-aside drw-rec-hero-aside--vis">
+              <div class="drw-rec-hero-vis">
                 <div class="drw-feat-vis drw-feat-vis--bespoke fv--stack" aria-hidden="true"><div class="drw-feat-vis-eyebrow">PROVISION &middot; HARDENED</div><div class="fv-stage"><div class="fv-stack"><div class="fv-layer" style="--i:0"><span class="fv-layer-name">VPC + subnets</span><span class="fv-layer-tick">&#10003;</span></div><div class="fv-layer" style="--i:1"><span class="fv-layer-name">K8s cluster</span><span class="fv-layer-tick">&#10003;</span></div><div class="fv-layer" style="--i:2"><span class="fv-layer-name">Datastores + PITR</span><span class="fv-layer-tick">&#10003;</span></div><div class="fv-layer" style="--i:3"><span class="fv-layer-name">RBAC · NetPol · PSS</span><span class="fv-layer-tick">&#10003;</span></div></div></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">Hardened defaults on provision</span><span class="drw-feat-vis-counter">Ready in <strong>4&ndash;7 min</strong></span></div></div>
               </div>
             </div>
 
             <!-- outcome checklist · moved below the hero so the visual leads the right column (matches ZN engine drawers) -->
-            <div class="drw-zd-outcomes"><ul class="drw-outcome-list">
+            <div class="drw-rec-detail drw-rec-detail--v3"><ul class="drw-outcome-list">
                   <li>
                     <span class="drw-outcome-check" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5 L7 12 L13 5"/></svg></span>
                     <span><strong>Three clouds, one wizard</strong>, EKS, GKE, AKS with identical hardening defaults</span>
@@ -2631,7 +2755,7 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
           <div class="feat-visual" aria-hidden="true"><canvas class="zd-stage-3d" data-stage="deployment" tabindex="-1"></canvas></div>
           <template class="feat-drawer-tpl">
             <!-- HERO BLOCK · 2-col split -->
-            <div class="drw-rec-hero">
+            <div class="drw-rec-hero drw-rec-hero--v3">
               <div class="drw-rec-hero-text">
                 <h2 class="drw-rec-h">Deployment</h2>
                 <p class="drw-rec-sub">From git push to live, in minutes.</p>
@@ -2640,13 +2764,13 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
                   <a class="btn btn-primary" href="zopday.html">Explore ZopDay <span aria-hidden="true">&rarr;</span></a>
                 </div>
               </div>
-              <div class="drw-rec-hero-aside drw-rec-hero-aside--vis">
+              <div class="drw-rec-hero-vis">
                 <div class="drw-feat-vis drw-feat-vis--bespoke fv--pipe" aria-hidden="true"><div class="drw-feat-vis-eyebrow">GIT PUSH &rarr; LIVE URL</div><div class="fv-stage"><div class="fv-pipe"><span class="fv-pipe-packet"></span><span class="fv-pipe-node" style="--i:0"><span class="fv-pipe-dot"></span><span class="fv-pipe-lbl">Commit</span></span><span class="fv-pipe-line"></span><span class="fv-pipe-node" style="--i:1"><span class="fv-pipe-dot"></span><span class="fv-pipe-lbl">Build</span></span><span class="fv-pipe-line"></span><span class="fv-pipe-node" style="--i:2"><span class="fv-pipe-dot"></span><span class="fv-pipe-lbl">Deploy</span></span><span class="fv-pipe-line"></span><span class="fv-pipe-node" style="--i:3"><span class="fv-pipe-dot"></span><span class="fv-pipe-lbl">Live</span></span></div></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">Canary &rarr; progressive &rarr; full</span><span class="drw-feat-vis-counter">Deploy <strong>3m 42s</strong></span></div></div>
               </div>
             </div>
 
             <!-- outcome checklist · moved below the hero so the visual leads the right column (matches ZN engine drawers) -->
-            <div class="drw-zd-outcomes"><ul class="drw-outcome-list">
+            <div class="drw-rec-detail drw-rec-detail--v3"><ul class="drw-outcome-list">
                   <li>
                     <span class="drw-outcome-check" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5 L7 12 L13 5"/></svg></span>
                     <span><strong>Push, branch, webhook, or UI</strong>, every trigger tied to an environment policy</span>
@@ -2798,7 +2922,7 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
           <div class="feat-visual" aria-hidden="true"><canvas class="zd-stage-3d" data-stage="livestate" tabindex="-1"></canvas></div>
           <template class="feat-drawer-tpl">
             <!-- HERO BLOCK · 2-col split -->
-            <div class="drw-rec-hero">
+            <div class="drw-rec-hero drw-rec-hero--v3">
               <div class="drw-rec-hero-text">
                 <h2 class="drw-rec-h">Live State</h2>
                 <p class="drw-rec-sub">Cluster, live. Audited, every change.</p>
@@ -2807,13 +2931,13 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
                   <a class="btn btn-primary" href="zopday.html">Explore ZopDay <span aria-hidden="true">&rarr;</span></a>
                 </div>
               </div>
-              <div class="drw-rec-hero-aside drw-rec-hero-aside--vis">
+              <div class="drw-rec-hero-vis">
                 <div class="drw-feat-vis drw-feat-vis--bespoke fv--pods" aria-hidden="true"><div class="drw-feat-vis-eyebrow">EVERY CLUSTER &middot; LIVE</div><div class="fv-stage"><div class="fv-grid" style="--cols:10"><span class="fv-cell" style="--i:0"></span><span class="fv-cell" style="--i:1"></span><span class="fv-cell" style="--i:2"></span><span class="fv-cell" style="--i:3"></span><span class="fv-cell" style="--i:4"></span><span class="fv-cell" style="--i:5"></span><span class="fv-cell" style="--i:6"></span><span class="fv-cell" style="--i:7"></span><span class="fv-cell" style="--i:8"></span><span class="fv-cell" style="--i:9"></span><span class="fv-cell" style="--i:10"></span><span class="fv-cell" style="--i:11"></span><span class="fv-cell" style="--i:12"></span><span class="fv-cell" style="--i:13"></span><span class="fv-cell" style="--i:14"></span><span class="fv-cell" style="--i:15"></span><span class="fv-cell" style="--i:16"></span><span class="fv-cell" style="--i:17"></span><span class="fv-cell" style="--i:18"></span><span class="fv-cell" style="--i:19"></span><span class="fv-cell" style="--i:20"></span><span class="fv-cell" style="--i:21"></span><span class="fv-cell" style="--i:22"></span><span class="fv-cell" style="--i:23"></span><span class="fv-cell" style="--i:24"></span><span class="fv-cell" style="--i:25"></span><span class="fv-cell" style="--i:26"></span><span class="fv-cell" style="--i:27"></span><span class="fv-cell" style="--i:28"></span><span class="fv-cell" style="--i:29"></span><span class="fv-cell" style="--i:30"></span><span class="fv-cell" style="--i:31"></span><span class="fv-cell" style="--i:32"></span><span class="fv-cell" style="--i:33"></span><span class="fv-cell" style="--i:34"></span><span class="fv-cell" style="--i:35"></span><span class="fv-cell" style="--i:36"></span><span class="fv-cell" style="--i:37"></span><span class="fv-cell" style="--i:38"></span><span class="fv-cell" style="--i:39"></span></div><div class="fv-health"><span class="fv-health-bar"></span></div></div><div class="drw-feat-vis-foot"><span class="drw-feat-vis-running">21 K8s resource pages, live</span><span class="drw-feat-vis-counter">Healthy <strong>92%</strong></span></div></div>
               </div>
             </div>
 
             <!-- outcome checklist · moved below the hero so the visual leads the right column (matches ZN engine drawers) -->
-            <div class="drw-zd-outcomes"><ul class="drw-outcome-list">
+            <div class="drw-rec-detail drw-rec-detail--v3"><ul class="drw-outcome-list">
                   <li>
                     <span class="drw-outcome-check" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5 L7 12 L13 5"/></svg></span>
                     <span><strong>21 resource pages</strong> with detail drawers, pods through namespaces</span>

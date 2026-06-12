@@ -95,6 +95,15 @@ Three files carry the changes: **index.html** (homepage), **zopnight.html**, **z
   numbers illustrative").
 - Stakeholder grid: missing subhead added.
 - `.zd-feature-num` delimiter normalized to `&middot;`.
+- **Feature-bento drawers (all 3 · Landing Zone / Deployment / Live State) now use the homepage
+  v3 drawer layout.** Ported `#drw-visual-led-css` from index.html and swapped the drawer markup:
+  `.drw-rec-hero` → `.drw-rec-hero--v3` (visual-led 2-col, visual column slightly wider),
+  `.drw-rec-hero-aside--vis` → `.drw-rec-hero-vis`, `.drw-zd-outcomes` →
+  `.drw-rec-detail--v3` (outcomes demoted below the fold in a 2-col grid). Adds hairline dividers
+  between hero / outcomes / pillars, muted-italic subhead, 700-weight heading — identical rhythm
+  to the homepage drawers. ZopDay note: `--g-600/--g-700` are undefined here, so sub/lede colours
+  fall back to `--ink-3/--ink-2` (same warm greys the homepage dark theme uses). Dead
+  `.drw-zd-outcomes` / `.drw-rec-hero-aside--vis` rules removed.
 
 ---
 
