@@ -1438,7 +1438,7 @@ html[data-theme="dark"] .ps-tab:hover::after{ background:#3a3a42; }
             <p class="biz-slider-cap">Cloud bill incurred monthly</p>
           </div>
           <div class="tier-divider"></div>
-          <p class="biz-note">Unlimited access to every feature, no restrictions. Pricing scales with your monthly cloud spend; above $500K you move to Enterprise.</p>
+          <p class="biz-note">Unlimited access to every feature, no restrictions. Pricing scales with your monthly cloud spend; above $1M you move to Enterprise.</p>
           <div class="tier-cta">
             <a class="btn btn-accent" href="signin.html" style="width:100%; justify-content:center;">
               <span>Get Started</span> <span class="arrow">&rarr;</span>
@@ -2716,7 +2716,7 @@ calc();
     spend.textContent=fmt(k);
     if(k<=50){ cur.style.display=''; amt.textContent='1,000'; per.textContent='/month'; tag.textContent='For monthly cloud spends up to $50K.'; }
     else if(k<=500){ cur.style.display=''; amt.textContent='5,000'; per.textContent='/month'; tag.textContent='For monthly cloud spends up to $500K.'; }
-    else { cur.style.display='none'; amt.textContent='Custom'; per.textContent=''; tag.textContent='Above $500K — you’re in Enterprise territory.'; }
+    else { cur.style.display=''; amt.textContent='10,000'; per.textContent='/month'; tag.textContent='For monthly cloud spends up to $1M.'; }
   }
   r.addEventListener('input', update); update();
 })();
