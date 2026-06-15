@@ -3079,6 +3079,95 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
   <!-- WHY ZOPDAY · 4 numbered points -->
     <!-- SECTION · MCP · deploy from your coding agent · ported from the
        audit pass. Self-contained: mcp-section-css carries all styles. -->
+<style id="mcp-section-css">
+    /* MCP · "Your coding agent now ships infra" — section + terminal mockup.
+       This is the self-contained block the comment above promised but that
+       was never committed (markup shipped style-less). The terminal mirrors
+       its deploy-log sibling (.zd-deploylog): mac-window chrome, mono,
+       always-dark — reads as the integrated terminal in Claude / Cursor. */
+    .mcp-section{ padding:var(--sec-pad, 96px) 0; }
+    .mcp-eyebrow{
+      display:flex; align-items:center; gap:10px; margin:0 0 18px;
+      font-family:var(--mono); font-size:11px; letter-spacing:.16em;
+      text-transform:uppercase; color:var(--ink-3);
+    }
+    .mcp-eyebrow-sq{ width:10px; height:10px; background:var(--zop-orange); flex-shrink:0; }
+    .mcp-h{
+      margin:0 0 16px; font-size:clamp(28px, 3.2vw, 44px); font-weight:700;
+      letter-spacing:-.03em; line-height:1.1; color:var(--ink); max-width:720px;
+    }
+    .mcp-h em{ font-style:normal; color:var(--zop-orange); }
+    .mcp-sub{
+      margin:0 0 20px; font-size:clamp(16px, 1.5vw, 18px); font-weight:600;
+      color:var(--ink-2); letter-spacing:-.01em; max-width:60ch;
+    }
+    .mcp-body{ margin:0 0 14px; max-width:62ch; font-size:15px; line-height:1.65; color:var(--ink-3); }
+    .mcp-body strong{ color:var(--ink); font-weight:600; }
+    .mcp-tag{
+      margin:0 0 36px; max-width:62ch;
+      font-family:var(--mono); font-size:12.5px; letter-spacing:.01em; color:var(--ink-4);
+    }
+
+    /* Terminal window — sibling of .zd-deploylog-frame */
+    .mcp-terminal{
+      max-width:920px; background:#0B0B0F; border:1px solid #2a2a30;
+      box-shadow:0 18px 40px -28px rgba(0,0,0,.55); overflow:hidden;
+    }
+    .mcp-terminal-chrome{
+      display:flex; align-items:center; gap:8px; padding:12px 16px;
+      background:#15151B; border-bottom:1px solid #2a2a30;
+    }
+    .mcp-terminal-dot{ width:12px; height:12px; border-radius:50%; flex-shrink:0; }
+    .mcp-terminal-dot--r{ background:#FF5F57; }
+    .mcp-terminal-dot--y{ background:#FEBC2E; }
+    .mcp-terminal-dot--g{ background:#28C840; }
+    .mcp-terminal-title{
+      flex:1; text-align:center; font-family:var(--mono); font-size:12px;
+      font-weight:500; color:rgba(240,235,219,.55); letter-spacing:.02em;
+    }
+    .mcp-terminal-pill{
+      flex-shrink:0; font-family:var(--mono); font-size:9.5px; font-weight:700;
+      letter-spacing:.18em; text-transform:uppercase; color:var(--zop-orange);
+      padding:3px 8px; border:1px solid var(--zop-orange);
+    }
+
+    /* Body · prompt / answer exchanges */
+    .mcp-terminal-body{
+      padding:20px 24px 22px;
+      font-family:var(--mono, 'JetBrains Mono', monospace);
+      font-size:13px; line-height:1.55; color:rgba(240,235,219,.82);
+    }
+    .mcp-q{ display:flex; align-items:baseline; gap:10px; margin:0; }
+    .mcp-a{ display:flex; align-items:baseline; gap:10px; margin:6px 0 0; }
+    .mcp-a + .mcp-q{ margin-top:18px; }
+    .mcp-prompt{ color:var(--zop-orange); font-weight:700; flex-shrink:0; }
+    .mcp-q-text{ color:#F0EBDB; letter-spacing:.005em; }
+    .mcp-a-mark{ color:var(--ink-4); flex-shrink:0; }
+    .mcp-a-text{ color:rgba(240,235,219,.66); }
+    .mcp-a-text strong{ color:#F0EBDB; font-weight:600; }
+    .mcp-a-text em{ font-style:normal; color:var(--zop-orange); }
+
+    /* Live cursor */
+    .mcp-cursor{
+      display:inline-block; width:8px; height:14px; background:var(--zop-orange);
+      vertical-align:middle; animation:mcp-blink 1s steps(2) infinite;
+    }
+    @keyframes mcp-blink{ 50%{ opacity:0; } }
+
+    /* Foot · flow summary */
+    .mcp-foot{
+      display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 18px;
+      max-width:920px; margin:22px 0 0; padding-top:18px; border-top:1px solid var(--line);
+    }
+    .mcp-foot-flow{ font-family:var(--mono); font-size:12px; font-weight:700; letter-spacing:.04em; color:var(--ink); }
+    .mcp-foot-arrow{ color:var(--zop-orange); }
+    .mcp-foot-tag{ font-size:13px; color:var(--ink-3); line-height:1.5; }
+
+    @media (max-width:640px){
+      .mcp-terminal-body{ font-size:12px; padding:16px 16px 18px; }
+    }
+    @media (prefers-reduced-motion:reduce){ .mcp-cursor{ animation:none; } }
+</style>
 <section class="mcp-section" id="mcp">
     <div class="container mcp-inner">
       <p class="mcp-eyebrow">
