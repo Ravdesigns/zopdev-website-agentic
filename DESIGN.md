@@ -418,8 +418,9 @@ If you write any of these, rewrite the element with different structure:
 | `homepage-chrome.css` | Canonical chrome (nav + footer + buttons + sections + tokens) — link this from every page. |
 | `tokens.css` | Backward-compat tokens for legacy chrome. |
 | `chrome.css` | Legacy chrome — being phased out. |
-| `index.html` | Homepage source of truth. All component patterns live here. |
-| `design-system.html` | Live visual reference for devs (this doc's HTML companion). |
+| `index.html` | Homepage source of truth. All component patterns live here (incl. §28.8–28.10: feature drawers, bespoke `fv--*` visuals, showcase mocks). |
+| `zopnight.html` / `zopday.html` | Per-product page sources. Carry per-product accent theming (§23), the `.fcar` carousel (§28.7), and `.zn-engine` / `.zd-engine` overview cards (§28.11). Edit as a pair. |
+| `design-system.html` | Live visual reference for devs (this doc's HTML companion). **Note:** does not yet render §28.7–28.11 — DESIGN.md is currently ahead of it. |
 
 ---
 
@@ -724,6 +725,19 @@ Each product page (`zopnight.html`, `zopday.html`, `zopcloud.html`) carries **ex
 
 **No other section** on a product page may use a saturated brand fill. Brand color anywhere else is restricted to small accents (eyebrow squares, hover stripes, h1 `<em>` highlights, button focus rings) — same 5–10% surface ratio as the homepage.
 
+### Per-product accent theming (`body[data-product]`)
+
+Brand-register product pages set `<body data-product="zopnight">` (or `"zopday"` / `"zopcloud"`) so the shared chrome can carry the sub-brand accent without per-page rule duplication. The primary use today is the **primary button**:
+
+| Page hook | `.btn-primary` fill | Text | Hover |
+|---|---|---|---|
+| `body[data-product="zopnight"]` | `--logo-blue-on-dark` `#4A66D4` | `#F0EBDB` cream | transparent bg + blue text/border |
+| `body[data-product="zopday"]` | `--zop-orange` `#F58549` | `#0A0A0D` ink | transparent bg + orange text/border |
+
+- This is the **brand-register** treatment for marketing product pages. Product / app UI still follows "Handoff to product UI" above (ink CTA + a sub-brand dot) — keep app surfaces restrained.
+- **Exceptions:** the hero (`.zn-hero` / `.zd-hero`) and the saturated final band (see the table above) keep their bespoke cream / ink button treatments via higher-specificity `!important` — `data-product` deliberately does **not** override them.
+- Add any future per-product accent by scoping to `body[data-product="…"]` in the shared chrome, never by copying rules into each page.
+
 ---
 
 ## 24. Motion choreography
@@ -973,6 +987,65 @@ When adding similar manifest sections, follow this template:
 
 **Use this pattern** for any future hero / section that needs a cinematic multi-line statement and where the user pulling the content onto the stage themselves is preferable to an auto-reveal timer (most enterprise audiences prefer scroll-led — they read at their own pace).
 
+### 28.7 Generic carousel (`.fcar`)
+
+The shared, content-agnostic carousel — generalizes the §28.1 Trust Posture mechanism (itself descended from `.proof-carousel`) into a drop-in component. Now drives the "depth behind the engines / stages" sections on both product pages (ZopNight 9 tiles, ZopDay 7 cards). **Prefer `.fcar` over hand-rolling a new carousel** — only the active-dot tint differs per product.
+
+```html
+<div class="fcar" data-fcar role="region" aria-roledescription="carousel" aria-label="…">
+  <div class="fcar-wrap"><div class="fcar-track">
+    <article class="…">…</article>   <!-- any card class; one slide each -->
+  </div></div>
+  <button class="fcar-nav fcar-prev" aria-label="Previous">‹</button>
+  <button class="fcar-nav fcar-next" aria-label="Next">›</button>
+  <div class="fcar-dots" role="tablist"></div>
+</div>
+```
+
+- Track is flexbox (`gap:18px`), moved by `transform: translateX(-index × step)` over `.45s var(--ease-out)` — never `width`/`left` (per §6). `step` = card width + computed gap, read at runtime.
+- Visible slides: **3 desktop → 2 at ≤980px → 1 at ≤640px** (`.fcar-track > *` flex-basis `calc((100% − 36px)/3)` etc.; JS `getVisible()` mirrors the same 640 / 980 breakpoints).
+- `prev`/`next` auto-disable at the ends; dots auto-generate (`.fcar-dot`; active animates 8px → 24px pill).
+- **Only per-product difference:** `.fcar-dot.is-active` background — `--logo-blue-on-dark` (#4A66D4) on ZopNight, `--zop-orange` on ZopDay.
+
+### 28.8 Feature drawers · v3 visual-led layout (`.feat-drawer-tpl`, `.drw-rec-hero--v3`)
+
+The bento feature cards (§7.3) each open a drawer whose body is cloned from a `<template class="feat-drawer-tpl">` into `#drawer-content` (`drawer.js` toggles `.open` on `#drawer` + `#drawer-scrim`). The canonical first fold is **v3, visual-led**:
+
+- `.drw-rec-hero--v3` — 2-col: copy left (`.drw-rec-hero-text` = title + sub + lede + CTAs), visual right (`.drw-rec-hero-vis`).
+- `.drw-rec-detail--v3` — outcome bullets demoted below the fold as a 2-col checklist.
+- Editorial rhythm via `drw-visual-led-css`: hairline dividers, 48–64px spacing, 700-weight heading, muted-italic sub.
+- 20 drawer templates on the homepage; both product pages reuse the same layout. (`--g-600`/`--g-700` are undefined on the dark product pages, so sub/lede fall back to `--ink-3`/`--ink-2`.)
+
+### 28.9 Bespoke drawer visuals (`.drw-feat-vis--bespoke` + `fv--*`)
+
+The visual column of a v3 hero (`.drw-rec-hero-vis`) carries a small, animated, **CSS-only** explainer instead of a static image. One framework, one modifier per visual type.
+
+- Scoped palette (`drw-feat-vis-bespoke-css :root`): `--fvO #F58549 · --fvB #4A66D4 · --fvG #7FB236 · --fvink #E6E6EA · --fvdim #7B7B82 · --fvline #2A2A34`.
+
+```html
+<div class="drw-feat-vis drw-feat-vis--bespoke fv--stack" aria-hidden="true">
+  <div class="drw-feat-vis-eyebrow">PROVISION · 3 CLOUDS</div>
+  <div class="fv-stage"> … </div>
+  <div class="drw-feat-vis-foot">
+    <span class="drw-feat-vis-running">…</span><span class="drw-feat-vis-counter">…</span>
+  </div>
+</div>
+```
+
+- 13 modifiers: `fv--stack · pipe · pods · graph · bars · hbars · tags · grid · radius · spike · term · units · form`. Each owns its keyframes; **all** collapse to a static frame under `prefers-reduced-motion`.
+- **Per-product tint:** the palette is multi-color by default. For an all-orange ZopDay drawer, override inline on the visual: `style="--fvG:var(--fvO); --fvB:var(--fvO);"`. 15 bespoke visuals ship on the homepage; none are blank.
+
+### 28.10 Showcase motion mocks (`.ftab-mock` + live cursor `.fm-cursor`)
+
+The homepage sun ↔ moon showcase (`#showcase`) replaced 5 product videos with CSS motion-graphic dashboards in the `.ftab-mock` / `.fm-*` vocabulary — five tabs, each a **4-scene story** (`data-step` flips the scene).
+
+- Always-on motion is a **live mouse cursor**: each scene's `.fm-cursor` runs `smCursorAct` + `smCursorRipple` (2.6s) — glides `--cx0/--cy0` → `--cx1/--cy1`, then clicks (scale + ripple), looping. Static pointer at the target under reduced-motion.
+- **Hover-pause is scoped to the tab strip (`.showcase-tabs`) only**, never the whole frame — a frame-wide pause froze both cyclers whenever the section scrolled up under a stationary cursor (it read as permanently static). Scene cycler `STEP_DWELL 2400ms`; tab autoplay `DWELL 10600ms`; switching tabs resets the incoming mock to scene 1.
+
+### 28.11 Engine / overview cards (`.zn-engine`, `.zd-engine`)
+
+The "three engines / three stages" overview on each product page is a plain 3-col icon-card grid (`.zn-engines-grid` / `.zd-engines-grid`): **icon → title → tag → body → mono foot**. No drawer, no 3D canvas — stage/engine depth lives in the §28.7 carousel below + the dashboard. Cards use the canonical card-lift (§7.3) with the left-rail accent in the product color (ZopNight blue, ZopDay orange). The two are mirror images apart from that accent — **edit them as a pair** to keep the product pages siblings.
+
 ---
 
 ## 29. Sitewide `li::before` exemption list
@@ -1082,4 +1155,8 @@ When you hand this to engineering, the questions they're likely to ask first:
 
 ---
 
-**Last updated**: 2026-05-13 — sections 27–30 added covering the flat-folder media migration, recent component additions (Trust Posture carousel, ebook reader, changelog timeline, deploy-log terminal, security manifest, scroll-led statement), the `li::before` exemption discipline, and the full developer handoff checklist.
+## Changelog
+
+**2026-05-13** — sections 27–30 added covering the flat-folder media migration, recent component additions (Trust Posture carousel, ebook reader, changelog timeline, deploy-log terminal, security manifest, scroll-led statement), the `li::before` exemption discipline, and the full developer handoff checklist.
+
+**2026-06-15** — documented five components that had drifted out of the system: §28.7 generic `.fcar` carousel, §28.8 v3 visual-led feature drawers, §28.9 bespoke `fv--*` drawer visuals, §28.10 showcase `.ftab-mock` + live cursor, §28.11 `.zn-engine` / `.zd-engine` overview cards. Added §23 per-product accent theming (`body[data-product]`) and refreshed the §13 file map. (Separately, in code: pruned dead stage-drawer CSS/JS from `zopday.html` / `zopnight.html`.)
