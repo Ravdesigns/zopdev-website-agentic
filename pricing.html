@@ -7,12 +7,12 @@
 <link rel="icon" type="image/svg+xml" href="favicon.svg"/>
 
 <title>Pricing · ZopDev</title>
-<meta name="description" content="ZopNight pricing, per cloud account, not per seat. Starter free, Pro $299/account/mo, Enterprise custom. Transparent, outcome-based pricing."/>
+<meta name="description" content="ZopNight pricing — Business scales with your monthly cloud spend, Enterprise is custom and outcome-based. Transparent pricing, no per-seat fees."/>
 <link rel="canonical" href="https://zopdev.com/pricing.html"/>
 
 <!-- Open Graph / Twitter · social previews -->
 <meta property="og:title" content="Pricing · ZopDev">
-<meta property="og:description" content="ZopNight pricing, per cloud account, not per seat. Starter free, Pro $299/account/mo, Enterprise custom.">
+<meta property="og:description" content="ZopNight pricing — Business scales with your monthly cloud spend; Enterprise is custom, outcome-based.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://zop.dev/pricing">
 <meta property="og:image" content="https://zop.dev/favicon.svg">
@@ -1396,94 +1396,75 @@ html[data-theme="dark"] .ps-tab:hover::after{ background:#3a3a42; }
         </button>
       </div>
 
+      <style id="biz-tier-css">
+  /* ZopNight pricing duo · Business (slider-driven, larger) + Enterprise (always-dark). */
+  #pricing-zopnight.tiers-grid{ grid-template-columns:1.55fr 1fr; }
+  .tier-biz{ background:var(--bg-1); }
+  .biz-slider{ display:flex; flex-direction:column; gap:var(--sp-3); margin-top:var(--sp-1); }
+  .biz-slider-rail{ display:flex; align-items:center; gap:var(--sp-3); font-family:var(--mono); font-size:var(--t-12); color:var(--ink-4); }
+  .biz-range{ flex:1; -webkit-appearance:none; appearance:none; height:4px; background:var(--line); outline:none; cursor:pointer; }
+  .biz-range::-webkit-slider-thumb{ -webkit-appearance:none; appearance:none; width:20px; height:20px; border-radius:50%; background:var(--paper, #FAF7EC); border:2px solid var(--zop-orange); box-shadow:0 1px 5px rgba(0,0,0,.3); cursor:pointer; }
+  .biz-range::-moz-range-thumb{ width:20px; height:20px; border-radius:50%; background:var(--paper, #FAF7EC); border:2px solid var(--zop-orange); cursor:pointer; }
+  .biz-slider-spend{ font-size:var(--t-28); font-weight:var(--fw-bold); color:var(--ink); font-variant-numeric:tabular-nums; line-height:1; }
+  .biz-slider-cap{ font-family:var(--mono); font-size:var(--t-11); letter-spacing:var(--ls-meta); text-transform:uppercase; color:var(--ink-4); margin:0; }
+  .biz-note{ font-size:var(--t-14); color:var(--ink-3); line-height:var(--lh-body); margin:0; }
+  .tier-ent{ background:#15151B; border-right:0; }
+  .tier-ent .tier-name{ color:rgba(240,235,219,.55); }
+  .tier-ent .tier-price .amount{ color:#F0EBDB; }
+  .tier-ent .tier-tagline{ color:rgba(240,235,219,.7); }
+  .tier-ent .tier-label{ color:rgba(240,235,219,.5); }
+  .tier-ent .tier-features li{ color:rgba(240,235,219,.82); }
+  .tier-ent .tier-divider{ background:rgba(240,235,219,.16); border-color:rgba(240,235,219,.16); }
+  @media (max-width:860px){ #pricing-zopnight.tiers-grid{ grid-template-columns:1fr; } .tier-ent{ border-top:1px solid var(--line); } }
+</style>
       <div class="pricing-panes">
       <div class="tiers-grid" id="pricing-zopnight" role="tabpanel" data-product="zopnight">
-        <!-- STARTER -->
-        <div class="tier">
+        <!-- BUSINESS · slider-driven, larger card -->
+        <div class="tier tier-biz">
           <div>
-            <div class="tier-name">Starter</div>
+            <div class="tier-name">Business</div>
             <div class="tier-price">
-              <span class="amount">Free</span>
+              <span class="currency" id="biz-cur">$</span><span class="amount" id="biz-amount">1,000</span><span class="period" id="biz-period">/month</span>
             </div>
-            <p class="tier-tagline">For teams starting their FinOps journey. Get visibility without commitment.</p>
+            <p class="tier-tagline" id="biz-tagline">For monthly cloud spends up to $50K.</p>
+          </div>
+          <div class="biz-slider">
+            <div class="biz-slider-rail">
+              <span>$0</span>
+              <input type="range" class="biz-range" id="biz-range" min="0" max="100" value="15" step="1" aria-label="Monthly cloud spend"/>
+              <span>$1M</span>
+            </div>
+            <div class="biz-slider-spend" id="biz-spend">$50K</div>
+            <p class="biz-slider-cap">Cloud bill incurred monthly</p>
           </div>
           <div class="tier-divider"></div>
-          <div class="tier-label">What's included</div>
-          <ul class="tier-features">
-            <li>Up to 2 cloud accounts (AWS, Azure, or GCP)</li>
-            <li>14-day resource history</li>
-            <li>Atlas inventory, full multi-cloud map</li>
-            <li>10 automated remediations per month</li>
-            <li>ZopNight Recommendations feed</li>
-            <li>Email support (2 business day response)</li>
-            <li>1 workspace, unlimited users</li>
-          </ul>
-          <div class="tier-cta">
-            <a class="btn btn-secondary" href="signin.html" style="width:100%; justify-content:center;">
-              <span>Start Free</span> <span class="arrow">→</span>
-            </a>
-          </div>
-        </div>
-
-        <!-- PRO (featured) -->
-        <div class="tier featured">
-          <div class="tier-pop">Most popular</div>
-          <div>
-            <div class="tier-name">Pro</div>
-            <div class="tier-price">
-              <span class="currency">$</span>
-              <span class="amount">299</span>
-              <span class="period">/account/mo</span>
-            </div>
-            <p class="tier-tagline">For engineering and FinOps teams running production infrastructure at scale.</p>
-          </div>
-          <div class="tier-divider"></div>
-          <div class="tier-label">Everything in Starter, plus</div>
-          <ul class="tier-features">
-            <li>Unlimited cloud accounts</li>
-            <li>90-day resource history</li>
-            <li>Unlimited automated remediations</li>
-            <li>Schedule, automated maintenance windows</li>
-            <li>Showback, team cost attribution reports</li>
-            <li>Slack &amp; PagerDuty integration</li>
-            <li>MCP Server for Claude &amp; Codex</li>
-            <li>RBAC, viewer, editor, admin roles</li>
-            <li>Priority support (4h response, 24/5)</li>
-            <li>API access + webhook delivery</li>
-          </ul>
+          <p class="biz-note">Unlimited access to every feature, no restrictions. Pricing scales with your monthly cloud spend; above $500K you move to Enterprise.</p>
           <div class="tier-cta">
             <a class="btn btn-accent" href="signin.html" style="width:100%; justify-content:center;">
-              <span>Start 14-Day Trial</span> <span class="arrow">→</span>
+              <span>Get Started</span> <span class="arrow">&rarr;</span>
             </a>
           </div>
         </div>
 
-        <!-- ENTERPRISE -->
-        <div class="tier">
+        <!-- ENTERPRISE · always-dark card -->
+        <div class="tier tier-ent">
           <div>
             <div class="tier-name">Enterprise</div>
-            <div class="tier-price">
-              <span class="amount" style="font-size:var(--t-36);">Custom</span>
-            </div>
-            <p class="tier-tagline">For regulated industries, self-hosted deployments, and multi-org complexity.</p>
+            <div class="tier-price"><span class="amount" style="font-size:var(--t-36);">Custom</span></div>
+            <p class="tier-tagline">For monthly cloud spends over $500K, regulated industries, and multi-org complexity.</p>
           </div>
           <div class="tier-divider"></div>
-          <div class="tier-label">Everything in Pro, plus</div>
+          <div class="tier-label">What&rsquo;s included</div>
           <ul class="tier-features">
-            <li>Self-hosted deployment option</li>
-            <li>SSO / SAML 2.0 + OIDC</li>
-            <li>Custom data retention (up to 2 years)</li>
-            <li>Enterprise SLA with dedicated uptime commitment</li>
-            <li>Dedicated Customer Success Manager</li>
+            <li>In-depth cost reports &amp; optimization strategies</li>
+            <li>Custom policies for your business needs</li>
+            <li>Expert FinOps support for seamless implementation</li>
+            <li>SSO / SAML, custom retention, dedicated CSM</li>
             <li>AWS, Azure &amp; GCP Marketplace billing</li>
-            <li>Custom IAM policy review + security walkthrough</li>
-            <li>Volume pricing across accounts</li>
-            <li>Shared Slack channel with engineering</li>
-            <li>Pentest report access under NDA</li>
           </ul>
           <div class="tier-cta">
             <a class="btn btn-primary" href="demo.html" style="width:100%; justify-content:center;">
-              <span>Talk to Sales</span> <span class="arrow">→</span>
+              <span>Schedule a Demo</span> <span class="arrow">&rarr;</span>
             </a>
           </div>
         </div>
@@ -1535,134 +1516,113 @@ html[data-theme="dark"] .ps-tab:hover::after{ background:#3a3a42; }
           <thead>
             <tr>
               <th>Feature</th>
-              <th class="col-plan">Starter</th>
-              <th class="col-plan col-featured">Pro</th>
+              <th class="col-plan col-featured">Business</th>
               <th class="col-plan">Enterprise</th>
             </tr>
           </thead>
           <tbody>
-            <tr class="matrix-group"><td colspan="4">Cloud Coverage</td></tr>
+            <tr class="matrix-group"><td colspan="3">Cloud Coverage</td></tr>
             <tr>
               <td class="feat-name">Cloud accounts</td>
-              <td class="col-plan"><span style="font-family:var(--mono);font-size:var(--t-13);color:var(--ink-3);">Up to 2</span></td>
               <td class="col-plan"><span style="font-family:var(--mono);font-size:var(--t-13);color:var(--zop-orange);">Unlimited</span></td>
               <td class="col-plan"><span style="font-family:var(--mono);font-size:var(--t-13);color:var(--ink-3);">Unlimited</span></td>
             </tr>
             <tr>
               <td class="feat-name">AWS, Azure, GCP</td>
-              <td class="col-plan"><span class="check">✓</span></td>
               <td class="col-plan"><span class="check-o">✓</span></td>
               <td class="col-plan"><span class="check">✓</span></td>
             </tr>
             <tr>
               <td class="feat-name">Resource history</td>
-              <td class="col-plan"><span style="font-family:var(--mono);font-size:var(--t-13);color:var(--ink-3);">14 days</span></td>
               <td class="col-plan"><span style="font-family:var(--mono);font-size:var(--t-13);color:var(--zop-orange);">90 days</span></td>
               <td class="col-plan"><span style="font-family:var(--mono);font-size:var(--t-13);color:var(--ink-3);">Custom (up to 2y)</span></td>
             </tr>
-            <tr class="matrix-group"><td colspan="4">Core Platform</td></tr>
+            <tr class="matrix-group"><td colspan="3">Core Platform</td></tr>
             <tr>
               <td class="feat-name">Atlas inventory</td>
-              <td class="col-plan"><span class="check">✓</span></td>
               <td class="col-plan"><span class="check-o">✓</span></td>
               <td class="col-plan"><span class="check">✓</span></td>
             </tr>
             <tr>
               <td class="feat-name">MCP Server</td>
-              <td class="col-plan"><span class="dash">·</span></td>
               <td class="col-plan"><span class="check-o">✓</span></td>
               <td class="col-plan"><span class="check">✓</span></td>
             </tr>
             <tr>
               <td class="feat-name">Recommendations feed</td>
-              <td class="col-plan"><span class="check">✓</span></td>
               <td class="col-plan"><span class="check-o">✓</span></td>
               <td class="col-plan"><span class="check">✓</span></td>
             </tr>
             <tr>
               <td class="feat-name">Automated remediations</td>
-              <td class="col-plan"><span style="font-family:var(--mono);font-size:var(--t-13);color:var(--ink-3);">10 / month</span></td>
               <td class="col-plan"><span style="font-family:var(--mono);font-size:var(--t-13);color:var(--zop-orange);">Unlimited</span></td>
               <td class="col-plan"><span style="font-family:var(--mono);font-size:var(--t-13);color:var(--ink-3);">Unlimited</span></td>
             </tr>
             <tr>
               <td class="feat-name">Schedule (maintenance windows)</td>
-              <td class="col-plan"><span class="dash">·</span></td>
               <td class="col-plan"><span class="check-o">✓</span></td>
               <td class="col-plan"><span class="check">✓</span></td>
             </tr>
             <tr>
               <td class="feat-name">Showback (team cost reports)</td>
-              <td class="col-plan"><span class="dash">·</span></td>
               <td class="col-plan"><span class="check-o">✓</span></td>
               <td class="col-plan"><span class="check">✓</span></td>
             </tr>
-            <tr class="matrix-group"><td colspan="4">Integrations &amp; Alerts</td></tr>
+            <tr class="matrix-group"><td colspan="3">Integrations &amp; Alerts</td></tr>
             <tr>
               <td class="feat-name">Slack integration</td>
-              <td class="col-plan"><span class="dash">·</span></td>
               <td class="col-plan"><span class="check-o">✓</span></td>
               <td class="col-plan"><span class="check">✓</span></td>
             </tr>
             <tr>
               <td class="feat-name">PagerDuty integration</td>
-              <td class="col-plan"><span class="dash">·</span></td>
               <td class="col-plan"><span class="check-o">✓</span></td>
               <td class="col-plan"><span class="check">✓</span></td>
             </tr>
             <tr>
               <td class="feat-name">REST API + webhooks</td>
-              <td class="col-plan"><span class="dash">·</span></td>
               <td class="col-plan"><span class="check-o">✓</span></td>
               <td class="col-plan"><span class="check">✓</span></td>
             </tr>
-            <tr class="matrix-group"><td colspan="4">Security &amp; Compliance</td></tr>
+            <tr class="matrix-group"><td colspan="3">Security &amp; Compliance</td></tr>
             <tr>
               <td class="feat-name">RBAC (viewer / editor / admin)</td>
-              <td class="col-plan"><span class="check">✓</span></td>
               <td class="col-plan"><span class="check-o">✓</span></td>
               <td class="col-plan"><span class="check">✓</span></td>
             </tr>
             <tr>
               <td class="feat-name">SSO / SAML 2.0 + OIDC</td>
               <td class="col-plan"><span class="dash">·</span></td>
-              <td class="col-plan"><span class="dash">·</span></td>
               <td class="col-plan"><span class="check">✓</span></td>
             </tr>
             <tr>
               <td class="feat-name">Audit log export to SIEM</td>
-              <td class="col-plan"><span class="dash">·</span></td>
               <td class="col-plan"><span class="check-o">✓</span></td>
               <td class="col-plan"><span class="check">✓</span></td>
             </tr>
             <tr>
               <td class="feat-name">Self-hosted deployment</td>
               <td class="col-plan"><span class="dash">·</span></td>
-              <td class="col-plan"><span class="dash">·</span></td>
               <td class="col-plan"><span class="check">✓</span></td>
             </tr>
-            <tr class="matrix-group"><td colspan="4">Support &amp; Success</td></tr>
+            <tr class="matrix-group"><td colspan="3">Support &amp; Success</td></tr>
             <tr>
               <td class="feat-name">Email support</td>
-              <td class="col-plan"><span style="font-family:var(--mono);font-size:var(--t-12);color:var(--ink-3);">2 business days</span></td>
               <td class="col-plan"><span style="font-family:var(--mono);font-size:var(--t-12);color:var(--zop-orange);">4h · 24/5</span></td>
               <td class="col-plan"><span style="font-family:var(--mono);font-size:var(--t-12);color:var(--ink-3);">15m · 24/7</span></td>
             </tr>
             <tr>
               <td class="feat-name">SLA guarantee</td>
-              <td class="col-plan"><span class="dash">·</span></td>
               <td class="col-plan"><span style="font-family:var(--mono);font-size:var(--t-12);color:var(--zop-orange);">99.9%</span></td>
               <td class="col-plan"><span style="font-family:var(--mono);font-size:var(--t-12);color:var(--ink-3);">Custom</span></td>
             </tr>
             <tr>
               <td class="feat-name">Dedicated CSM</td>
               <td class="col-plan"><span class="dash">·</span></td>
-              <td class="col-plan"><span class="dash">·</span></td>
               <td class="col-plan"><span class="check">✓</span></td>
             </tr>
             <tr>
               <td class="feat-name">AWS / Azure / GCP Marketplace</td>
-              <td class="col-plan"><span class="dash">·</span></td>
               <td class="col-plan"><span class="dash">·</span></td>
               <td class="col-plan"><span class="check">✓</span></td>
             </tr>
@@ -2740,6 +2700,25 @@ calc();
     document.documentElement.setAttribute('data-theme', next);
     try { localStorage.setItem('zop-theme', next); } catch(e){}
   });
+})();
+</script>
+<script>
+/* Business tier · slider-driven tiered price (up to $50K -> $1,000/mo, up to $500K -> $5,000/mo, above -> Enterprise). */
+(function(){
+  var r=document.getElementById('biz-range'); if(!r) return;
+  var cur=document.getElementById('biz-cur'), amt=document.getElementById('biz-amount'),
+      per=document.getElementById('biz-period'), tag=document.getElementById('biz-tagline'),
+      spend=document.getElementById('biz-spend');
+  function fmt(k){ return k>=1000 ? '$'+(k/1000).toFixed(k%1000?1:0)+'M' : '$'+Math.round(k)+'K'; }
+  function update(){
+    var v=+r.value, k;
+    if(v<=15) k=(v/15)*50; else if(v<=55) k=50+((v-15)/40)*450; else k=500+((v-55)/45)*500;
+    spend.textContent=fmt(k);
+    if(k<=50){ cur.style.display=''; amt.textContent='1,000'; per.textContent='/month'; tag.textContent='For monthly cloud spends up to $50K.'; }
+    else if(k<=500){ cur.style.display=''; amt.textContent='5,000'; per.textContent='/month'; tag.textContent='For monthly cloud spends up to $500K.'; }
+    else { cur.style.display='none'; amt.textContent='Custom'; per.textContent=''; tag.textContent='Above $500K — you’re in Enterprise territory.'; }
+  }
+  r.addEventListener('input', update); update();
 })();
 </script>
 </body>
