@@ -138,19 +138,34 @@ Pass to make the two product pages true siblings (same design system, product ac
   feature cards (numbered eyebrow + 3D canvas preview + drawer). Per direction they're now plain
   icon cards mirroring ZopNight's `.zn-engine` cards (icon → title → tag → body → foot, 3-col
   grid `.zd-engines-grid`). **The per-stage drawers + 3D `zd-stage-3d` canvases were removed**;
-  stage detail now lives in the depth bento below + the dashboard. (Leftover dead CSS from the old
-  drawers — `drw-visual-led-css`, `drw-feat-vis-*`, `.zd-stages-bento` — can be pruned later.)
+  stage detail now lives in the depth bento below + the dashboard. (The old `.zd-stages-bento`
+  card CSS + the stage-preview 3D `<script>` — `genLanding/Deploy/LivePoints` + the
+  `canvas.zd-stage-3d` initialiser — were dead and have been **pruned**; see the cleanup note
+  below. `drw-visual-led-css` / `drw-feat-vis-*` are **kept** — the depth-bento drawers use them.)
 - **Depth sections → carousels (both pages).** "The depth behind the three engines/stages" was a
   static multi-column grid (ZopNight 9 tiles, ZopDay 7 cards — all present, nothing was missing).
   Both are now carousels using one shared generic component `.fcar` (`#fcar-css` + `#fcar-js`,
   same transform-based mechanism as the trust-posture carousel): 3 cards visible (2 tablet · 1
   mobile), prev/next arrows + dots. Active-dot tinted per product (ZopNight blue, ZopDay orange).
-  Old `.zn-depth-grid` / `.zd-features-grid` grid rules are now unused (prunable).
+  The old `.zn-depth-grid` / `.zd-features-grid` grid rules became unused and have been **pruned**
+  (see the cleanup note below) — the live `.zn-depth-tile` / `.zd-feature` card rules are kept.
 - **Primary CTA buttons carry each product's brand colour.** Page-scoped
   `body[data-product="zopnight"] .btn-primary` → blue (`#4A66D4`),
   `body[data-product="zopday"] .btn-primary` → orange (`#F58549`). Base buttons were neutral ink;
   the hero + final sections keep their bespoke cream/paper treatments (higher-specificity
   `!important`).
+- **Dead-code cleanup (post-consistency pass).** Removed only code proven unreferenced (zero
+  `class=` usage), then verified in a real browser afterwards — both depth carousels, the ZopDay
+  overview icon cards, the 7 posture cards, and the **live hero bridge-3D** all render, no console
+  errors, div/brace balance unchanged:
+  - zopday.html — the `.zd-stages-bento` card-chrome block (incl. its `canvas.zd-stage-3d` rule)
+    + the `.zd-features-grid` rules; and the stage-preview 3D `<script>`
+    (`genLanding/Deploy/LivePoints` + the `canvas.zd-stage-3d` initialiser). `product-3d.js` stays
+    — the hero bridge still uses `ZopProduct3D`.
+  - zopnight.html — the `.zn-depth-grid` rules (base + hero-tile washes + responsive `@media`).
+  - **Deliberately kept (still live — do not remove):** `drw-visual-led-css` + `drw-feat-vis-*`
+    (depth-bento drawers), `.zn-depth-tile` / `.zd-feature` card rules (the carousel cards),
+    `ZopProduct3D` / `product-3d.js` (hero bridge-3D).
 
 ---
 

@@ -275,135 +275,6 @@ html[data-theme="dark"] .zd-narrative-chip--depth{ color:var(--logo-blue-on-dark
   .zd-sec-head--stack .sub{ flex:1 1 auto; align-self:flex-start; }
 }
 
-/* THREE STAGES · 3-card bento built on the homepage `.feature` card
-   chrome (mirrors `.features.features-bento .feature` in index.html
-   verbatim — same border, hover lift, orange ::after rail, .num
-   eyebrow with hairline, grayscale-to-colour `.feat-visual`). The
-   only ZopDay-specific bits are the 3-col grid template and the
-   per-card geometric ::before/::after illustrations. */
-.zd-stages-bento{
-  display:grid;
-  grid-template-columns:repeat(3, 1fr);
-  border:1px solid var(--line);
-  background:var(--bg-0);
-  margin-top:32px;
-}
-.zd-stages-bento .feature{
-  padding:36px 32px;
-  border-right:1px solid var(--line);
-  position:relative;
-  display:flex; flex-direction:column;
-  transition:transform var(--dur-med, .25s) var(--ease-out, cubic-bezier(.22,1,.36,1)),
-             box-shadow var(--dur-med, .25s) var(--ease-out, cubic-bezier(.22,1,.36,1));
-  will-change:transform;
-}
-.zd-stages-bento .feature:last-child{ border-right:0; }
-.zd-stages-bento .feature::after{
-  content:''; position:absolute; top:0; left:0; width:4px; height:100%;
-  background:var(--zop-orange);
-  transform:scaleY(0); transform-origin:top;
-  transition:transform var(--dur-med, .25s) var(--ease-out, cubic-bezier(.22,1,.36,1));
-  pointer-events:none; z-index:2;
-}
-.zd-stages-bento .feature:hover,
-.zd-stages-bento .feature:focus-within{
-  transform:translateY(-4px);
-  box-shadow:0 8px 0 -4px var(--ink);
-  z-index:1;
-}
-.zd-stages-bento .feature:hover::after,
-.zd-stages-bento .feature:focus-within::after{ transform:scaleY(1); }
-
-/* Numbered eyebrow · mono label + brand-orange badge chip on the
-   right, joined by a hairline that fills the gap between them.
-   Mirrors the `.feature .num` pattern on the homepage. */
-.zd-stages-bento .feature .num{
-  font-family:var(--mono); font-size:11px;
-  color:var(--g-500); letter-spacing:.1em;
-  margin-bottom:18px;
-  display:flex; align-items:center; gap:14px;
-  text-transform:uppercase;
-}
-.zd-stages-bento .feature .num > span:first-child{ white-space:nowrap; }
-.zd-stages-bento .feature .num::before{
-  content:''; flex:1; height:1px; background:var(--line); order:1;
-}
-.zd-stages-bento .feature .num .feat-num-badge{
-  order:2;
-  font-family:var(--mono); font-size:10px; font-weight:700;
-  letter-spacing:.16em; text-transform:uppercase;
-  padding:3px 8px;
-  background:var(--zop-orange); color:#0F0F12;
-  white-space:nowrap;
-}
-
-.zd-stages-bento .feature h3{
-  font-size:22px; font-weight:700;
-  margin:0 0 12px;
-  letter-spacing:-.02em; line-height:1.15;
-  color:var(--ink);
-}
-.zd-stages-bento .feature p{
-  font-size:14px; color:var(--g-600);
-  line-height:1.55; margin:0 0 20px;
-}
-
-/* Visual band · bleeds to card edges, grayscale → colour on hover,
-   identical recipe to `.features-bento > .feature .feat-visual`. */
-.zd-stages-bento .feature .feat-visual{
-  margin:auto -32px -36px;
-  min-height:160px;
-  border-top:1px solid var(--line);
-  background:linear-gradient(180deg, rgba(245,133,73,.05) 0%, transparent 100%);
-  position:relative;
-  overflow:hidden;
-  filter:grayscale(1) contrast(1.05);
-  opacity:.78;
-  transition:filter 360ms cubic-bezier(.22,1,.36,1),
-             opacity 360ms cubic-bezier(.22,1,.36,1);
-}
-.zd-stages-bento .feature:hover .feat-visual,
-.zd-stages-bento .feature:focus-within .feat-visual{
-  filter:grayscale(0) contrast(1);
-  opacity:1;
-}
-@media (hover:none){
-  .zd-stages-bento .feature .feat-visual{ filter:none; opacity:1; }
-}
-@media (prefers-reduced-motion:reduce){
-  .zd-stages-bento .feature .feat-visual{ transition-duration:1ms; }
-}
-/* Audit · CSS-only line-drawings replaced with canvas-driven 3D
-   dotted shapes that match the homepage feature-bento visuals.
-   Canvas fills the .feat-visual band; product-3d.js does the
-   rendering. Per-stage point clouds defined in the inline <script>
-   near the bottom of this page. */
-.zd-stages-bento .feat-visual canvas.zd-stage-3d{
-  display:block; width:100%; height:100%;
-  outline:none;
-}
-.zd-stages-bento .feat-visual::before,
-.zd-stages-bento .feat-visual::after{ content:none !important; }
-
-html[data-theme="dark"] .zd-stages-bento{
-  background:#0F0F12; border-color:#2a2a30;
-}
-html[data-theme="dark"] .zd-stages-bento .feature{ border-right-color:#2a2a30; }
-html[data-theme="dark"] .zd-stages-bento .feature .feat-visual{
-  border-top-color:#2a2a30;
-  background:linear-gradient(180deg, rgba(245,133,73,.10) 0%, transparent 100%);
-}
-
-@media (max-width:900px){
-  .zd-stages-bento{ grid-template-columns:1fr; }
-  .zd-stages-bento .feature{
-    border-right:0;
-    border-bottom:1px solid var(--line);
-  }
-  .zd-stages-bento .feature:last-child{ border-bottom:0; }
-  html[data-theme="dark"] .zd-stages-bento .feature{ border-bottom-color:#2a2a30; }
-}
-
 /* Why ZopDay · bullets */
 .zd-why{
   display:grid; grid-template-columns:repeat(2, 1fr);
@@ -2727,9 +2598,7 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
       </div>
 
 
-    <!-- Features grid · 7 PDF-spec tiles per doc V8. Asymmetric 4-col
-         bento; every 3rd tile (01, 04, 07) is a wider "hero" span,
-         driven by `.zd-features-grid > .zd-feature:nth-child(3n+1)`. -->
+    <!-- Features carousel · 7 PDF-spec feature cards in the shared .fcar component. -->
     <div class="fcar" data-fcar role="region" aria-roledescription="carousel" aria-label="More ZopDay features">
         <div class="fcar-wrap"><div class="fcar-track">
       <article class="zd-feature">
@@ -2790,36 +2659,6 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
   </section>
 
   <style>
-    /* SECTION 3 · FEATURES · 4-col asymmetric bento.
-       Every 3rd tile starting at #1 (01 / 04 / 07) is a "hero" that spans
-       2 columns with a brand-orange wash. Saves vertical space versus the
-       uniform 3-col grid and gives the section the same rhythm as the
-       homepage features-bento. */
-    .zd-features-grid{
-      display:grid;
-      grid-template-columns:repeat(4, minmax(0, 1fr));
-      gap:18px;
-      margin-top:32px;
-    }
-    .zd-features-grid > .zd-feature:nth-child(3n+1){
-      grid-column:span 2;
-      background:linear-gradient(180deg, rgba(245,133,73,.05) 0%, var(--bg-0) 60%);
-    }
-    html[data-theme="dark"] .zd-features-grid > .zd-feature:nth-child(3n+1){
-      background:linear-gradient(180deg, rgba(245,133,73,.10) 0%, var(--bg-0) 60%);
-    }
-    .zd-features-grid > .zd-feature:nth-child(3n+1) .zd-feature-title{
-      font-size:22px;
-    }
-    @media (max-width:1100px){
-      .zd-features-grid{ grid-template-columns:repeat(2, minmax(0, 1fr)); }
-      .zd-features-grid > .zd-feature:nth-child(3n+1){ grid-column:1 / span 2; }
-    }
-    @media (max-width:580px){
-      .zd-features-grid{ grid-template-columns:1fr; }
-      .zd-features-grid > .zd-feature:nth-child(3n+1){ grid-column:1; }
-      .zd-features-grid > .zd-feature:nth-child(3n+1) .zd-feature-title{ font-size:20px; }
-    }
     .zd-feature{
       background:var(--bg-0);
       border:1px solid var(--line);
@@ -4640,114 +4479,7 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
 <!-- 3D dotted bridge · same render pipeline as the homepage globe -->
 <script src="product-3d.js" defer></script>
 
-<script>
-/* =============================================================================
-   Three-stages 3D · canvas-driven dotted point clouds for the Section 2
-   stage cards (Landing Zone / Deployment / Live State). Mirrors the
-   homepage feature-bento visual style: each card has its own canvas,
-   each canvas has a unique geometric shape rendered as ~600–900 cream-
-   colored dots with sparse brand-orange accent dots, slow Y-axis
-   auto-rotation. Replaces the previous CSS-only line-drawings.
-   ========================================================================= */
-function genLandingPoints(){
-  /* Landing Zone · 3 clustered box volumes side-by-side (representing
-     hardened K8s clusters across AWS/GCP/Azure). Fibonacci-like sample
-     of each box, sparse accents for cluster center dots. */
-  var pts = [];
-  var clusters = [
-    {cx:-0.42, cy:0.0,  cz:0.0,  rx:0.22, ry:0.22, rz:0.22},
-    {cx: 0.00, cy:0.0,  cz:0.0,  rx:0.26, ry:0.26, rz:0.26},
-    {cx: 0.42, cy:0.0,  cz:0.0,  rx:0.22, ry:0.22, rz:0.22}
-  ];
-  for(var ci=0; ci<clusters.length; ci++){
-    var c = clusters[ci];
-    var N = 280;
-    for(var i=0; i<N; i++){
-      /* Random uniform inside the box, but bias toward the surface
-         so the cluster reads as a shell rather than a solid blob. */
-      var t = i / (N-1);
-      var ang = t * Math.PI * 2 * 8;
-      var z = (Math.random() * 2 - 1) * c.rz;
-      var r = Math.sqrt(Math.max(0, c.rx*c.rx - z*z));
-      pts.push({
-        x: c.cx + Math.cos(ang) * r,
-        y: c.cy + Math.sin(ang) * r,
-        z: z,
-        hi: (i % 70 === 0)
-      });
-    }
-  }
-  return pts;
-}
 
-function genDeployPoints(){
-  /* Deployment · vertical push-to-deploy column. Dots form a tall
-     dotted "pipe" with 4 brighter accent rings spaced along the
-     length, representing scan → build → deploy → live stages. */
-  var pts = [];
-  var N = 800;
-  for(var i=0; i<N; i++){
-    var t = i / (N-1);
-    var y = 0.55 - t * 1.10;          /* top → bottom */
-    var ang = t * Math.PI * 2 * 22;   /* helical wrap */
-    var r = 0.16 + Math.sin(t * Math.PI * 8) * 0.02;
-    var x = Math.cos(ang) * r;
-    var z = Math.sin(ang) * r;
-    /* 4 accent rings at t = 0.15, 0.40, 0.65, 0.90 */
-    var hi = false;
-    [0.15, 0.40, 0.65, 0.90].forEach(function(t0){
-      if(Math.abs(t - t0) < 0.012) hi = true;
-    });
-    pts.push({ x:x, y:y, z:z, hi:hi });
-  }
-  return pts;
-}
-
-function genLivePoints(){
-  /* Live State · 3D dotted lattice (resource matrix). Sparse grid of
-     points in a 9×5×3 lattice, accent dots scattered to feel like
-     resources lighting up. */
-  var pts = [];
-  for(var x=-4; x<=4; x++){
-    for(var y=-2; y<=2; y++){
-      for(var z=-1; z<=1; z++){
-        /* Add slight per-point jitter so the grid doesn't read as
-           perfectly mechanical. */
-        var jx = (Math.random() - 0.5) * 0.02;
-        var jy = (Math.random() - 0.5) * 0.02;
-        var jz = (Math.random() - 0.5) * 0.02;
-        pts.push({
-          x: x * 0.12 + jx,
-          y: y * 0.12 + jy,
-          z: z * 0.16 + jz,
-          hi: (Math.abs(x) + Math.abs(y) + Math.abs(z)) % 4 === 0
-        });
-      }
-    }
-  }
-  return pts;
-}
-
-document.addEventListener('DOMContentLoaded', function(){
-  if(!window.ZopProduct3D) return;
-  var configs = [
-    { stage:'landing',    gen:genLandingPoints,    speed:0.0018, rotX:-0.20 },
-    { stage:'deployment', gen:genDeployPoints,     speed:0.0024, rotX:-0.10 },
-    { stage:'livestate',  gen:genLivePoints,       speed:0.0014, rotX:-0.14 }
-  ];
-  configs.forEach(function(cfg){
-    var c = document.querySelector('canvas.zd-stage-3d[data-stage="' + cfg.stage + '"]');
-    if(!c) return;
-    ZopProduct3D(c, cfg.gen, {
-      accent: '#F58549',
-      radiusFactor: 0.38,
-      speed: cfg.speed,
-      rotX: cfg.rotX,
-      rotY: 0.5
-    });
-  });
-});
-</script>
 <script>
 /* =============================================================================
    ZopDay 3D · suspension bridge in dotted form. Two towers above + below

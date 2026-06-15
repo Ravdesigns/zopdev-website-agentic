@@ -3045,30 +3045,6 @@ html[data-theme="dark"] .znd-cv-card-body{ color:#D4CDB5; }
       </div>
 
     <style>
-      /* ZopNight depth-grid · 9 PDF feature tiles. Same asymmetric
-         4-col bento rhythm as the ZopDay features grid: every 3rd
-         tile starting from #1 spans 2 columns. */
-      .zn-depth-grid{
-        display:grid;
-        grid-template-columns:repeat(4, minmax(0, 1fr));
-        gap:18px;
-        margin-top:56px;
-      }
-      .zn-depth-grid > .zn-depth-tile:nth-child(3n+1){
-        grid-column:span 2;
-        background:linear-gradient(180deg, rgba(74, 102, 212, .05) 0%, var(--bg-0) 60%);
-      }
-      html[data-theme="dark"] .zn-depth-grid > .zn-depth-tile:nth-child(3n+1){
-        background:linear-gradient(180deg, rgba(74, 102, 212, .10) 0%, var(--bg-0) 60%);
-      }
-      @media (max-width:1100px){
-        .zn-depth-grid{ grid-template-columns:repeat(2, minmax(0, 1fr)); }
-        .zn-depth-grid > .zn-depth-tile:nth-child(3n+1){ grid-column:1 / span 2; }
-      }
-      @media (max-width:580px){
-        .zn-depth-grid{ grid-template-columns:1fr; }
-        .zn-depth-grid > .zn-depth-tile:nth-child(3n+1){ grid-column:1; }
-      }
       /* Audit · revamped depth tiles. Sharper hover state, stronger
          hero distinction (3n+1 tiles), inline "Read more" affordance
          that reveals on hover · gives the section a livelier rhythm
@@ -3118,20 +3094,6 @@ html[data-theme="dark"] .znd-cv-card-body{ color:#D4CDB5; }
         opacity:1;
         transform:translateX(0);
       }
-      /* Hero tiles (1, 4, 7) get a brighter wash + stronger blue
-         accent so the bento rhythm reads at a glance. */
-      .zn-depth-grid > .zn-depth-tile:nth-child(3n+1){
-        background:linear-gradient(180deg,
-          rgba(74, 102, 212, .12) 0%,
-          rgba(74, 102, 212, .03) 40%,
-          var(--bg-0) 75%) !important;
-      }
-      html[data-theme="dark"] .zn-depth-grid > .zn-depth-tile:nth-child(3n+1){
-        background:linear-gradient(180deg,
-          rgba(74, 102, 212, .20) 0%,
-          rgba(74, 102, 212, .06) 40%,
-          var(--bg-0) 75%) !important;
-      }
       .zn-depth-num{
         font-family:var(--mono, 'Space Grotesk', monospace);
         font-size:10.5px; letter-spacing:.14em;
@@ -3144,7 +3106,6 @@ html[data-theme="dark"] .znd-cv-card-body{ color:#D4CDB5; }
         letter-spacing:-.015em; line-height:1.25;
         color:var(--ink);
       }
-      .zn-depth-grid > .zn-depth-tile:nth-child(3n+1) .zn-depth-title{ font-size:20px; }
       .zn-depth-body{
         margin:0;
         font-size:13.5px; line-height:1.55;
