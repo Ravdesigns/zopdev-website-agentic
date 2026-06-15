@@ -3078,7 +3078,8 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
 
   <!-- WHY ZOPDAY · 4 numbered points -->
     <!-- SECTION · MCP · deploy from your coding agent · ported from the
-       audit pass. Self-contained: mcp-section-css carries all styles. -->
+       audit pass. Terminal styles live in mcp-section-css; the section head
+       uses the shared .zd-sec-head pattern (same as every other section). -->
 <style id="mcp-section-css">
     /* MCP · "Your coding agent now ships infra" — section + terminal mockup.
        This is the self-contained block the comment above promised but that
@@ -3086,21 +3087,10 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
        its deploy-log sibling (.zd-deploylog): mac-window chrome, mono,
        always-dark — reads as the integrated terminal in Claude / Cursor. */
     .mcp-section{ padding:var(--sec-pad, 96px) 0; }
-    .mcp-eyebrow{
-      display:flex; align-items:center; gap:10px; margin:0 0 18px;
-      font-family:var(--mono); font-size:11px; letter-spacing:.16em;
-      text-transform:uppercase; color:var(--ink-3);
-    }
-    .mcp-eyebrow-sq{ width:10px; height:10px; background:var(--zop-orange); flex-shrink:0; }
-    .mcp-h{
-      margin:0 0 16px; font-size:clamp(28px, 3.2vw, 44px); font-weight:700;
-      letter-spacing:-.03em; line-height:1.1; color:var(--ink); max-width:720px;
-    }
-    .mcp-h em{ font-style:normal; color:var(--zop-orange); }
-    .mcp-sub{
-      margin:0 0 20px; font-size:clamp(16px, 1.5vw, 18px); font-weight:600;
-      color:var(--ink-2); letter-spacing:-.01em; max-width:60ch;
-    }
+    /* Section head uses the shared .zd-sec-head pattern (homepage-chrome.css
+       [class*="-sec-head"]): 2-col grid (h2 | sub) + hairline divider, hidden
+       meta — identical to every other ZopDay section head. No bespoke head
+       styles needed (and legacy *-eyebrow classes are auto-hidden site-wide). */
     .mcp-body{ margin:0 0 14px; max-width:62ch; font-size:15px; line-height:1.65; color:var(--ink-3); }
     .mcp-body strong{ color:var(--ink); font-weight:600; }
     .mcp-tag{
@@ -3170,12 +3160,10 @@ html[data-theme="dark"] .zd-deploy-loop-callout-text{ color:#F0EBDB; }
 </style>
 <section class="mcp-section" id="mcp">
     <div class="container mcp-inner">
-      <p class="mcp-eyebrow">
-        <span class="mcp-eyebrow-sq" aria-hidden="true"></span>
-        Available now
-      </p>
-      <h2 class="mcp-h">Your coding agent<br/><em>now ships infra.</em></h2>
-      <p class="mcp-sub">Same wizard. Same hardening. Voiced through the agent you already use.</p>
+      <div class="zd-sec-head">
+        <div><h2>Your coding agent<br/><em>now ships infra.</em></h2></div>
+        <p class="sub">Same wizard. Same hardening. Voiced through the agent you already use.</p>
+      </div>
       <p class="mcp-body">
         ZopDay exposes every provisioning and deploy action through one MCP server.
         <strong>Claude</strong>, <strong>Cursor</strong>, or <strong>Codex</strong> can
