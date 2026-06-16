@@ -141,7 +141,6 @@
 .tier-cta{ margin-top:auto; }
 .tier-features{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:var(--sp-3); }
 .tier-features li{
-  display:flex; align-items:flex-start; gap:var(--sp-3);
   font-size:var(--t-14); color:var(--ink-3); line-height:var(--lh-body);
 }
 /* Feature-list bullets · clean SVG checkmark per tier. Default tier
@@ -159,6 +158,11 @@
   /* featured · orange check (#F58549) */
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14' fill='none' stroke='%23F58549' stroke-width='2' stroke-linecap='square'><path d='M2.5 7.5l3 3 6-7'/></svg>");
 }
+/* The sitewide li::before centers via `0.5lh`, but that same rule sets
+   font-size:0 + line-height:0 on the pseudo, so both `lh` and `em` resolve to 0
+   here (the 8px square ends up at top:-4px, floating above the text). Pin a
+   fixed top so it sits mid-line on the 14px / 1.55-lh first row. */
+.tier-features li::before{ top: 7px !important; }
 .tier-divider{
   height:1px; background:var(--line); width:100%;
 }
@@ -1458,9 +1462,8 @@ html[data-theme="dark"] .ps-tab:hover::after{ background:#3a3a42; }
           <ul class="tier-features">
             <li>In-depth cost reports &amp; optimization strategies</li>
             <li>Custom policies for your business needs</li>
-            <li>Expert FinOps support for seamless implementation</li>
-            <li>SSO / SAML, custom retention, dedicated CSM</li>
-            <li>AWS, Azure &amp; GCP Marketplace billing</li>
+            <li>Expert support for seamless implementation</li>
+            <li>SSO / SAML, dedicated CSM</li>
           </ul>
           <div class="tier-cta">
             <a class="btn btn-primary" href="demo.html" style="width:100%; justify-content:center;">
