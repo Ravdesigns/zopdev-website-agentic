@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ZopDev mark · three-tile brand icon (no wordmark). -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="256" height="256" role="img" aria-label="ZopDev">
+  <title>ZopDev mark</title>
+  <rect x="0" y="0" width="16" height="16" fill="#2A4494"/>
+      <rect x="16" y="0" width="16" height="16" fill="#F58549"/>
+      <rect x="16" y="16" width="16" height="16" fill="#7FB236"/>
+</svg>
