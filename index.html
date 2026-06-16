@@ -3887,6 +3887,28 @@ body.globe-cursor-active{ cursor:none; }
 .zoom-statement #zl2{
   color:var(--zop-orange);
 }
+/* "continuously." shimmers forever · a soft cream highlight sweeps across
+   the muted grey on an endless loop, so the word *feels* continuous. The
+   solid grey above is the fallback; the shimmer only switches on where
+   motion is welcome (and background-clip:text is supported). */
+@media (prefers-reduced-motion: no-preference){
+  @supports ((-webkit-background-clip:text) or (background-clip:text)){
+    .zoom-statement #zl3{
+      background:linear-gradient(100deg,
+        var(--g-600) 0%, var(--g-600) 42%,
+        #FFF7E9 50%,
+        var(--g-600) 58%, var(--g-600) 100%);
+      background-size:220% 100%;
+      -webkit-background-clip:text; background-clip:text;
+      -webkit-text-fill-color:transparent; color:transparent;
+      animation:zl-shimmer 5s linear infinite;
+    }
+  }
+}
+@keyframes zl-shimmer{
+  from{ background-position:120% 50%; }
+  to{   background-position:-120% 50%; }
+}
 
 /* =========================================================================
    Product reveal, ZopNight console assembled panel-by-panel via scroll.
