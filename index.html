@@ -3894,6 +3894,8 @@ body.globe-cursor-active{ cursor:none; }
 @media (prefers-reduced-motion: no-preference){
   @supports ((-webkit-background-clip:text) or (background-clip:text)){
     .zoom-statement #zl3{
+      position:relative;
+      --shimmer-dur:3.2s;
       background:linear-gradient(100deg,
         var(--g-600) 0%, var(--g-600) 38%,
         #F4EFE0 46%, #FFFFFF 50%, #F4EFE0 54%,
@@ -3901,7 +3903,22 @@ body.globe-cursor-active{ cursor:none; }
       background-size:220% 100%;
       -webkit-background-clip:text; background-clip:text;
       -webkit-text-fill-color:transparent; color:transparent;
-      animation:zl-shimmer 5s linear infinite;
+      animation:zl-shimmer var(--shimmer-dur) linear infinite;
+    }
+    /* Travelling bloom · a blurred white streak rides behind the crisp
+       glint, in lockstep (same keyframes + duration), so the shimmer
+       blooms as it passes instead of carrying a flat static glow. */
+    .zoom-statement #zl3::before{
+      content:attr(data-text);
+      position:absolute; inset:0;
+      background:linear-gradient(100deg,
+        transparent 34%, rgba(255,255,255,.95) 50%, transparent 66%);
+      background-size:220% 100%;
+      -webkit-background-clip:text; background-clip:text;
+      -webkit-text-fill-color:transparent; color:transparent;
+      animation:zl-shimmer var(--shimmer-dur) linear infinite;
+      filter:blur(9px);
+      z-index:-1; pointer-events:none;
     }
   }
 }
@@ -10283,7 +10300,7 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
     <div class="zoom-statement" id="zoom-statement">
       <span class="zl" id="zl1">The control plane that runs</span>
       <span class="zl" id="zl2">AI-powered CloudOps</span>
-      <span class="zl" id="zl3">continuously.</span>
+      <span class="zl" id="zl3" data-text="continuously.">continuously.</span>
     </div>
 
   </div>
