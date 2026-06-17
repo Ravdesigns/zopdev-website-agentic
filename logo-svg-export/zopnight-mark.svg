@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ZopNight mark · brand icon (blue tile + white moon) · exported from the site master sprite (#mark-zopnight). -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="512" height="512" role="img" aria-label="ZopNight">
+  <title>ZopNight</title>
+  <rect x="0" y="0" width="32" height="32" fill="#2A4494"/>
+      <circle cx="16" cy="16" r="8" fill="#FFFFFF"/>
+</svg>

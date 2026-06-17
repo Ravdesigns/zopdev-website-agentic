@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ZopCloud mark · brand icon (blue tile + white pixel-cloud) · exported from the site master sprite (#mark-zopcloud). -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="512" height="512" role="img" aria-label="ZopCloud">
+  <title>ZopCloud</title>
+  <!-- Brand playbook: pixel-cloud silhouette on family-blue container -->
+      <rect x="0" y="0" width="32" height="32" fill="#2A4494"/>
+      <rect x="12" y="8"  width="8"  height="6"  fill="#FFFFFF"/>
+      <rect x="6"  y="14" width="20" height="10" fill="#FFFFFF"/>
+</svg>
