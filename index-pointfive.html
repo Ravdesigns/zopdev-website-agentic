@@ -3876,17 +3876,18 @@ body.globe-cursor-active{ cursor:none; }
 .zoom-statement #zl1,
 .zoom-statement #zl2,
 .zoom-statement #zl3{
-  font-size:clamp(2rem, 5vw, 4.2rem);
-  letter-spacing:-0.03em;
+  font-size:clamp(1.45rem, 3.1vw, 2.5rem);
+  font-weight:600;
+  letter-spacing:-0.02em;
+  line-height:1.22;
+  color:var(--ink);
 }
 .zoom-statement #zl1,
-.zoom-statement #zl3{
-  font-weight:600;
-  color:var(--g-600);
-}
-.zoom-statement #zl2{
-  color:var(--zop-orange);
-}
+.zoom-statement #zl2{ display:inline; }
+.zoom-statement #zl3{ display:inline-block; }
+.zoom-statement .zl + .zl{ margin-top:0; }
+/* (variation) statement is one flowing sentence now · unified cream is set
+   above; "proof of value" (#zl3) carries the shimmer below. */
 /* "continuously." shimmers forever · a soft cream highlight sweeps across
    the muted grey on an endless loop, so the word *feels* continuous. The
    solid grey above is the fallback; the shimmer only switches on where
@@ -3897,9 +3898,9 @@ body.globe-cursor-active{ cursor:none; }
       position:relative;
       --shimmer-dur:3.2s;
       background:linear-gradient(100deg,
-        var(--g-600) 0%, var(--g-600) 38%,
-        #F4EFE0 46%, #FFFFFF 50%, #F4EFE0 54%,
-        var(--g-600) 62%, var(--g-600) 100%);
+        var(--ink) 0%, var(--ink) 38%,
+        #FFFFFF 50%,
+        var(--ink) 62%, var(--ink) 100%);
       background-size:220% 100%;
       -webkit-background-clip:text; background-clip:text;
       -webkit-text-fill-color:transparent; color:transparent;
@@ -9068,7 +9069,7 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
       </span>
     </h1>
 
-    <p class="hero-v2-lead">The Technology Value Efficiency OS that finds the cloud and AI waste your dashboards miss, ships the fix, and proves the savings against your real bill, governed in one continuous loop. Built for FinOps and the engineers who own it.</p>
+    <p class="hero-v2-lead">Technology Value OS that helps teams operate AI, cloud, cost, access, deployments, automation, and remediations from one accountable system.</p>
 
     <div class="hero-v2-cta">
       <a class="btn btn-primary" href="signin.html">
@@ -10298,9 +10299,9 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
          dashboard reveal · the actual globe is composited on top via the
          viewport-fixed canvas. -->
     <div class="zoom-statement" id="zoom-statement">
-      <span class="zl" id="zl1">Dashboards show the waste.</span>
-      <span class="zl" id="zl2">ZopDev fixes it.</span>
-      <span class="zl" id="zl3" data-text="continuously.">continuously.</span>
+      <span class="zl" id="zl1">Built for a world where humans and AI agents both change technology systems,</span>
+      <span class="zl" id="zl2">and every action needs ownership, context, and</span>
+      <span class="zl" id="zl3" data-text="proof of value.">proof of value.</span>
     </div>
 
   </div>
@@ -29843,11 +29844,11 @@ if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded'
   .zp-chart-card .zp-chart-toggle-opt,
   .zp-chart-card .zp-chart-legend{ font-size:8px !important; }
   .zp-chart-svg, .zp-chart-card svg{ width:100% !important; height:auto !important; max-height:none !important; min-height:80px !important; display:block !important; }
-  /* Statement headline tames itself on phone-portrait · all three lines
-     share one size; the orange on line 2 carries the emphasis. */
+  /* Statement is a full sentence on phone-portrait · smaller so it stays a
+     tidy few lines; "proof of value" still shimmers. */
   .zoom-statement #zl1,
   .zoom-statement #zl2,
-  .zoom-statement #zl3{ font-size:clamp(20px, 6.4vw, 32px) !important; }
+  .zoom-statement #zl3{ font-size:clamp(17px, 4.6vw, 23px) !important; }
   .hero-grid-cloud{ grid-template-columns:1fr !important; gap:24px !important; }
   .hero-grid-cloud > *{ width:100% !important; max-width:100% !important; }
   .hero h1, .hero-reveal{ font-size:clamp(32px, 9vw, 48px) !important; }
