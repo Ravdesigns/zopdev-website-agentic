@@ -3891,12 +3891,12 @@ body.globe-cursor-active{ cursor:none; }
   @supports ((-webkit-background-clip:text) or (background-clip:text)){
     .zoom-statement .zl-pay{
       position:relative;
-      --shimmer-dur:2.6s;
+      --shimmer-dur:3s;
       background:linear-gradient(100deg,
-        var(--ink) 0%, var(--ink) 34%,
+        var(--ink) 0%, var(--ink) 42%,
         #FFFFFF 50%,
-        var(--ink) 66%, var(--ink) 100%);
-      background-size:240% 100%;
+        var(--ink) 58%, var(--ink) 100%);
+      background-size:300% 100%;
       -webkit-background-clip:text; background-clip:text;
       -webkit-text-fill-color:transparent; color:transparent;
       animation:zl-shimmer var(--shimmer-dur) linear infinite;
@@ -3906,19 +3906,19 @@ body.globe-cursor-active{ cursor:none; }
       content:attr(data-text);
       position:absolute; inset:0;
       background:linear-gradient(100deg,
-        transparent 28%, rgba(255,255,255,1) 50%, transparent 72%);
-      background-size:240% 100%;
+        transparent 36%, rgba(255,255,255,1) 50%, transparent 64%);
+      background-size:300% 100%;
       -webkit-background-clip:text; background-clip:text;
       -webkit-text-fill-color:transparent; color:transparent;
       animation:zl-shimmer var(--shimmer-dur) linear infinite;
-      filter:blur(12px);
+      filter:blur(10px);
       z-index:-1; pointer-events:none;
     }
   }
 }
 @keyframes zl-shimmer{
-  from{ background-position:120% 50%; }
-  to{   background-position:-120% 50%; }
+  from{ background-position:150% 50%; }
+  to{   background-position:-50% 50%; }
 }
 
 /* =========================================================================
