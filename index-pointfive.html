@@ -9201,38 +9201,45 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
   .hero-v2-headline.hero-reveal.go .hr-w3{ animation-delay: 1.50s; }
   .hero-v2-headline.hero-reveal.go .hr-r3{ animation-delay: 1.80s; }
 
-  /* ── Icon -> word reveal · each verb gets a line glyph that pops in, then
-     the word swipes in beside it (staggered on the existing verb ladder).
-     Brand-coloured icons stay lit; the word settles to ink via .done.
-     Motion-gated · reduced-motion shows icon + word together, no motion. */
-  .hero-v2-headline .hr-word.hw{ display:inline-flex; align-items:center; gap:.14em; opacity:1; }
-  .hero-v2-headline.hero-reveal.go .hr-word.hw{ animation:none; opacity:1; } /* container static; children carry motion */
-  .hero-v2-headline .hw-ic{ display:inline-flex; }
-  .hero-v2-headline .hw-ic svg{ width:.52em; height:.52em; display:block; overflow:visible; }
+  /* ── Icon -> word reveal · each verb's line glyph flashes in *over* the
+     word (absolutely placed, so it never affects spacing), then fades away
+     as the word wipes in. At rest there are no icons — just the clean words
+     at their normal spacing. Motion-gated; reduced-motion shows words only. */
+  .hero-v2-headline .hr-word.hw{ position:relative; display:inline-block; opacity:1; }
+  .hero-v2-headline.hero-reveal.go .hr-word.hw{ animation:none; opacity:1; }
   .hero-v2-headline .hw-tx{ display:inline-block; }
+  .hero-v2-headline .hw-ic{
+    position:absolute; left:50%; top:50%;
+    transform:translate(-50%,-50%);
+    line-height:0; pointer-events:none; opacity:0;  /* hidden at rest · flashes only during the reveal */
+  }
+  .hero-v2-headline .hw-ic svg{ width:.9em; height:.9em; display:block; overflow:visible; }
   .hero-v2-headline .hw--ai    .hw-ic{ color:var(--zop-blue, #2A4494); }
   .hero-v2-headline .hw--cloud .hw-ic{ color:var(--zop-green, #7FB236); }
   .hero-v2-headline .hw--human .hw-ic{ color:var(--zop-orange); }
   html[data-theme="dark"] .hero-v2-headline .hw--ai .hw-ic{ color:var(--logo-blue-on-dark, #4A66D4); }
-  @keyframes hw-ic-pop{
-    0%  { opacity:0; transform:scale(.3) rotate(-15deg); }
-    60% { opacity:1; transform:scale(1.15) rotate(6deg); }
-    100%{ opacity:1; transform:scale(1) rotate(0); }
+  /* icon · pops in over the word, holds a beat, then fades + scales away */
+  @keyframes hw-ic-flash{
+    0%   { opacity:0; transform:translate(-50%,-50%) scale(.4) rotate(-12deg); }
+    22%  { opacity:1; transform:translate(-50%,-50%) scale(1.06) rotate(5deg); }
+    50%  { opacity:1; transform:translate(-50%,-50%) scale(1) rotate(0); }
+    100% { opacity:0; transform:translate(-50%,-50%) scale(1.55) rotate(0); }
   }
+  /* word · wipes in from the left as the icon dissolves */
   @keyframes hw-tx-wipe{
-    from{ opacity:0; clip-path:inset(0 100% 0 0); transform:translateX(-.1em); }
-    to  { opacity:1; clip-path:inset(0 0 0 0);    transform:translateX(0); }
+    from{ opacity:0; clip-path:inset(0 100% 0 0); }
+    to  { opacity:1; clip-path:inset(0 0 0 0); }
   }
   @media (prefers-reduced-motion: no-preference){
-    .hero-v2-headline .hw-ic, .hero-v2-headline .hw-tx{ opacity:0; }
-    .hero-v2-headline.hero-reveal.go .hw-ic{ animation:hw-ic-pop .44s cubic-bezier(.34,1.56,.64,1) both; }
+    .hero-v2-headline .hw-tx{ opacity:0; }              /* word hidden until its wipe */
+    .hero-v2-headline.hero-reveal.go .hw-ic{ animation:hw-ic-flash 1.05s cubic-bezier(.34,1.56,.64,1) both; }
     .hero-v2-headline.hero-reveal.go .hw-tx{ animation:hw-tx-wipe .5s cubic-bezier(.22,.8,.32,1) both; }
     .hero-v2-headline.hero-reveal.go .hw--ai    .hw-ic{ animation-delay:0s;    }
-    .hero-v2-headline.hero-reveal.go .hw--ai    .hw-tx{ animation-delay:.40s;  }
-    .hero-v2-headline.hero-reveal.go .hw--cloud .hw-ic{ animation-delay:.70s;  }
-    .hero-v2-headline.hero-reveal.go .hw--cloud .hw-tx{ animation-delay:1.10s; }
-    .hero-v2-headline.hero-reveal.go .hw--human .hw-ic{ animation-delay:1.40s; }
-    .hero-v2-headline.hero-reveal.go .hw--human .hw-tx{ animation-delay:1.80s; }
+    .hero-v2-headline.hero-reveal.go .hw--ai    .hw-tx{ animation-delay:.45s;  }
+    .hero-v2-headline.hero-reveal.go .hw--cloud .hw-ic{ animation-delay:.7s;   }
+    .hero-v2-headline.hero-reveal.go .hw--cloud .hw-tx{ animation-delay:1.15s; }
+    .hero-v2-headline.hero-reveal.go .hw--human .hw-ic{ animation-delay:1.4s;  }
+    .hero-v2-headline.hero-reveal.go .hw--human .hw-tx{ animation-delay:1.85s; }
   }
 
   @media (prefers-reduced-motion: reduce){
