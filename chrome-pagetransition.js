@@ -47,13 +47,29 @@
     document.body.appendChild(overlay);
   }
 
-  /* ── On page load · ensure overlay starts visible then fades out so the
-     incoming page reveals smoothly ─────────────────────────────────────── */
+  /* ── On page load · start the wash visible, then fade it out so the
+     incoming page reveals smoothly. The setTimeout safety force-clears the
+     wash even when rAF / the CSS transition is throttled (background or
+     embedded preview tabs) — without it the curtain can freeze mid-fade and
+     sit veiling the page. ──────────────────────────────────────────────── */
+  function clearWash(){
+    overlay.classList.remove('is-in');
+    overlay.style.display = 'none';
+  }
+  overlay.style.display = '';
   overlay.classList.add('is-in');
   requestAnimationFrame(function(){
-    requestAnimationFrame(function(){
-      overlay.classList.remove('is-in');
-    });
+    requestAnimationFrame(function(){ overlay.classList.remove('is-in'); });
+  });
+  setTimeout(clearWash, FADE_IN + 260);
+
+  /* Belt & suspenders · also clear on full load and whenever the tab becomes
+     visible. A tab throttled or hidden during load (background tab, embedded
+     preview pane) can pause rAF and the CSS fade mid-way; this guarantees the
+     wash is gone the moment the page is actually looked at. */
+  window.addEventListener('load', function(){ setTimeout(clearWash, 50); });
+  document.addEventListener('visibilitychange', function(){
+    if (!document.hidden) clearWash();
   });
 
   /* ── Intercept internal link clicks · fade out, navigate ──────────────── */
@@ -87,6 +103,8 @@
         url.hash) return;
 
     e.preventDefault();
+    overlay.style.display = '';      /* re-arm · load-reveal may have hidden it */
+    void overlay.offsetWidth;        /* reflow so the fade starts from opacity:0 */
     overlay.classList.add('is-in');
     var navigated = false;
     var navigate = function(){
@@ -101,12 +119,13 @@
   /* ── Back/forward bfcache · re-fade out cleanly ───────────────────────── */
   window.addEventListener('pageshow', function(ev){
     if (ev.persisted) {
+      overlay.style.display = '';
+      void overlay.offsetWidth;
       overlay.classList.add('is-in');
       requestAnimationFrame(function(){
-        requestAnimationFrame(function(){
-          overlay.classList.remove('is-in');
-        });
+        requestAnimationFrame(function(){ overlay.classList.remove('is-in'); });
       });
+      setTimeout(clearWash, FADE_IN + 260);
     }
   });
 })();
