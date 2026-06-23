@@ -3937,8 +3937,8 @@ body.globe-cursor-active{ cursor:none; }
 .zoom-statement .cdcr-ring-track{ fill:none; stroke:rgba(240,235,219,.13); stroke-width:1.5; }
 .zoom-statement .cdcr-ring-arc{
   fill:none; stroke:var(--zop-orange); stroke-width:3; stroke-linecap:round;
-  stroke-dasharray:64 690; transform-origin:160px 160px;
-  filter:drop-shadow(0 0 6px rgba(245,133,73,.65));
+  stroke-dasharray:15 85; stroke-linejoin:miter;
+  filter:drop-shadow(0 0 6px rgba(245,133,73,.7));
 }
 .zoom-statement .cdcr-hub{
   position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
@@ -3946,25 +3946,37 @@ body.globe-cursor-active{ cursor:none; }
 }
 .zoom-statement .cdcr-hub-ic{ width:clamp(26px,5vmin,38px); height:clamp(26px,5vmin,38px); color:var(--zop-orange); filter:drop-shadow(0 0 10px rgba(245,133,73,.4)); }
 .zoom-statement .cdcr-hub-name{ font-weight:700; font-size:clamp(15px,2.6vmin,22px); line-height:1.12; letter-spacing:-.02em; color:var(--ink); }
+.zoom-statement .cdcr-corners rect{ fill:var(--zop-orange); opacity:.55; }
 .zoom-statement .cdcr-node{ position:absolute; display:flex; align-items:center; gap:9px; white-space:nowrap; }
 .zoom-statement .cdcr-node-label{ font-weight:600; font-size:clamp(13px,2vmin,17px); letter-spacing:-.01em; color:var(--ink-2,#D4CDB5); }
-.zoom-statement .cdcr-dot{ width:11px; height:11px; border-radius:50%; background:var(--zop-orange); box-shadow:0 0 0 4px rgba(245,133,73,.14); flex:none; }
+.zoom-statement .cdcr-dot{ width:12px; height:12px; border-radius:2px; background:var(--zop-orange); box-shadow:0 0 0 4px rgba(245,133,73,.14); flex:none; }
 .zoom-statement .cdcr-node--n{ left:50%; top:12.5%; transform:translate(-50%,-50%); flex-direction:column; gap:7px; }
 .zoom-statement .cdcr-node--s{ left:50%; top:87.5%; transform:translate(-50%,-50%); flex-direction:column; gap:7px; }
 .zoom-statement .cdcr-node--e{ left:87.5%; top:50%; transform:translate(-50%,-50%); }
 .zoom-statement .cdcr-node--w{ left:12.5%; top:50%; transform:translate(-50%,-50%); }
 @media (prefers-reduced-motion: no-preference){
-  .zoom-statement .cdcr-ring-arc{ animation:cdcr-spin 7s linear infinite; }
+  .zoom-statement .cdcr-ring-arc{ animation:cdcr-travel 7s linear infinite; }
   .zoom-statement .cdcr-node .cdcr-dot{ animation:cdcr-pulse 7s ease-in-out infinite; }
   .zoom-statement .cdcr-node--n .cdcr-dot{ animation-delay:-1.75s; }
   .zoom-statement .cdcr-node--e .cdcr-dot{ animation-delay:0s; }
   .zoom-statement .cdcr-node--s .cdcr-dot{ animation-delay:-5.25s; }
   .zoom-statement .cdcr-node--w .cdcr-dot{ animation-delay:-3.5s; }
 }
-@keyframes cdcr-spin{ to{ transform:rotate(360deg); } }
+@keyframes cdcr-travel{ from{ stroke-dashoffset:0; } to{ stroke-dashoffset:-100; } }
 @keyframes cdcr-pulse{
   0%,14%,100%{ box-shadow:0 0 0 4px rgba(245,133,73,.14); transform:scale(1); }
   6%{ box-shadow:0 0 0 8px rgba(245,133,73,.32), 0 0 16px rgba(245,133,73,.7); transform:scale(1.55); }
+}
+/* CDCR loop · phone-portrait · shrink hub + labels so the square stays
+   roomy and the side labels clear the centre. */
+@media (max-width:600px){
+  .zoom-statement .cdcr-stage{ width:min(74vw,300px); }
+  .zoom-statement .cdcr-cap{ font-size:9px; letter-spacing:.12em; }
+  .zoom-statement .cdcr-node-label{ font-size:11px; }
+  .zoom-statement .cdcr-dot{ width:9px; height:9px; }
+  .zoom-statement .cdcr-hub{ width:50%; gap:5px; }
+  .zoom-statement .cdcr-hub-ic{ width:22px; height:22px; }
+  .zoom-statement .cdcr-hub-name{ font-size:13px; line-height:1.1; }
 }
 
 /* =========================================================================
@@ -10385,8 +10397,14 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
         <span class="cdcr-cap">Continuous Detection &middot; Continuous Remediation</span>
         <div class="cdcr-stage">
           <svg class="cdcr-ring" viewBox="0 0 320 320" aria-hidden="true">
-            <circle class="cdcr-ring-track" cx="160" cy="160" r="120"/>
-            <circle class="cdcr-ring-arc" cx="160" cy="160" r="120"/>
+            <rect class="cdcr-ring-track" x="40" y="40" width="240" height="240"/>
+            <rect class="cdcr-ring-arc" x="40" y="40" width="240" height="240" pathLength="100"/>
+            <g class="cdcr-corners">
+              <rect x="35.5" y="35.5" width="9" height="9"/>
+              <rect x="275.5" y="35.5" width="9" height="9"/>
+              <rect x="275.5" y="275.5" width="9" height="9"/>
+              <rect x="35.5" y="275.5" width="9" height="9"/>
+            </g>
           </svg>
           <div class="cdcr-node cdcr-node--n"><span class="cdcr-node-label">Detect</span><span class="cdcr-dot"></span></div>
           <div class="cdcr-node cdcr-node--e"><span class="cdcr-dot"></span><span class="cdcr-node-label">Classify</span></div>
