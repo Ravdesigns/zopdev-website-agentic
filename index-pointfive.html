@@ -9060,9 +9060,9 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
 
     <h1 class="hero-v2-headline hero-reveal hero-reveal--bdg">
       <span class="hr-line">
-        <span class="hr-word hr-w1 hr-ai">AI.</span>
-        <span class="hr-word hr-w2 hr-cloud">Cloud.</span>
-        <span class="hr-word hr-w3 hr-human">Humans.</span>
+        <span class="hr-word hr-w1 hr-ai hw hw--ai"><span class="hw-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8a2 2 0 0 0 1.3 1.3L21 12l-5.8 1.9a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.8a2 2 0 0 0-1.3-1.3L3 12l5.8-1.9a2 2 0 0 0 1.3-1.3z"/></svg></span><span class="hw-tx">AI.</span></span>
+        <span class="hr-word hr-w2 hr-cloud hw hw--cloud"><span class="hw-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg></span><span class="hw-tx">Cloud.</span></span>
+        <span class="hr-word hr-w3 hr-human hw hw--human"><span class="hw-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span><span class="hw-tx">Humans.</span></span>
       </span>
       <span class="hr-line">
         <span class="hr-rest hr-r3 hr-rest-solo hero-v2-line2">Made accountable.</span>
@@ -9207,6 +9207,40 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
   .hero-v2-headline.hero-reveal.go .hr-w2{ animation-delay: .75s;  }
   .hero-v2-headline.hero-reveal.go .hr-w3{ animation-delay: 1.50s; }
   .hero-v2-headline.hero-reveal.go .hr-r3{ animation-delay: 1.80s; }
+
+  /* ── Icon -> word reveal · each verb gets a line glyph that pops in, then
+     the word swipes in beside it (staggered on the existing verb ladder).
+     Brand-coloured icons stay lit; the word settles to ink via .done.
+     Motion-gated · reduced-motion shows icon + word together, no motion. */
+  .hero-v2-headline .hr-word.hw{ display:inline-flex; align-items:center; gap:.14em; opacity:1; }
+  .hero-v2-headline.hero-reveal.go .hr-word.hw{ animation:none; opacity:1; } /* container static; children carry motion */
+  .hero-v2-headline .hw-ic{ display:inline-flex; }
+  .hero-v2-headline .hw-ic svg{ width:.52em; height:.52em; display:block; overflow:visible; }
+  .hero-v2-headline .hw-tx{ display:inline-block; }
+  .hero-v2-headline .hw--ai    .hw-ic{ color:var(--zop-blue, #2A4494); }
+  .hero-v2-headline .hw--cloud .hw-ic{ color:var(--zop-green, #7FB236); }
+  .hero-v2-headline .hw--human .hw-ic{ color:var(--zop-orange); }
+  html[data-theme="dark"] .hero-v2-headline .hw--ai .hw-ic{ color:var(--logo-blue-on-dark, #4A66D4); }
+  @keyframes hw-ic-pop{
+    0%  { opacity:0; transform:scale(.3) rotate(-15deg); }
+    60% { opacity:1; transform:scale(1.15) rotate(6deg); }
+    100%{ opacity:1; transform:scale(1) rotate(0); }
+  }
+  @keyframes hw-tx-wipe{
+    from{ opacity:0; clip-path:inset(0 100% 0 0); transform:translateX(-.1em); }
+    to  { opacity:1; clip-path:inset(0 0 0 0);    transform:translateX(0); }
+  }
+  @media (prefers-reduced-motion: no-preference){
+    .hero-v2-headline .hw-ic, .hero-v2-headline .hw-tx{ opacity:0; }
+    .hero-v2-headline.hero-reveal.go .hw-ic{ animation:hw-ic-pop .44s cubic-bezier(.34,1.56,.64,1) both; }
+    .hero-v2-headline.hero-reveal.go .hw-tx{ animation:hw-tx-wipe .5s cubic-bezier(.22,.8,.32,1) both; }
+    .hero-v2-headline.hero-reveal.go .hw--ai    .hw-ic{ animation-delay:0s;    }
+    .hero-v2-headline.hero-reveal.go .hw--ai    .hw-tx{ animation-delay:.40s;  }
+    .hero-v2-headline.hero-reveal.go .hw--cloud .hw-ic{ animation-delay:.70s;  }
+    .hero-v2-headline.hero-reveal.go .hw--cloud .hw-tx{ animation-delay:1.10s; }
+    .hero-v2-headline.hero-reveal.go .hw--human .hw-ic{ animation-delay:1.40s; }
+    .hero-v2-headline.hero-reveal.go .hw--human .hw-tx{ animation-delay:1.80s; }
+  }
 
   @media (prefers-reduced-motion: reduce){
     .hero-v2-pill,
