@@ -8927,7 +8927,7 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
 
     <h1 class="hero-v2-headline hero-reveal hero-reveal--bdg">
       <span class="hr-line">
-        <span class="hr-word hr-tvos"><svg class="tvos-spark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.8a2 2 0 0 0 1.3 1.3L21 12l-5.8 1.9a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.8a2 2 0 0 0-1.3-1.3L3 12l5.8-1.9a2 2 0 0 0 1.3-1.3z"/></svg>Technology Value OS</span>
+        <span class="hr-word hr-tvos"><span class="tvos-spark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8a2 2 0 0 0 1.3 1.3L21 12l-5.8 1.9a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.8a2 2 0 0 0-1.3-1.3L3 12l5.8-1.9a2 2 0 0 0 1.3-1.3z"/></svg></span>Technology Value OS</span>
       </span>
       <span class="hr-line">
         <span class="hr-rest hr-r1 hr-rest-solo hero-v2-line2">for <span class="w-ai">AI</span>, <span class="w-cloud">Cloud</span> and <span class="w-human">Humans</span></span>
@@ -9237,24 +9237,22 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
   @keyframes settle-ai{ 0%,48%{ color:var(--logo-blue-on-dark, #4A66D4); } 100%{ color:var(--ink, #F0EBDB); } }
   @keyframes settle-cloud{ 0%,48%{ color:var(--zop-green, #7FB236); } 100%{ color:var(--ink, #F0EBDB); } }
   @keyframes settle-human{ 0%,48%{ color:var(--zop-orange); } 100%{ color:var(--ink, #F0EBDB); } }
-  /* AI sparkle before "Technology Value OS" · brand-orange, gentle twinkle */
-  .hero-v2-headline .tvos-spark{ width:.58em; height:.58em; display:inline-block; vertical-align:.02em;
-    margin-right:.2em; color:var(--zop-orange); overflow:visible; transform-origin:center;
-    filter:drop-shadow(0 0 12px rgba(245,133,73,.35)); }
+  /* sparkle · pops in beside the headline, then fades + collapses so the word
+     settles clean (no sparkle at rest) — like the earlier icon -> word reveal. */
+  .hero-v2-headline .tvos-spark{ display:inline-block; overflow:hidden; vertical-align:.02em;
+    width:0; margin-right:0; opacity:0; color:var(--zop-orange); transform-origin:center; }
+  .hero-v2-headline .tvos-spark svg{ width:.58em; height:.58em; display:block;
+    filter:drop-shadow(0 0 12px rgba(245,133,73,.4)); }
   @media (prefers-reduced-motion: no-preference){
-    .hero-v2-headline .tvos-spark{ opacity:0; }   /* hidden until it pops in with the headline */
-    .hero-v2-headline.hero-reveal.go .tvos-spark{
-      animation: tvos-pop .7s cubic-bezier(.34,1.56,.64,1) both, tvos-twinkle 3.4s ease-in-out 1s infinite;
-    }
+    .hero-v2-headline.hero-reveal.go .tvos-spark{ animation:tvos-cycle 1.6s cubic-bezier(.4,0,.2,1) both; }
   }
-  @keyframes tvos-pop{
-    0%{ opacity:0; transform:scale(.3) rotate(-25deg); }
-    55%{ opacity:1; transform:scale(1.2) rotate(8deg); }
-    100%{ opacity:1; transform:scale(1) rotate(0); }
-  }
-  @keyframes tvos-twinkle{
-    0%,100%{ opacity:.85; transform:scale(.97) rotate(0deg); }
-    50%{ opacity:1; transform:scale(1.12) rotate(10deg); }
+  @keyframes tvos-cycle{
+    0%   { opacity:0; width:0;      margin-right:0;     transform:scale(.3) rotate(-25deg); }
+    10%  { opacity:0; width:.58em;  margin-right:.22em; transform:scale(.3) rotate(-25deg); }
+    40%  { opacity:1; width:.58em;  margin-right:.22em; transform:scale(1.12) rotate(8deg); }
+    62%  { opacity:1; width:.58em;  margin-right:.22em; transform:scale(1) rotate(0); }
+    86%  { opacity:0; width:.58em;  margin-right:.22em; transform:scale(.7) rotate(0); }
+    100% { opacity:0; width:0;      margin-right:0;     transform:scale(.7) rotate(0); }
   }
   /* Subhead · single line on desktop, wraps naturally on mobile */
   .hero-v2-lead{
