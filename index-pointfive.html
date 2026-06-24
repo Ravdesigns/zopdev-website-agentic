@@ -8986,12 +8986,11 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
 </section>
 
 <style id="hero-kpis-css">
-  .hero-kpis{ background:var(--bg-0,#0F0F12); padding:clamp(40px,7vh,80px) 0; border-top:1px solid var(--line); }
+  .hero-kpis{ background:var(--bg-0,#0F0F12); padding:clamp(40px,7vh,80px) 0; }
   .hero-kpis .hk-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:1px;
     background:var(--line); border:1px solid var(--line); }
   .hero-kpis .hk-card{ background:var(--bg-0,#0F0F12); padding:clamp(22px,3vw,34px) clamp(20px,2.4vw,30px);
     display:flex; flex-direction:column; gap:10px; }
-  .hero-kpis .hk-card::before{ content:""; width:9px; height:9px; background:var(--zop-orange); margin-bottom:4px; }
   .hero-kpis .hk-num{ font-family:var(--font,'Space Grotesk',sans-serif); font-weight:700;
     font-size:clamp(1.9rem,3.4vw,2.9rem); letter-spacing:-.03em; line-height:1; color:var(--ink,#F0EBDB); }
   .hero-kpis .hk-label{ font-size:clamp(12.5px,1.1vw,14px); line-height:1.45; color:var(--ink-3,#A8A195); }
@@ -9227,20 +9226,34 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
   html[data-theme="dark"] .hero-v2-headline .hr-ai{ color: var(--logo-blue-on-dark, #4A66D4); }
   .hero-v2-line2{ color: var(--ink); }
   /* new hero copy · "Technology Value OS" headline + "for AI, Cloud and Humans" tagline */
-  .hero-v2-headline .hero-v2-line2{ font-size:.46em; font-weight:600; letter-spacing:-.01em; }
-  .hero-v2-headline .w-ai{ color:var(--zop-blue, #2A4494); }
-  .hero-v2-headline .w-cloud{ color:var(--zop-green, #7FB236); }
-  .hero-v2-headline .w-human{ color:var(--zop-orange); }
-  html[data-theme="dark"] .hero-v2-headline .w-ai{ color:var(--logo-blue-on-dark, #4A66D4); }
+  .hero-v2-headline .w-ai,
+  .hero-v2-headline .w-cloud,
+  .hero-v2-headline .w-human{ color:var(--ink, #F0EBDB); }   /* settle colour (rest + reduced-motion) */
+  @media (prefers-reduced-motion: no-preference){
+    .hero-v2-headline.hero-reveal.go .w-ai{ animation:settle-ai 2.4s ease .35s both; }
+    .hero-v2-headline.hero-reveal.go .w-cloud{ animation:settle-cloud 2.4s ease .35s both; }
+    .hero-v2-headline.hero-reveal.go .w-human{ animation:settle-human 2.4s ease .35s both; }
+  }
+  @keyframes settle-ai{ 0%,48%{ color:var(--logo-blue-on-dark, #4A66D4); } 100%{ color:var(--ink, #F0EBDB); } }
+  @keyframes settle-cloud{ 0%,48%{ color:var(--zop-green, #7FB236); } 100%{ color:var(--ink, #F0EBDB); } }
+  @keyframes settle-human{ 0%,48%{ color:var(--zop-orange); } 100%{ color:var(--ink, #F0EBDB); } }
   /* AI sparkle before "Technology Value OS" · brand-orange, gentle twinkle */
   .hero-v2-headline .tvos-spark{ width:.58em; height:.58em; display:inline-block; vertical-align:.02em;
-    margin-right:.2em; color:var(--zop-orange); overflow:visible;
+    margin-right:.2em; color:var(--zop-orange); overflow:visible; transform-origin:center;
     filter:drop-shadow(0 0 12px rgba(245,133,73,.35)); }
   @media (prefers-reduced-motion: no-preference){
-    .hero-v2-headline .tvos-spark{ transform-origin:center; animation:tvos-twinkle 3.6s ease-in-out infinite; }
+    .hero-v2-headline .tvos-spark{ opacity:0; }   /* hidden until it pops in with the headline */
+    .hero-v2-headline.hero-reveal.go .tvos-spark{
+      animation: tvos-pop .7s cubic-bezier(.34,1.56,.64,1) both, tvos-twinkle 3.4s ease-in-out 1s infinite;
+    }
+  }
+  @keyframes tvos-pop{
+    0%{ opacity:0; transform:scale(.3) rotate(-25deg); }
+    55%{ opacity:1; transform:scale(1.2) rotate(8deg); }
+    100%{ opacity:1; transform:scale(1) rotate(0); }
   }
   @keyframes tvos-twinkle{
-    0%,100%{ opacity:.82; transform:scale(.95) rotate(0deg); }
+    0%,100%{ opacity:.85; transform:scale(.97) rotate(0deg); }
     50%{ opacity:1; transform:scale(1.12) rotate(10deg); }
   }
   /* Subhead · single line on desktop, wraps naturally on mobile */
