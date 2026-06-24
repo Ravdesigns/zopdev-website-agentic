@@ -8927,7 +8927,7 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
 
     <h1 class="hero-v2-headline hero-reveal hero-reveal--bdg">
       <span class="hr-line">
-        <span class="hr-word hr-tvos"><span class="tvos-spark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8a2 2 0 0 0 1.3 1.3L21 12l-5.8 1.9a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.8a2 2 0 0 0-1.3-1.3L3 12l5.8-1.9a2 2 0 0 0 1.3-1.3z"/></svg></span>Technology Value OS</span>
+        <span class="hr-word hr-tvos">Technology Value OS</span>
       </span>
       <span class="hr-line">
         <span class="hr-rest hr-r1 hr-rest-solo hero-v2-line2">for <span class="w-ai">AI</span>, <span class="w-cloud">Cloud</span> and <span class="w-human">Humans</span></span>
@@ -8989,11 +8989,26 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
   .hero-kpis{ background:var(--bg-0,#0F0F12); padding:clamp(40px,7vh,80px) 0; }
   .hero-kpis .hk-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:1px;
     background:var(--line); border:1px solid var(--line); }
-  .hero-kpis .hk-card{ background:var(--bg-0,#0F0F12); padding:clamp(22px,3vw,34px) clamp(20px,2.4vw,30px);
-    display:flex; flex-direction:column; gap:10px; }
+  .hero-kpis .hk-card{ position:relative; background:var(--bg-0,#0F0F12); padding:clamp(22px,3vw,34px) clamp(20px,2.4vw,30px);
+    display:flex; flex-direction:column; gap:10px;
+    transition:background .3s ease, transform .35s cubic-bezier(.22,1,.36,1), box-shadow .35s ease; }
+  /* hover · orange top accent sweeps in, number warms, label brightens, card lifts (motion-safe) */
+  .hero-kpis .hk-card::after{ content:""; position:absolute; left:0; right:0; top:0; height:2px;
+    background:var(--zop-orange,#F58549); transform:scaleX(0); transform-origin:left;
+    transition:transform .4s cubic-bezier(.22,1,.36,1); }
   .hero-kpis .hk-num{ font-family:var(--font,'Space Grotesk',sans-serif); font-weight:700;
-    font-size:clamp(1.9rem,3.4vw,2.9rem); letter-spacing:-.03em; line-height:1; color:var(--ink,#F0EBDB); }
-  .hero-kpis .hk-label{ font-size:clamp(12.5px,1.1vw,14px); line-height:1.45; color:var(--ink-3,#A8A195); }
+    font-size:clamp(1.9rem,3.4vw,2.9rem); letter-spacing:-.03em; line-height:1; white-space:nowrap;
+    color:var(--ink,#F0EBDB); transition:color .3s ease; }
+  .hero-kpis .hk-num .hk-unit{ font-size:.5em; font-weight:600; letter-spacing:-.01em; }
+  .hero-kpis .hk-label{ font-size:clamp(12.5px,1.1vw,14px); line-height:1.45; color:var(--ink-3,#A8A195);
+    transition:color .3s ease; }
+  .hero-kpis .hk-card:hover{ background:#16161c; }
+  .hero-kpis .hk-card:hover::after{ transform:scaleX(1); }
+  .hero-kpis .hk-card:hover .hk-num{ color:var(--zop-orange,#F58549); }
+  .hero-kpis .hk-card:hover .hk-label{ color:var(--ink,#F0EBDB); }
+  @media (prefers-reduced-motion: no-preference){
+    .hero-kpis .hk-card:hover{ transform:translateY(-4px); box-shadow:0 14px 34px -16px rgba(0,0,0,.7); }
+  }
   @media (max-width:760px){ .hero-kpis .hk-grid{ grid-template-columns:repeat(2,1fr); } }
 </style>
 <section class="hero-kpis" aria-label="By the numbers">
@@ -9002,7 +9017,7 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
       <article class="hk-card"><span class="hk-num">20&ndash;60%</span><span class="hk-label">off the cloud bill, in the first month</span></article>
       <article class="hk-card"><span class="hk-num">&lt; 5 min</span><span class="hk-label">to first findings &mdash; read-only, agentless</span></article>
       <article class="hk-card"><span class="hk-num">$15M+</span><span class="hk-label">cloud spend under management</span></article>
-      <article class="hk-card"><span class="hk-num">150+ teams</span><span class="hk-label">made accountable in one OS</span></article>
+      <article class="hk-card"><span class="hk-num">150+ <span class="hk-unit">teams</span></span><span class="hk-label">made accountable in one OS</span></article>
     </div>
   </div>
 </section>
@@ -9237,23 +9252,6 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
   @keyframes settle-ai{ 0%,48%{ color:var(--logo-blue-on-dark, #4A66D4); } 100%{ color:var(--ink, #F0EBDB); } }
   @keyframes settle-cloud{ 0%,48%{ color:var(--zop-green, #7FB236); } 100%{ color:var(--ink, #F0EBDB); } }
   @keyframes settle-human{ 0%,48%{ color:var(--zop-orange); } 100%{ color:var(--ink, #F0EBDB); } }
-  /* sparkle · pops in beside the headline, then fades + collapses so the word
-     settles clean (no sparkle at rest) — like the earlier icon -> word reveal. */
-  .hero-v2-headline .tvos-spark{ display:inline-block; overflow:hidden; vertical-align:.02em;
-    width:0; margin-right:0; opacity:0; color:var(--zop-orange); transform-origin:center; }
-  .hero-v2-headline .tvos-spark svg{ width:.58em; height:.58em; display:block;
-    filter:drop-shadow(0 0 12px rgba(245,133,73,.4)); }
-  @media (prefers-reduced-motion: no-preference){
-    .hero-v2-headline.hero-reveal.go .tvos-spark{ animation:tvos-cycle 1.6s cubic-bezier(.4,0,.2,1) both; }
-  }
-  @keyframes tvos-cycle{
-    0%   { opacity:0; width:0;      margin-right:0;     transform:scale(.3) rotate(-25deg); }
-    10%  { opacity:0; width:.58em;  margin-right:.22em; transform:scale(.3) rotate(-25deg); }
-    40%  { opacity:1; width:.58em;  margin-right:.22em; transform:scale(1.12) rotate(8deg); }
-    62%  { opacity:1; width:.58em;  margin-right:.22em; transform:scale(1) rotate(0); }
-    86%  { opacity:0; width:.58em;  margin-right:.22em; transform:scale(.7) rotate(0); }
-    100% { opacity:0; width:0;      margin-right:0;     transform:scale(.7) rotate(0); }
-  }
   /* Subhead · single line on desktop, wraps naturally on mobile */
   .hero-v2-lead{
     margin: 0 auto 44px;
