@@ -8986,7 +8986,14 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
 </section>
 
 <style id="hero-kpis-css">
-  .hero-kpis{ background:var(--bg-0,#0F0F12); padding:clamp(40px,7vh,80px) 0; }
+  .hero-kpis{ position:relative; background:var(--bg-0,#0F0F12); padding:clamp(40px,7vh,80px) 0; }
+  /* hero gridlines continue into the KPI top padding · full-bleed 6-col,
+     aligned with .hero-v2::before, so the texture runs unbroken from the hero
+     down to the cards, then stops at the cards. */
+  .hero-kpis::before{ content:""; position:absolute; top:0; left:0; right:0;
+    height:clamp(40px,7vh,80px); background-image:linear-gradient(to right, var(--line) 1px, transparent 1px);
+    background-size:calc(100%/6) 100%; background-position:0 0; opacity:.25; pointer-events:none; z-index:0; }
+  .hero-kpis > .container{ position:relative; z-index:1; }
   .hero-kpis .hk-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:1px;
     background:var(--line); border:1px solid var(--line); }
   .hero-kpis .hk-card{ position:relative; background:var(--bg-0,#0F0F12); padding:clamp(22px,3vw,34px) clamp(20px,2.4vw,30px);
@@ -9048,20 +9055,32 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
     from{ opacity: 0; transform: translate3d(0, 24px, 0); }
     to  { opacity: 1; transform: translate3d(0, 0, 0); }
   }
+  /* Hidden at rest · the whole hero now enters together AFTER the loader
+     fires `.go` on the headline (gated via :has() below), instead of these
+     rise animations playing — wasted — behind the loader and leaving the
+     headline to pop in alone afterwards. One headline-led cascade. */
   .hero-v2-pill,
   .hero-v2-lead,
   .hero-v2-cta,
   .hero-v2-trust,
   .hero-v2-vendors{
     opacity: 0;
-    animation: hv-rise .8s cubic-bezier(.22,1,.36,1) forwards;
     will-change: transform, opacity;
   }
-  .hero-v2-pill   { animation-delay: 60ms;  }
-  .hero-v2-lead   { animation-delay: 2100ms; } /* lands after headline finishes */
-  .hero-v2-cta    { animation-delay: 2260ms; }
-  .hero-v2-trust  { animation-delay: 2420ms; }
-  .hero-v2-vendors{ animation-delay: 2560ms; }
+  .hero-v2:has(.hero-reveal.go) :is(
+    .hero-v2-pill, .hero-v2-lead, .hero-v2-cta, .hero-v2-trust, .hero-v2-vendors){
+    animation: hv-rise .8s cubic-bezier(.22,1,.36,1) both;
+  }
+  /* cascade from the loader hand-off · pill → (headline) → lead → cta → trust → vendors */
+  .hero-v2:has(.hero-reveal.go) .hero-v2-pill   { animation-delay: 0ms;   }
+  .hero-v2:has(.hero-reveal.go) .hero-v2-lead   { animation-delay: 560ms; }
+  .hero-v2:has(.hero-reveal.go) .hero-v2-cta    { animation-delay: 700ms; }
+  .hero-v2:has(.hero-reveal.go) .hero-v2-trust  { animation-delay: 840ms; }
+  .hero-v2:has(.hero-reveal.go) .hero-v2-vendors{ animation-delay: 980ms; }
+  /* fallback · never leave the hero hidden if :has() is unavailable */
+  @supports not (selector(:has(*))){
+    .hero-v2-pill, .hero-v2-lead, .hero-v2-cta, .hero-v2-trust, .hero-v2-vendors{ opacity: 1; }
+  }
 
   /* Headline · port the legacy `.hero-reveal` recipe verbatim so the
      "Build / Deploy / Govern." words pop up with an overshoot bounce
@@ -9102,10 +9121,10 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
     animation: hv-rest 480ms cubic-bezier(.22,.8,.32,1) both;
   }
   /* Delay ladder · matches the legacy index hero exactly. */
-  .hero-v2-headline.hero-reveal.go .hr-w1{ animation-delay: 0s;    }
-  .hero-v2-headline.hero-reveal.go .hr-w2{ animation-delay: .75s;  }
-  .hero-v2-headline.hero-reveal.go .hr-w3{ animation-delay: 1.50s; }
-  .hero-v2-headline.hero-reveal.go .hr-r3{ animation-delay: 1.80s; }
+  /* headline leads · TVOS pops, then "for AI, Cloud and Humans" slides in
+     (delays target the actual markup classes .hr-tvos / .hr-r1). */
+  .hero-v2-headline.hero-reveal.go .hr-tvos{ animation-delay: .15s; }
+  .hero-v2-headline.hero-reveal.go .hr-r1{ animation-delay: .33s; }
 
   /* ── Hover reveal · AI / Cloud / Humans each lead with a small line glyph
      BESIDE the word. At rest the words are plain cream and the glyph is
