@@ -292,7 +292,7 @@ code, .mono{font-family:var(--mono); letter-spacing:0}
 
 /* Logo lockup utility */
 .logo-lockup{display:inline-block; color:var(--ink); line-height:0}
-.logo-lockup svg{display:block; height:100%; width:auto; max-width:none; aspect-ratio:715/276}
+.logo-lockup svg{display:block; height:100%; width:auto; max-width:none; aspect-ratio:3817/1365}
 .logo-lockup.on-dark{color:var(--paper)}
 .logo-lockup.sm{height:42px}
 .logo-lockup.md{height:52px}
