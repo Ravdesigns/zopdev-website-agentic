@@ -22,7 +22,7 @@ zopdev-emails-handover/
 │   ├── 07-changelog.html             changelog subscription confirm
 │   ├── 08-ebook-ready.html           ebook download delivery
 │   └── 09-reclaim-forecast.html      ZopNight calculator output
-└── logo-png-export/                ← source logo PNGs (2876×1120, 124 KB)
+└── logo-png-export/                ← source logo PNGs (2400×858, ~50–60 KB)
     ├── zopdev-logo-black.png
     └── zopdev-logo-white.png
 ```
@@ -80,7 +80,7 @@ The logo is **base64-embedded** in each file (`data:image/png;base64,...`) so th
 - Black logo (light-mode): `https://your-cdn.zop.dev/zopdev-logo-black.png`
 - White logo (dark-mode):  `https://your-cdn.zop.dev/zopdev-logo-white.png`
 
-The source PNGs ship in `logo-png-export/` (2876 × 1120, ~120 KB each) — host these on your CDN or static asset bucket.
+The source PNGs ship in `logo-png-export/` (2400 × 858, ~50–60 KB each) — host these on your CDN or static asset bucket.
 
 ---
 
