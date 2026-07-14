@@ -16942,6 +16942,158 @@ html:not([data-theme="light"]) .hero h1 .hr-r2 em{
 </style>
 
 <!-- ============================================================
+     ZOPNIGHT · AI SPEND · new capability. LLM/agent spend metered
+     like cloud spend. Section head + always-dark "Cost Reports ·
+     AI Spend" mock: 4 KPI tiles + tier-mix donut + top models.
+     ============================================================ -->
+<style id="zn-aispend-css">
+  .zn-aispend .zna-new{
+    display:inline-block; margin-left:8px; padding:2px 7px 1px;
+    font-family:var(--mono,'JetBrains Mono',monospace); font-size:9px;
+    letter-spacing:.16em; text-transform:uppercase;
+    border:1px solid var(--zop-orange); color:var(--zop-orange);
+  }
+  /* always-dark dashboard mock (mirrors §7.11 dashboard-mock grammar) */
+  .zn-aispend .zna-mock{
+    margin-top:44px; background:#101014; border:1px solid #2a2a30;
+    padding:clamp(16px,2.4vw,28px); color:#F0EBDB;
+    display:flex; flex-direction:column; gap:18px;
+  }
+  .zn-aispend .zna-bar{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px; flex-wrap:wrap; border-bottom:1px solid #2a2a30; padding-bottom:14px;
+  }
+  .zn-aispend .zna-bar-title{ font-family:var(--font,'Space Grotesk',sans-serif); font-weight:700; font-size:18px; }
+  .zn-aispend .zna-tabs{ display:flex; gap:20px; font-family:var(--mono,'JetBrains Mono',monospace); font-size:12px; }
+  .zn-aispend .zna-tab{ color:#8A8378; padding-bottom:8px; border-bottom:2px solid transparent; }
+  .zn-aispend .zna-tab.is-active{ color:#F0EBDB; border-bottom-color:var(--logo-blue-on-dark,#4A66D4); }
+  .zn-aispend .zna-tiles{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+  .zn-aispend .zna-tile{ background:#17171c; border:1px solid #26262c; padding:16px 18px; display:flex; flex-direction:column; gap:6px; }
+  .zn-aispend .zna-tile-label{ font-family:var(--mono,'JetBrains Mono',monospace); font-size:10px; letter-spacing:.12em; color:#8A8378; }
+  .zn-aispend .zna-tile-num{ font-family:var(--font,'Space Grotesk',sans-serif); font-weight:700; font-size:clamp(22px,2.4vw,30px); line-height:1; letter-spacing:-.02em; font-variant-numeric:tabular-nums; }
+  .zn-aispend .zna-unit{ font-size:.5em; font-weight:600; color:#A8A195; margin-left:3px; }
+  .zn-aispend .zna-num-warn{ color:var(--zop-orange); }
+  .zn-aispend .zna-tile-meta{ font-size:11.5px; color:#8A8378; line-height:1.35; }
+  .zn-aispend .zna-cols{ display:grid; grid-template-columns:1fr 1.35fr; gap:12px; }
+  .zn-aispend .zna-panel{ background:#17171c; border:1px solid #26262c; padding:18px 20px; }
+  .zn-aispend .zna-panel-title{ font-family:var(--font,'Space Grotesk',sans-serif); font-weight:700; font-size:14px; margin-bottom:16px; }
+  .zn-aispend .zna-donut-wrap{ position:relative; width:130px; height:130px; margin:2px auto 16px; }
+  .zn-aispend .zna-donut{ width:100%; height:100%; transform:rotate(-90deg); }
+  .zn-aispend .zna-donut circle{ fill:none; stroke-width:3.6; }
+  .zn-aispend .zna-donut-track{ stroke:#2a2a30; }
+  .zn-aispend .zna-donut-val{ stroke:var(--logo-blue-on-dark,#4A66D4); }
+  .zn-aispend .zna-donut-c{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .zn-aispend .zna-donut-pct{ font-family:var(--font,'Space Grotesk',sans-serif); font-weight:700; font-size:26px; line-height:1; }
+  .zn-aispend .zna-donut-lab{ font-size:11px; color:#8A8378; margin-top:2px; }
+  .zn-aispend .zna-legend{ display:flex; gap:18px; justify-content:center; font-size:12px; color:#A8A195; }
+  .zn-aispend .zna-dot{ display:inline-block; width:9px; height:9px; margin-right:6px; vertical-align:middle; }
+  .zn-aispend .zna-dot-strong{ background:var(--logo-blue-on-dark,#4A66D4); }
+  .zn-aispend .zna-dot-cheap{ background:#4a4a52; }
+  .zn-aispend .zna-models{ display:flex; flex-direction:column; gap:16px; }
+  .zn-aispend .zna-model-row{ display:flex; justify-content:space-between; align-items:baseline; gap:12px; }
+  .zn-aispend .zna-model-name{ font-family:var(--mono,'JetBrains Mono',monospace); font-size:12.5px; color:#D4CDB5; }
+  .zn-aispend .zna-model-cost{ font-family:var(--font,'Space Grotesk',sans-serif); font-weight:700; font-size:14px; font-variant-numeric:tabular-nums; }
+  .zn-aispend .zna-model-bar{ height:6px; background:#22222a; margin:8px 0 5px; }
+  .zn-aispend .zna-model-bar span{ display:block; height:100%; background:linear-gradient(90deg,var(--zop-blue,#2A4494),var(--logo-blue-on-dark,#4A66D4)); }
+  .zn-aispend .zna-model-sub{ font-family:var(--mono,'JetBrains Mono',monospace); font-size:10.5px; color:#8A8378; }
+  /* capability bentos · canonical card-lift (§7.3 Pattern A), ZopNight accent */
+  .zn-aispend .zna-caps{ display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:20px; }
+  .zn-aispend .zna-cap{ position:relative; overflow:hidden; border:1px solid var(--line); background:transparent; padding:26px; display:flex; flex-direction:column; gap:12px; transition:transform var(--dur-med) var(--ease-out), box-shadow var(--dur-med) var(--ease-out); }
+  html[data-theme="dark"] .zn-aispend .zna-cap{ background:#14141a; border-color:#2a2a30; }
+  .zn-aispend .zna-cap::after{ content:""; position:absolute; top:0; left:0; width:4px; height:100%; background:var(--zop-orange); transform:scaleY(0); transform-origin:top; transition:transform var(--dur-med) var(--ease-out); pointer-events:none; }
+  .zn-aispend .zna-cap:hover{ transform:translateY(-4px); box-shadow:0 8px 0 -4px var(--ink); }
+  .zn-aispend .zna-cap:hover::after{ transform:scaleY(1); }
+  .zn-aispend .zna-cap-ico{ width:26px; height:26px; color:var(--zop-blue,#2A4494); }
+  html[data-theme="dark"] .zn-aispend .zna-cap-ico{ color:var(--logo-blue-on-dark,#4A66D4); }
+  .zn-aispend .zna-cap-ico svg{ width:100%; height:100%; display:block; }
+  .zn-aispend .zna-cap-h{ margin:0; font-family:var(--font,'Space Grotesk',sans-serif); font-weight:700; font-size:18px; letter-spacing:-.02em; color:var(--ink); }
+  .zn-aispend .zna-cap-p{ margin:0; font-size:14px; line-height:1.5; color:var(--g-600); }
+  .zn-aispend .zna-cap-foot{ margin-top:auto; padding-top:8px; font-family:var(--mono,'JetBrains Mono',monospace); font-size:10.5px; letter-spacing:.1em; color:var(--g-500); }
+  @media (max-width:760px){
+    .zn-aispend .zna-tiles{ grid-template-columns:repeat(2,1fr); }
+    .zn-aispend .zna-cols{ grid-template-columns:1fr; }
+    .zn-aispend .zna-tabs{ gap:14px; font-size:11px; }
+    .zn-aispend .zna-caps{ grid-template-columns:1fr; }
+  }
+</style>
+<section class="section zn-aispend" id="zn-aispend" aria-label="ZopNight AI Spend">
+  <div class="container">
+    <div class="sec-head sec-head--no-divider">
+      <div class="sec-meta">zopnight &middot; ai spend <span class="zna-new">new</span></div>
+      <div>
+        <h2>AI is your fastest-growing bill.<br/><span class="h2-subline">Now ZopNight meters it.</span></h2>
+        <p class="sub">Every AI request tracked like a cloud resource, by model, team, and routing tier. See what strong vs cheap routing actually costs, which teams burn the budget, and where calls fail, before finance asks.</p>
+      </div>
+    </div>
+
+    <div class="zna-mock" role="img" aria-label="ZopNight Cost Reports, AI Spend view: 42.11 dollars spend across all AI requests, 2,960 requests served, 1,310 ms average latency, 12 failed requests; 52% of requests routed to the strong tier; top model claude-sonnet-4.5 at 0.276 dollars.">
+      <div class="zna-bar">
+        <span class="zna-bar-title">Cost Reports</span>
+        <div class="zna-tabs" aria-hidden="true">
+          <span class="zna-tab">Summary</span>
+          <span class="zna-tab">K8s</span>
+          <span class="zna-tab">Teams</span>
+          <span class="zna-tab">Tags</span>
+          <span class="zna-tab is-active">AI Spend</span>
+        </div>
+      </div>
+      <div class="zna-tiles" aria-hidden="true">
+        <div class="zna-tile"><div class="zna-tile-label">SPEND</div><div class="zna-tile-num">$42.11</div><div class="zna-tile-meta">Across all AI requests</div></div>
+        <div class="zna-tile"><div class="zna-tile-label">REQUESTS</div><div class="zna-tile-num">2,960</div><div class="zna-tile-meta">Total served</div></div>
+        <div class="zna-tile"><div class="zna-tile-label">AVG LATENCY</div><div class="zna-tile-num">1,310<span class="zna-unit">ms</span></div><div class="zna-tile-meta">Across all requests</div></div>
+        <div class="zna-tile"><div class="zna-tile-label">FAILED</div><div class="zna-tile-num zna-num-warn">12</div><div class="zna-tile-meta">Upstream errors</div></div>
+      </div>
+      <div class="zna-cols" aria-hidden="true">
+        <div class="zna-panel">
+          <div class="zna-panel-title">Tier mix</div>
+          <div class="zna-donut-wrap">
+            <svg class="zna-donut" viewBox="0 0 42 42"><circle class="zna-donut-track" cx="21" cy="21" r="15.9155"/><circle class="zna-donut-val" cx="21" cy="21" r="15.9155" stroke-dasharray="52 48"/></svg>
+            <div class="zna-donut-c"><span class="zna-donut-pct">52%</span><span class="zna-donut-lab">Strong</span></div>
+          </div>
+          <div class="zna-legend"><span><i class="zna-dot zna-dot-strong"></i>Strong</span><span><i class="zna-dot zna-dot-cheap"></i>Cheap</span></div>
+        </div>
+        <div class="zna-panel">
+          <div class="zna-panel-title">Top models by spend</div>
+          <div class="zna-models">
+            <div class="zna-model">
+              <div class="zna-model-row"><span class="zna-model-name">anthropic/claude-sonnet-4.5</span><span class="zna-model-cost">$0.276</span></div>
+              <div class="zna-model-bar"><span style="width:100%"></span></div>
+              <div class="zna-model-sub">26 reqs &middot; $0.0106 avg</div>
+            </div>
+            <div class="zna-model">
+              <div class="zna-model-row"><span class="zna-model-name">openai/gpt-4o-mini</span><span class="zna-model-cost">$0.011</span></div>
+              <div class="zna-model-bar"><span style="width:9%"></span></div>
+              <div class="zna-model-sub">24 reqs &middot; $0.0005 avg</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="zna-caps">
+      <div class="zna-cap">
+        <span class="zna-cap-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></span>
+        <h3 class="zna-cap-h">Every dollar attributed</h3>
+        <p class="zna-cap-p">Spend split by model, team, tag, and routing tier, reconciled against the provider invoice, not estimated.</p>
+        <div class="zna-cap-foot">MODEL &middot; TEAM &middot; TAG</div>
+      </div>
+      <div class="zna-cap">
+        <span class="zna-cap-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="m15 15 6 6"/><path d="m4 4 5 5"/></svg></span>
+        <h3 class="zna-cap-h">Priced by routing tier</h3>
+        <p class="zna-cap-p">See what the strong and cheap tiers each cost, plus the live mix. Route routine calls cheap, keep the hard ones strong.</p>
+        <div class="zna-cap-foot">STRONG &middot; CHEAP</div>
+      </div>
+      <div class="zna-cap">
+        <span class="zna-cap-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span>
+        <h3 class="zna-cap-h">Latency and failures, watched</h3>
+        <p class="zna-cap-p">Average latency and upstream errors per model and team, so slow or failing calls surface before your users feel them.</p>
+        <div class="zna-cap-foot">LATENCY &middot; ERRORS</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
      PRODUCT CTA · ZopNight · big heading + button + dashboard peek
      that rises on hover (mirrors the product dropdown peek pattern).
      ============================================================ -->
